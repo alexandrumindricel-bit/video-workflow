@@ -7,7 +7,8 @@ description: Edit a raw talking-head video into a finished vertical short in the
 
 Follow these steps **every time** the user sends a raw video. Tool root: `/home/user/video-workflow`
 (`VW=/home/user/video-workflow`). Use a fresh work dir per video in the scratchpad, e.g. `$SCRATCH/<name>/work`.
-Read `STYLE_GUIDE.md` (the style) and `templates/STORYBOARD_REFERENCE.md` (element syntax) before step 4.
+Read `STYLE_GUIDE.md` (the style), `EFFECTS.md` (the 17-effect library - use several in EVERY video) and
+`templates/STORYBOARD_REFERENCE.md` (syntax) before step 4.
 
 ## 0. Setup (once per container)
 `$VW/vw.sh setup`. If it warns that huggingface.co is blocked, tell the user transcription can't run until they allow
@@ -64,10 +65,15 @@ reply at the end. Rules from the style guide:
 `layout.json`) or `"lower"` (chest area, above captions). Never `center` over the face. Titles may overlap the top
 of the head slightly (that is the look), never the eyes/mouth.
 
+**Effects library (`EFFECTS.md`) - mandatory in every video**: about one effect moment every 4-6 s of final video
+(30 s → 5-7, 60 s → 9-12), each matched to what is being said, no repeat within ~15 s, mixing camera, cut-out and UI
+families. Put one in the hook. Example with all of them: `templates/storyboard.effects-example.json`.
+
 **CTA / ending** (if the user said what they want): `comment` (keyword CTA) and/or `follow` card in the last 4-6 s.
 
-**Style preset**: `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles) or
-`"depth"` (blue gradient 3D hero words, white pop-in words) when the user asks for the blue look.
+**Style preset**: `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles),
+`"bold"` (white heavy words + big yellow keyword, like the effects reference) or `"depth"` (blue gradient 3D hero words).
+Pick per user request; otherwise editorial.
 
 **SFX** are automatic: whoosh on titles, pop on cards, typing ticks on prompts, click on steps/list items,
 shutter on flash, glitch sound on glitch, etc. Override per element with `"sfx": "name"` or `"sfx": null`.
@@ -77,13 +83,16 @@ Optional `music: {file, gain_db}` only if the user supplies a track (it is ducke
 ```
 $VW/vw.sh render WORK OUT.mp4
 ```
-→ transparent captions/graphics layer (Chromium, deterministic frames) → punch-ins, glitches, overlay, voice cleanup,
-SFX mix, loudness -14 LUFS → H.264 1080x1920 30 fps + `WORK/qa_sheet.jpg`.
+→ `fx.py` camera effects + person cut-out (MediaPipe selfie segmentation) → front/back graphics layers (Chromium,
+deterministic frames) → stack: background · back layer · sticker · person · outline · front layer → glitches, voice
+cleanup, SFX mix, loudness -14 LUFS → H.264 1080x1920 30 fps + `WORK/qa_sheet.jpg`.
 
 ## 6. QA (before delivering)
 - Look at `WORK/qa_sheet.jpg` and extract 4-6 full frames at hook/graphic/transition moments
   (`ffmpeg -ss T -i OUT.mp4 -frames:v 1 f.jpg`) and actually view them: face never covered, text inside the safe area
   (nothing important in bottom 18 % / right 12 %), no text overflowing, keywords highlighted, hook has 3+ changes.
+- For every cut-out effect, view a frame: edges clean (no halo/missing hair or hands)? If the cut-out is poor for this
+  footage, swap that effect for a UI one.
 - Confirm output is 1080x1920, 30 fps, audio present (compose prints it), sync check was OK.
 - Fix storyboard → re-run render (cut is not re-run unless the edit changes).
 
@@ -93,7 +102,8 @@ the storyboard table, and anything to double-check (low-confidence words, landsc
 ("more zoom", "less graphics", "depth style", different hook title).
 
 ## Notes / limits
-- Text-behind-the-speaker masking (ref B) is not implemented: it needs a segmentation model.
+- Person cut-out uses MediaPipe 0.10.14 in `/opt/vw-seg` (Python 3.12 venv, model bundled in the wheel): soft edges,
+  best for head-and-shoulders/medium shots. Text behind the speaker = any element on the back layer.
 - The SFX library is synthesized (`scripts/make_sfx.py`). The user's own WAVs dropped into `sfx/` with the same names
   (whoosh, pop, click, tick, shutter, impact, riser, glitch, ding, paper, swoosh_down) replace them.
-- Long videos: overlay render ≈ 3 s per second of video; compose ≈ 2 s per second.
+- Speed: about 10-12 s of rendering per second of final video when back-layer and cut-out effects are used.

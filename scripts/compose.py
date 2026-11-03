@@ -21,8 +21,11 @@ AUTO_SFX = {
     "counter": ("pop", -10), "step": ("click", -8), "list": ("click", -10), "stat": ("pop", -9),
     "comment": ("pop", -10), "follow": ("ding", -14), "image": ("pop", -10), "label": None, "frame": None,
     "flash": ("shutter", -8), "leak": ("whoosh", -10),
+    "orbit": ("riser", -14), "wall": ("paper", -11), "app": ("pop", -10), "phone": ("pop", -10),
+    "chart": ("riser", -14), "backdrop": ("whoosh", -11), "doodle": ("paper", -14), "tiles": ("click", -9),
+    "glass": ("whoosh", -11), "cover": ("impact", -12), "checklist": ("pop", -10),
 }
-TRANSITION_SFX = {"flash": ("shutter", -8), "leak": ("whoosh", -9), "glitch": ("glitch", -10),
+TRANSITION_SFX = {"zoom_through": ("whoosh", -7), "flash": ("shutter", -8), "leak": ("whoosh", -9), "glitch": ("glitch", -10),
                   "punch": None, "whoosh": ("whoosh", -9), "impact": ("impact", -8), "paper": ("paper", -8)}
 
 
@@ -63,64 +66,59 @@ def sfx_events(sb):
         d = TRANSITION_SFX.get(tr["kind"]) if spec == "auto" else ((spec, -9) if spec else None)
         if d:
             ev.append((tr["at"], d[0], d[1] + off))
+    EFFECT_SFX = {"pull_back": ("swoosh_down", -10), "frame_break": ("whoosh", -10), "vertigo": ("riser", -12),
+                  "sticker": ("paper", -9), "outline": ("tick", -12), "push": None, "punch": None, "cutout": None}
+    for e in sb.get("effects", []):
+        spec = e.get("sfx", "auto")
+        d = EFFECT_SFX.get(e["kind"]) if spec == "auto" else ((spec, -10) if spec else None)
+        if d:
+            ev.append((e["start"], d[0], d[1] + off))
     for s in sb.get("sfx", []):
         ev.append((s["at"], s["name"], s.get("gain_db", -10) + off))
     return sorted(ev)
-
-
-def zoom_pieces(sb, dur):
-    """Piecewise-constant zoom levels (punch-in jump cuts)."""
-    zs = sorted(sb.get("zooms", []), key=lambda z: z["start"])
-    pieces, t = [], 0.0
-    for z in zs:
-        s, e = max(t, z["start"]), min(dur, z["end"])
-        if e <= s:
-            continue
-        if s > t:
-            pieces.append((t, s, 1.0))
-        pieces.append((s, e, z.get("scale", 1.1)))
-        t = e
-    if t < dur:
-        pieces.append((t, dur, 1.0))
-    # snap to frames
-    return [(round(a * FPS) / FPS, round(b * FPS) / FPS, sc) for a, b, sc in pieces if round(b * FPS) > round(a * FPS)]
 
 
 def main():
     work, out = sys.argv[1], sys.argv[2]
     sb = json.load(open(os.path.join(work, "storyboard.json")))
     seg = json.load(open(os.path.join(work, "segments.json")))
-    layout = json.load(open(os.path.join(work, "layout.json")))
     dur = seg["duration"]
-    face = layout.get("face")
-    cx = (face["x"] + face["w"] / 2) if face else W / 2
-    cy = (face["y"] + face["h"] / 2) if face else H * 0.4
 
-    inputs = ["-i", os.path.join(work, "cut.mov"), "-i", os.path.join(work, "overlay.mov")]
+    # video layers come from fx.py (camera effects + person cut-out) and render_overlay.cjs (back/front graphics)
+    flags = json.load(open(os.path.join(work, "fx_flags.json")))
+    inputs = ["-i", os.path.join(work, "cut.mov"), "-i", os.path.join(work, "fx_bg.mov"),
+              "-i", os.path.join(work, "overlay.mov")]
+    n_in = 3
     f = []
-    # --- video: zoom pieces
-    pieces = zoom_pieces(sb, dur)
-    f.append(f"[0:v]split={len(pieces)}" + "".join(f"[zs{i}]" for i in range(len(pieces))))
-    for i, (a, b, sc) in enumerate(pieces):
-        cw, ch = int(W / sc) // 2 * 2, int(H / sc) // 2 * 2
-        x = int(min(max(cx - cw / 2, 0), W - cw))
-        y = int(min(max(cy - ch * 0.42, 0), H - ch))  # keep face slightly above center
-        f.append(f"[zs{i}]trim=start={a:.6f}:end={b:.6f},setpts=PTS-STARTPTS,"
-                 f"crop={cw}:{ch}:{x}:{y},scale={W}:{H}:flags=lanczos,setsar=1[zp{i}]")
-    f.append("".join(f"[zp{i}]" for i in range(len(pieces))) + f"concat=n={len(pieces)}:v=1:a=0[base0]")
-    # --- glitch transitions
-    v = "base0"
+    v = "1:v"
+    # --- glitch transitions (on the background plate)
     for k, tr in enumerate([t for t in sb.get("transitions", []) if t["kind"] == "glitch"]):
         a, b = tr["at"] - 0.05, tr["at"] + tr.get("dur", 0.2)
         f.append(f"[{v}]rgbashift=rh=-16:bh=16:gv=4:enable='between(t,{a:.3f},{b:.3f})',"
                  f"noise=alls=28:allf=t:enable='between(t,{a:.3f},{b:.3f})'[g{k}]")
         v = f"g{k}"
-    f.append(f"[{v}][1:v]overlay=0:0:format=auto:eof_action=pass,format=yuv420p[vout]")
+    f.append(f"[{v}]format=yuv444p[L0]"); v = "L0"
+    if os.path.exists(os.path.join(work, "overlay_back.mov")):
+        inputs += ["-i", os.path.join(work, "overlay_back.mov")]
+        f.append(f"[{v}][{n_in}:v]overlay=0:0:format=auto:eof_action=pass[L1]"); v = "L1"; n_in += 1
+    if flags.get("person"):
+        if flags.get("sticker"):
+            inputs += ["-i", os.path.join(work, "fx_sticker.mkv")]
+            f.append(f"color=c=white:s={W}x{H}:r={FPS}:d={dur:.3f}[wst];[wst][{n_in}:v]alphamerge[stk]")
+            f.append(f"[{v}][stk]overlay=0:0:format=auto[L2]"); v = "L2"; n_in += 1
+        inputs += ["-i", os.path.join(work, "fx_person.mov"), "-i", os.path.join(work, "fx_matte.mkv")]
+        f.append(f"[{n_in}:v][{n_in + 1}:v]alphamerge[per]")
+        f.append(f"[{v}][per]overlay=0:0:format=auto[L3]"); v = "L3"; n_in += 2
+        if flags.get("outline"):
+            col = next((e.get("color", "white") for e in sb.get("effects", []) if e["kind"] == "outline"), "white")
+            inputs += ["-i", os.path.join(work, "fx_outline.mkv")]
+            f.append(f"color=c={col}:s={W}x{H}:r={FPS}:d={dur:.3f}[olc];[olc][{n_in}:v]alphamerge[oln]")
+            f.append(f"[{v}][oln]overlay=0:0:format=auto[L4]"); v = "L4"; n_in += 1
+    f.append(f"[{v}][2:v]overlay=0:0:format=auto:eof_action=pass,format=yuv420p[vout]")
 
     # --- audio
     f.append("[0:a]highpass=f=70,acompressor=threshold=-20dB:ratio=3:attack=5:release=90:makeup=2[voice]")
     mix = ["[voice]"]
-    n_in = 2
     events = [e for e in sfx_events(sb) if 0 <= e[0] < dur]
     for k, (t, name, g) in enumerate(events):
         p = os.path.join(SFX_DIR, name + ".wav")
@@ -163,7 +161,7 @@ def main():
     au = next(s for s in pr["streams"] if s["codec_type"] == "audio")
     print(f"DONE {out}: {vs['width']}x{vs['height']} {vs['codec_name']} {vs['r_frame_rate']} fps, "
           f"audio {au['codec_name']} {au['sample_rate']} Hz, {float(pr['format']['duration']):.2f}s, "
-          f"{len(events)} SFX, {len(pieces)} zoom pieces")
+          f"{len(events)} SFX")
 
 
 if __name__ == "__main__":

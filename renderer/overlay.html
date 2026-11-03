@@ -155,6 +155,107 @@
       radial-gradient(55% 50% at 80% 70%, rgba(255,60,20,.85), rgba(255,60,0,0) 70%),
       radial-gradient(80% 60% at 50% 50%, rgba(255,200,120,.6), rgba(255,140,0,0) 75%); }
   .frame { border: 3px solid rgba(241,235,221,.85); position: absolute; inset: 70px 50px 330px 50px; }
+
+  /* ---------- bold preset (white + yellow keyword) ---------- */
+  .cap-bd { text-align: center; font-family: 'Inter', sans-serif; max-width: 980px; }
+  .cap-bd .small { font-weight: 800; font-size: 58px; color: #fff; letter-spacing: -0.02em; line-height: 1.08;
+                   text-shadow: 0 3px 14px rgba(0,0,0,.6), 0 1px 2px rgba(0,0,0,.7); }
+  .cap-bd .hero { font-weight: 900; font-size: 128px; line-height: .95; color: #F7E15A; letter-spacing: -0.045em; display: inline-block;
+                  text-shadow: 0 6px 22px rgba(0,0,0,.55); }
+  .cap-bd .w { display: inline-block; margin: 0 .11em; }
+  .f-bold { font-family: 'Inter'; font-weight: 900; color: #fff; letter-spacing: -0.045em; line-height: .95; text-shadow: 0 6px 24px rgba(0,0,0,.5); }
+  .f-yellow { font-family: 'Inter'; font-weight: 900; color: #F7E15A; letter-spacing: -0.045em; line-height: .95; text-shadow: 0 6px 24px rgba(0,0,0,.5); }
+
+  /* ---------- effect elements ---------- */
+  .orbit-card { position: absolute; left: 0; top: 0; width: 230px; height: 300px; border-radius: 26px; overflow: hidden; background: #15171c;
+                border: 3px solid rgba(255,255,255,.85); box-shadow: 0 18px 40px rgba(0,0,0,.45);
+                display: flex; flex-direction: column; justify-content: flex-end; }
+  .orbit-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .orbit-card .oc-ico { position: absolute; top: 34px; left: 0; right: 0; text-align: center; font-size: 96px; }
+  .orbit-card .oc-t { position: relative; font-family: 'Inter'; font-weight: 800; font-size: 30px; color: #fff; padding: 16px;
+                      background: linear-gradient(transparent, rgba(0,0,0,.75)); line-height: 1.05; }
+
+  .note { position: absolute; width: 270px; padding: 26px 24px 30px; font-family: 'Inter'; font-weight: 800; font-size: 34px;
+          line-height: 1.08; letter-spacing: -0.02em; box-shadow: 0 10px 24px rgba(0,0,0,.35); }
+  .note.paper { background: #F4EFE3; color: #1b1b1b; }
+  .note.paper::before { content: ''; position: absolute; top: -16px; left: 50%; width: 110px; height: 34px; margin-left: -55px;
+                        background: rgba(240,225,150,.75); transform: rotate(-3deg); }
+  .note.screen { background: #111317; color: #fff; border: 2px solid rgba(255,255,255,.25); border-radius: 18px; font-size: 30px; }
+  .note.screen .nh { font-family: 'JetBrains Mono'; font-size: 18px; opacity: .55; letter-spacing: .12em; margin-bottom: 10px; text-transform: uppercase; }
+  .note img { width: 100%; border-radius: 10px; display: block; margin-bottom: 10px; }
+
+  .app { width: 940px; border-radius: 30px; background: #FBF9F4; color: #1d1d1d; box-shadow: 0 24px 60px rgba(0,0,0,.45); overflow: hidden; }
+  .app .bar { height: 54px; background: #EFECE4; display: flex; align-items: center; gap: 12px; padding: 0 22px; }
+  .app .dot { width: 18px; height: 18px; border-radius: 50%; }
+  .app .hd { font-family: 'Inter'; font-weight: 800; font-size: 34px; padding: 22px 32px 6px; display: flex; align-items: center; gap: 12px; }
+  .app .hd .spark { color: #D97757; font-size: 40px; }
+  .app .tiles { display: flex; gap: 16px; padding: 18px 32px; align-items: flex-end; }
+  .app .tile { width: 132px; height: 186px; border-radius: 16px; background: linear-gradient(160deg, #3a3f4a, #16181d); position: relative; overflow: hidden;
+               display: flex; align-items: flex-end; justify-content: center; color: #fff; font-family: 'Inter'; font-weight: 700; font-size: 20px; padding-bottom: 12px; }
+  .app .tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .app .tile span { position: relative; }
+  .app .chip { margin-left: auto; align-self: flex-start; background: #F7E15A; color: #111; font-family: 'Inter'; font-weight: 900; font-size: 24px;
+               padding: 8px 16px; border-radius: 10px; letter-spacing: .02em; }
+  .app .inp { margin: 8px 32px 28px; border: 2px solid #E3DED3; border-radius: 22px; padding: 18px 22px; font-family: 'Inter'; font-size: 32px;
+              font-weight: 600; min-height: 40px; display: flex; align-items: center; justify-content: space-between; }
+  .app .inp .sb { width: 54px; height: 54px; border-radius: 14px; background: #D97757; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+
+  .phone { position: absolute; width: 400px; height: 820px; border-radius: 64px; background: #0b0b0d; padding: 16px;
+           box-shadow: 0 30px 70px rgba(0,0,0,.6), inset 0 0 0 3px #2b2b30; }
+  .phone .scr { width: 100%; height: 100%; border-radius: 50px; background: #121216; overflow: hidden; position: relative; padding: 70px 20px 20px; box-sizing: border-box;
+                display: flex; flex-direction: column; gap: 14px; }
+  .phone .notch { position: absolute; top: 18px; left: 50%; width: 120px; height: 34px; margin-left: -60px; border-radius: 20px; background: #000; }
+  .phone .ph { font-family: 'Inter'; font-weight: 800; color: #fff; font-size: 28px; text-align: center; margin-bottom: 10px; }
+  .phone .msg { max-width: 78%; padding: 14px 18px; border-radius: 24px; font-family: 'Inter'; font-weight: 600; font-size: 26px; line-height: 1.2; }
+  .phone .msg.me { align-self: flex-end; background: #2F86F0; color: #fff; border-bottom-right-radius: 8px; }
+  .phone .msg.them { align-self: flex-start; background: #2A2A31; color: #fff; border-bottom-left-radius: 8px; }
+  .phone .btn { align-self: center; margin-top: auto; background: #fff; color: #111; font-family: 'Inter'; font-weight: 800; font-size: 26px; padding: 14px 28px; border-radius: 30px; }
+
+  .chart { width: 920px; border-radius: 30px; padding: 28px 34px; box-sizing: border-box; }
+  .ed .chart, .dp .chart { background: rgba(14,16,20,.82); border: 1.5px solid rgba(255,255,255,.16); color: #fff; }
+  .chart .ct { font-family: 'Inter'; font-weight: 800; font-size: 40px; margin-bottom: 8px; }
+  .chart svg text { font-family: 'JetBrains Mono'; font-size: 24px; fill: rgba(255,255,255,.6); }
+  .chart .tag { position: absolute; background: #F7E15A; color: #111; font-family: 'Inter'; font-weight: 900; font-size: 30px; padding: 8px 16px; border-radius: 12px; white-space: nowrap; }
+
+  .backdrop { position: absolute; inset: 0; overflow: hidden; }
+  .bd-app { background: #F6F4EF; }
+  .bd-app .band { height: 560px; background: linear-gradient(135deg, #5B4BFF, #9B6CFF); padding: 120px 70px 0; box-sizing: border-box; color: #fff; }
+  .bd-app .band .lbl { font-family: 'JetBrains Mono'; font-size: 30px; letter-spacing: .2em; opacity: .8; text-transform: uppercase; }
+  .bd-app .band .tm { font-family: 'Inter'; font-weight: 900; font-size: 190px; letter-spacing: -0.05em; line-height: 1; margin-top: 10px; font-variant-numeric: tabular-nums; }
+  .bd-app .band .tt { font-family: 'Inter'; font-weight: 700; font-size: 44px; margin-top: 4px; }
+  .bd-app .rows { padding: 40px 70px; display: flex; flex-direction: column; gap: 22px; }
+  .bd-app .row { display: flex; align-items: center; gap: 22px; font-family: 'Inter'; font-weight: 700; font-size: 40px; color: #222; background: #fff;
+                 border-radius: 20px; padding: 24px 28px; box-shadow: 0 4px 14px rgba(0,0,0,.06); }
+  .bd-app .row .cb { width: 40px; height: 40px; border-radius: 10px; border: 3px solid #5B4BFF; flex: none; }
+  .bd-paper { background-color: #F3EEE2;
+              background-image: linear-gradient(rgba(90,120,160,.16) 2px, transparent 2px), linear-gradient(90deg, rgba(90,120,160,.16) 2px, transparent 2px);
+              background-size: 60px 60px; }
+
+  .tiles-row { display: flex; gap: 10px; }
+  .tl { width: 150px; height: 180px; display: flex; align-items: center; justify-content: center; font-family: 'JetBrains Mono'; font-weight: 500;
+        font-size: 130px; box-shadow: 0 8px 18px rgba(0,0,0,.35); border-radius: 8px; }
+  .tl.d { background: #1c1c1c; color: #F4EFE3; }
+  .tl.l { background: #F4EFE3; color: #1c1c1c; }
+
+  .glass { position: relative; font-family: 'Inter'; font-weight: 900; letter-spacing: -0.05em; line-height: .9; text-transform: uppercase; text-align: center; }
+  .glass .g1 { color: rgba(255,255,255,.16); -webkit-text-stroke: 3px rgba(255,255,255,.75); text-shadow: 0 0 40px rgba(255,255,255,.25), 0 20px 40px rgba(0,0,0,.25); }
+  .glass .g2 { position: absolute; inset: 0; color: transparent; -webkit-background-clip: text; background-clip: text;
+               background-image: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.9) 48%, transparent 60%); background-size: 250% 100%; }
+
+  .cover { position: absolute; left: 0; right: 0; text-align: center; }
+  .cover .iss { font-family: 'JetBrains Mono'; font-size: 26px; letter-spacing: .3em; text-transform: uppercase; color: #F4EFE3; opacity: .85; }
+  .cover .mast { font-family: 'Playfair Display'; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; line-height: .85; color: #F4EFE3;
+                 text-shadow: 0 8px 30px rgba(0,0,0,.3); white-space: nowrap; }
+  .cover .mast .ch { display: inline-block; }
+  .cover .lines { position: absolute; left: 60px; text-align: left; font-family: 'Playfair Display'; font-style: italic; font-size: 46px; color: #F4EFE3;
+                  text-shadow: 0 4px 16px rgba(0,0,0,.5); line-height: 1.1; max-width: 420px; }
+
+  .checklist { width: 860px; border-radius: 28px; padding: 26px 30px; box-sizing: border-box; background: rgba(16,18,22,.86); border: 1.5px solid rgba(255,255,255,.15); color: #fff; }
+  .checklist .ch-h { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 24px; letter-spacing: .14em; text-transform: uppercase; opacity: .7; margin-bottom: 16px; }
+  .checklist .ci { display: flex; align-items: center; gap: 20px; font-family: 'Inter'; font-weight: 700; font-size: 42px; padding: 12px 0; }
+  .checklist .bx { width: 50px; height: 50px; border-radius: 50%; border: 3px solid rgba(255,255,255,.4); flex: none; position: relative; box-sizing: border-box; }
+  .checklist .bx svg { position: absolute; inset: -3px; }
+  .doodle svg { overflow: visible; }
 </style>
 </head>
 <body>
@@ -175,28 +276,35 @@ let S = null; // state
 
 window.init = async (data) => {
   const { storyboard: sb, words, layout } = data;
-  const style = sb.style === 'depth' ? 'dp' : 'ed';
-  document.body.className = style;
+  const LAYER = data.layer || 'front';
+  const style = sb.style === 'depth' ? 'dp' : sb.style === 'bold' ? 'bd' : 'ed';
+  document.body.className = style === 'bd' ? 'dp bd' : style;
+  const face = layout.face || { x: 340, y: 600, w: 400, h: 400 };
+  const fcx = face.x + face.w / 2, fcy = face.y + face.h / 2;
   await document.fonts.ready;
   const stage = document.getElementById('stage');
   const Z = layout.zones;
   const zones = {
-    top: [Z.top.y0, Math.max(Z.top.y1, Z.top.y0 + 260)],
+    top: [Z.top.y0, Math.max(Z.top.y1, Z.top.y0 + 380)],  // may overlap the top of the hair, like the references
     lower: [Z.captions_y - 470, Z.captions_y - 50],
     center: [700, 1250],
   };
   const capY = sb.captions?.y ?? Z.captions_y;
 
-  // ---- build elements
-  const els = (sb.elements || []).map((el, k) => {
+  // ---- build elements (only those on this layer; orbit lives on both)
+  const BACK_TYPES = new Set(['backdrop', 'glass', 'cover', 'wall']);
+  const layerOf = el => el.type === 'orbit' ? 'both' : (el.layer || (BACK_TYPES.has(el.type) ? 'back' : 'front'));
+  const mine = (sb.elements || []).filter(el => layerOf(el) === 'both' || layerOf(el) === LAYER);
+  const els = mine.map((el, k) => {
     const n = document.createElement('div');
     n.className = 'el';
     const T = el.type;
+    const rnd = (i => () => { i = (i * 16807) % 2147483647; return (i - 1) / 2147483646; })(1000 + k * 7919);
     if (T === 'title') {
       n.classList.add('title');
       n.innerHTML = el.lines.map(l => {
-        const f = l.font || (style === 'dp' ? 'depth' : 'serif');
-        const sz = l.size || ({serif: 210, heavy: 170, italic: 170, mono: 34, depth: 190, 'depth-white': 150}[f] || 160);
+        const f = l.font || (style === 'dp' ? 'depth' : style === 'bd' ? 'bold' : 'serif');
+        const sz = l.size || ({serif: 210, heavy: 170, italic: 170, mono: 34, depth: 190, 'depth-white': 150, bold: 150, yellow: 170}[f] || 160);
         const cls = ['line', 'f-' + f, l.gold ? 'gold' : '', l.boxed ? 'boxed' : '', style === 'ed' && f !== 'mono' ? 'title-c' : ''].join(' ');
         const inner = (el.anim === 'drop')
           ? [...l.text].map(ch => `<span class="ch">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('')
@@ -237,6 +345,70 @@ window.init = async (data) => {
     } else if (T === 'frame') {
       n.className = 'el full';
       n.innerHTML = '<div class="frame"></div>';
+    } else if (T === 'orbit') {
+      n.className = 'el full';
+      n.innerHTML = el.items.map(it => {
+        const o = typeof it === 'string' ? { text: it } : it;
+        return `<div class="orbit-card">${o.image ? `<img src="${esc(o.image)}">` : ''}${o.icon ? `<div class="oc-ico">${esc(o.icon)}</div>` : ''}${o.text ? `<div class="oc-t">${esc(o.text)}</div>` : ''}</div>`;
+      }).join('');
+    } else if (T === 'wall') {
+      n.className = 'el full';
+      // scattered slots over the upper 62% of the frame, skipping the face (the person covers the rest: back layer)
+      const slots = [];
+      for (let r = 0; r < 5; r++) for (let c = 0; c < 3; c++) {
+        const x = 40 + c * 340 + (rnd() - .5) * 60, y = 90 + r * 250 + (rnd() - .5) * 50;
+        const overFace = x + 270 > face.x - 40 && x < face.x + face.w + 40 && y + 220 > face.y - face.h * 0.5 && y < face.y + face.h + 40;
+        if (!overFace) slots.push([x, y]);
+      }
+      n.innerHTML = el.items.map((it, j) => {
+        const o = typeof it === 'string' ? { text: it } : it;
+        const [x, y] = slots[j % slots.length];
+        const kind = el.kind || 'paper';
+        return `<div class="note ${kind}" style="left:${x}px;top:${y}px;--r:${((rnd() - .5) * 12).toFixed(1)}deg">${kind === 'screen' && o.head ? `<div class="nh">${esc(o.head)}</div>` : ''}${o.image ? `<img src="${esc(o.image)}">` : ''}${esc(o.text || '')}</div>`;
+      }).join('');
+    } else if (T === 'app') {
+      n.innerHTML = `<div class="app"><div class="bar"><div class="dot" style="background:#FF5F57"></div><div class="dot" style="background:#FEBC2E"></div><div class="dot" style="background:#28C840"></div></div>
+        <div class="hd"><span class="spark">✻</span>${esc(el.title || 'Claude')}</div>
+        <div class="tiles">${(el.tiles || []).map(tl => { const o = typeof tl === 'string' ? { text: tl } : tl; return `<div class="tile">${o.image ? `<img src="${esc(o.image)}">` : ''}<span>${esc(o.text || '')}</span></div>`; }).join('')}${el.chip ? `<div class="chip">${esc(el.chip)}</div>` : ''}</div>
+        <div class="inp"><span class="ty"></span><div class="sb">↑</div></div></div>`;
+    } else if (T === 'phone') {
+      n.className = 'el full';
+      const side = el.side || (fcx > 540 ? 'left' : 'right');
+      const x = side === 'left' ? 40 : 1080 - 440, y = el.y ?? 430;
+      n.innerHTML = `<div class="phone" style="left:${x}px;top:${y}px;transform-origin:${side === 'left' ? '0' : '100%'} 50%"><div class="scr"><div class="notch"></div>${el.title ? `<div class="ph">${esc(el.title)}</div>` : ''}${(el.messages || []).map(m => `<div class="msg ${m.from === 'me' ? 'me' : 'them'}">${esc(m.text)}</div>`).join('')}${el.button ? `<div class="btn">${esc(el.button)}</div>` : ''}</div></div>`;
+    } else if (T === 'chart') {
+      const vals = el.values || [2, 3, 2.6, 4, 5.2, 6.8, 9];
+      const labels = el.labels || ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+      const cw = 850, chh = 330, mx = Math.max(...vals) * 1.1;
+      const pts = vals.map((v, i) => [20 + i * (cw - 40) / (vals.length - 1), chh - 20 - (v / mx) * (chh - 50)]);
+      const d = 'M' + pts.map(p => p.map(q => q.toFixed(1)).join(',')).join(' L');
+      n.innerHTML = `<div class="chart" style="position:relative">${el.title ? `<div class="ct">${esc(el.title)}</div>` : ''}
+        <svg width="${cw}" height="${chh + 40}">${[0, 1, 2, 3].map(i => `<line x1="0" x2="${cw}" y1="${30 + i * 90}" y2="${30 + i * 90}" stroke="rgba(255,255,255,.12)" stroke-dasharray="6 8"/>`).join('')}
+        <path class="ln" d="${d}" fill="none" stroke="${el.color || '#F7E15A'}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle class="pt" r="14" fill="${el.color || '#F7E15A'}"/>
+        ${labels.map((l, i) => `<text x="${20 + i * (cw - 40) / (labels.length - 1)}" y="${chh + 30}" text-anchor="middle">${esc(l)}</text>`).join('')}</svg>
+        ${el.tag ? `<div class="tag">${esc(el.tag)}</div>` : ''}</div>`;
+      n.dataset.pts = JSON.stringify(pts);
+    } else if (T === 'backdrop') {
+      n.className = 'el full';
+      const kind = el.kind || 'app';
+      if (kind === 'app') n.innerHTML = `<div class="backdrop bd-app"><div class="band"><div class="lbl">${esc(el.label || 'Focus session')}</div><div class="tm"></div><div class="tt">${esc(el.title || '')}</div></div><div class="rows">${(el.items || []).map(i => `<div class="row"><div class="cb"></div>${esc(i)}</div>`).join('')}</div></div>`;
+      else if (kind === 'paper') n.innerHTML = `<div class="backdrop bd-paper"><svg width="1080" height="1920">${[0, 1, 2].map(i => { const y = 250 + i * 520 + rnd() * 120; let p = `M${80 + rnd() * 80},${y}`; for (let k2 = 0; k2 < 14; k2++) p += ` L${120 + k2 * 60 + rnd() * 30},${y + (k2 % 2 ? -110 : 110) * (0.6 + rnd() * .4)}`; return `<path d="${p}" stroke="rgba(247,225,90,.85)" stroke-width="34" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`; }).join('')}</svg></div>`;
+      else if (kind === 'image') n.innerHTML = `<div class="backdrop"><img src="${esc(el.src)}" style="width:100%;height:100%;object-fit:cover"></div>`;
+      else if (kind === 'gradient') n.innerHTML = `<div class="backdrop" style="background:radial-gradient(120% 80% at 30% 20%, ${(el.colors || ['#2F86F0', '#0B1530']).join(',')})"></div>`;
+      else n.innerHTML = `<div class="backdrop" style="background:${esc(el.color || '#111')}"></div>`;
+    } else if (T === 'doodle') {
+      n.className = 'el full doodle';
+      n.innerHTML = `<svg width="1080" height="1920"></svg>`;
+    } else if (T === 'tiles') {
+      n.innerHTML = `<div class="tiles-row">${[...String(el.text)].map((ch, j) => `<div class="tl ${j % 2 ? 'l' : 'd'}" style="transform:rotate(${((rnd() - .5) * 8).toFixed(1)}deg)">${esc(ch)}</div>`).join('')}</div>`;
+    } else if (T === 'glass') {
+      n.innerHTML = `<div class="glass" style="font-size:${el.size || 300}px"><div class="g1">${esc(el.text)}</div><div class="g2">${esc(el.text)}</div></div>`;
+    } else if (T === 'cover') {
+      n.className = 'el full';
+      n.innerHTML = `<div class="cover" style="top:${el.y ?? 110}px">${el.issue ? `<div class="iss">${esc(el.issue)}</div>` : ''}<div class="mast" style="font-size:${el.size || 300}px">${[...el.text].map(ch => `<span class="ch">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('')}</div></div>${el.lines ? `<div class="cover lines" style="top:${el.lines_y ?? 1150}px">${el.lines.map(esc).join('<br>')}</div>` : ''}`;
+    } else if (T === 'checklist') {
+      n.innerHTML = `<div class="checklist"><div class="ch-h"><span>${esc(el.title || 'All you need to do')}</span><span class="cnt"></span></div>${el.items.map(it => `<div class="ci"><div class="bx"><svg width="50" height="50"><circle cx="25" cy="25" r="22" fill="#2FBF71" class="fillc" opacity="0"/><path class="ck" d="M14 26 L22 34 L37 17" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="40" stroke-dashoffset="40"/></svg></div><span>${esc(it.text ?? it)}</span></div>`).join('')}</div>`;
     }
     n.style.opacity = 0;
     stage.appendChild(n);
@@ -277,7 +449,8 @@ window.init = async (data) => {
   cap.id = 'cap';
   stage.appendChild(cap);
 
-  S = { sb, style, els, chunks, cap, capY, capOn: cs.enabled !== false, mode: cs.mode || (style === 'dp' ? 'pop' : 'karaoke'), lastChunk: -1 };
+  S = { sb, style, els, chunks, cap, capY, layer: LAYER, fcx, fcy, face,
+        capOn: cs.enabled !== false && LAYER === 'front', mode: cs.mode || (style === 'ed' ? 'karaoke' : 'pop'), lastChunk: -1 };
   return { chunks: chunks.length, elements: els.length };
 };
 
@@ -382,6 +555,147 @@ window.renderAt = (t) => {
         break;
       }
       case 'frame': op = po * pi; break;
+      case 'orbit': {
+        // cards circle the speaker; the half of the ring "behind" them is drawn on the back layer
+        const cards = [...n.querySelectorAll('.orbit-card')];
+        const N = cards.length, rx = el.rx || 430, ry = el.ry || 110;
+        const ocx = el.cx ?? S.fcx, ocy = el.cy ?? (S.fcy + (el.dy ?? 200));
+        const w0 = (el.speed ?? 0.12) * 2 * Math.PI;
+        cards.forEach((c, j) => {
+          const th = (el.phase || 0) + 2 * Math.PI * j / N + w0 * st.local;
+          const z = Math.sin(th);
+          const mineSide = (z >= 0) === (S.layer === 'front');
+          const sc = (0.72 + 0.28 * (z + 1) / 2) * (el.card_scale || 1) * (0.6 + 0.4 * ease.back(st.pin));
+          c.style.opacity = mineSide ? 1 : 0;
+          c.style.transform = `translate(${(ocx + rx * Math.cos(th) - 115).toFixed(1)}px, ${(ocy + ry * z - 150 - 40 * Math.cos(th) * 0.3).toFixed(1)}px) scale(${sc.toFixed(3)}) rotate(${(Math.cos(th) * 8).toFixed(2)}deg)`;
+          c.style.filter = z < 0 ? `brightness(${(0.75 + 0.25 * (z + 1)).toFixed(2)})` : '';
+        });
+        op = po; tr = ''; sig.push(st.local.toFixed(3));
+        break;
+      }
+      case 'wall': {
+        [...n.querySelectorAll('.note')].forEach((c, j) => {
+          const p = ease.back(clamp((st.local - j * (el.stagger ?? 0.12)) / 0.28));
+          c.style.opacity = clamp(p * 2).toFixed(2);
+          c.style.transform = `rotate(${c.style.getPropertyValue('--r')}) scale(${(0.5 + 0.5 * p).toFixed(3)})`;
+          sig.push(p.toFixed(3));
+        });
+        op = po; tr = '';
+        break;
+      }
+      case 'app': {
+        [...n.querySelectorAll('.tile')].forEach((c, j) => {
+          const p = ease.back(clamp((st.local - 0.15 - j * 0.12) / 0.3));
+          c.style.opacity = clamp(p * 2); c.style.transform = `translateY(${(1 - p) * 40}px)`; sig.push(p.toFixed(3));
+        });
+        const chip = n.querySelector('.chip');
+        if (chip) { const p = ease.back(clamp((st.local - (el.chip_at ?? 0.9)) / 0.25)); chip.style.transform = `scale(${p.toFixed(3)}) rotate(4deg)`; sig.push(p.toFixed(3)); }
+        const txt = typed(el.input || '', st.local, el.cps || 22, 0.6);
+        const ty = n.querySelector('.ty'); if (ty.textContent !== txt) ty.textContent = txt; sig.push(txt.length);
+        tr = `translateY(${(1 - pi) * 60}px) scale(${fit * (0.92 + 0.08 * pi)})`;
+        break;
+      }
+      case 'phone': {
+        const ph = n.querySelector('.phone');
+        [...n.querySelectorAll('.msg')].forEach((m, j) => {
+          const at = el.messages[j].at != null ? el.messages[j].at - el.start : 0.4 + j * 0.7;
+          const p = ease.back(clamp((st.local - at) / 0.25));
+          m.style.display = p > 0 ? '' : 'none'; m.style.transform = `scale(${(0.7 + 0.3 * p).toFixed(3)})`; m.style.opacity = clamp(p * 2);
+          sig.push(p.toFixed(3));
+        });
+        ph.style.transform = `translateX(${((1 - pi) * (ph.style.left === '40px' ? -480 : 480)).toFixed(1)}px) rotate(${((1 - pi) * 8).toFixed(2)}deg) scale(${el.scale || 0.9})`;
+        op = po; tr = ''; sig.push(pi.toFixed(3));
+        break;
+      }
+      case 'chart': {
+        const ln = n.querySelector('.ln'), L = ln.getTotalLength();
+        const p = ease.inout(clamp((st.local - 0.2) / (el.grow ?? 1.2)));
+        ln.style.strokeDasharray = L; ln.style.strokeDashoffset = (L * (1 - p)).toFixed(1);
+        const pt = ln.getPointAtLength(L * p), dot = n.querySelector('.pt');
+        dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y);
+        const tag = n.querySelector('.tag');
+        if (tag) { const q = ease.back(clamp((st.local - 0.2 - (el.grow ?? 1.2)) / 0.25)); const svg = n.querySelector('svg');
+          tag.style.left = (svg.offsetLeft + pt.x - 60) + 'px'; tag.style.top = (svg.offsetTop + pt.y - 70) + 'px'; tag.style.transform = `scale(${q.toFixed(3)})`; sig.push(q.toFixed(3)); }
+        tr = `translateY(${(1 - pi) * 50}px) scale(${fit})`; sig.push(p.toFixed(3));
+        break;
+      }
+      case 'backdrop': {
+        const p = ease.out(clamp(st.local / 0.32));
+        n.firstElementChild.style.clipPath = `inset(0 0 ${((1 - p) * 100).toFixed(2)}% 0)`;
+        const tm = n.querySelector('.tm');
+        if (tm) { const secs = Math.max(0, Math.round((el.timer ?? 3000) - st.local)); const s2 = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, '0')}`; if (tm.textContent !== s2) tm.textContent = s2; sig.push(s2); }
+        op = po; tr = ''; sig.push(p.toFixed(3));
+        break;
+      }
+      case 'doodle': {
+        // hand-drawn shapes that "boil": control points re-jitter 10x per second
+        const svg = n.querySelector('svg');
+        const boil = Math.floor(t * 10), draw = ease.out(clamp(st.local / 0.35));
+        let seed = boil * 9301 + 49297;
+        const rr = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280 - 0.5; };
+        const J = el.jitter ?? 4;
+        const paths = (el.shapes || [{ shape: 'star', x: 200, y: 400 }]).map(sh => {
+          const s = sh.size || 140, x = sh.x, y = sh.y, pts = [];
+          const P = (px, py) => pts.push([x + px * s + rr() * J, y + py * s + rr() * J]);
+          let closed = false;
+          switch (sh.shape) {
+            case 'star': for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? .22 : .5; P(Math.cos(a) * r, Math.sin(a) * r); } break;
+            case 'sparkle': for (let i = 0; i <= 8; i++) { const a = -Math.PI / 2 + i * Math.PI / 4, r = i % 2 ? .1 : .5; P(Math.cos(a) * r, Math.sin(a) * r); } break;
+            case 'circle': for (let i = 0; i <= 26; i++) { const a = i / 24 * 2 * Math.PI; P(Math.cos(a) * .55 * 1.4, Math.sin(a) * .55 * 0.75); } break;
+            case 'spiral': for (let i = 0; i <= 40; i++) { const a = i / 40 * 5 * Math.PI, r = .05 + .45 * i / 40; P(Math.cos(a) * r, Math.sin(a) * r); } break;
+            case 'arrow': [[-.5, .3], [-.1, .05], [.25, -.1], [.5, -.3]].forEach(q => P(...q)); P(.25, -.32); P(.5, -.3); P(.42, -.06); break;
+            case 'underline': for (let i = 0; i <= 8; i++) P(-.8 + i * .2, (i % 2 ? .04 : -.04)); break;
+            case 'scribble': for (let i = 0; i <= 14; i++) P(-.6 + i * .085, i % 2 ? .3 : -.3); break;
+            case 'x': P(-.3, -.3); P(.3, .3); P(0, 0); P(.3, -.3); P(-.3, .3); break;
+            case 'heart': for (let i = 0; i <= 30; i++) { const a = i / 30 * 2 * Math.PI; P(.03 * 16 * Math.sin(a) ** 3, -.03 * (13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a))); } break;
+            case 'clapper': P(-.5, -.1); P(.5, -.1); P(.5, .5); P(-.5, .5); P(-.5, -.1); P(-.45, -.45); P(.48, -.62); P(.5, -.25); P(-.5, -.1); P(-.2, -.15); P(-.1, -.5); P(.15, -.2); P(.2, -.56); break;
+            default: P(-.5, 0); P(.5, 0);
+          }
+          const d = 'M' + pts.map(p => p.map(v => v.toFixed(1)).join(',')).join(' L') + (closed ? 'Z' : '');
+          return `<path d="${d}" fill="none" stroke="${sh.color || el.color || '#fff'}" stroke-width="${sh.width || el.width || 8}" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="${(1 - draw).toFixed(3)}"/>`;
+        }).join('');
+        svg.innerHTML = paths;
+        op = po; tr = ''; sig.push(boil, draw.toFixed(3));
+        break;
+      }
+      case 'tiles': {
+        const tl = [...n.querySelectorAll('.tl')];
+        tl.forEach((c, j) => { const p = ease.back(clamp((st.local - j * (el.stagger ?? 0.13)) / 0.2)); c.style.opacity = p > 0 ? 1 : 0; c.style.scale = (0.4 + 0.6 * p).toFixed(3); sig.push(p.toFixed(3)); });
+        tr = `scale(${fit})`; op = po;
+        break;
+      }
+      case 'glass': {
+        const p = ease.out(st.pin);
+        n.querySelector('.g2').style.backgroundPosition = `${(120 - 100 * clamp(st.local / 1.6)).toFixed(1)}% 0`;
+        tr = `translateY(${((1 - p) * 80).toFixed(1)}px) scale(${(fit * (1.08 - 0.08 * p)).toFixed(4)})`;
+        op = po * clamp(st.pin * 1.4); sig.push(st.local.toFixed(3));
+        break;
+      }
+      case 'cover': {
+        [...n.querySelectorAll('.mast .ch')].forEach((c, j) => {
+          const p = ease.back(clamp((st.local - j * 0.06) / 0.4));
+          c.style.transform = `translateY(${((1 - p) * -140).toFixed(1)}px) rotate(${((1 - p) * (j % 2 ? 8 : -8)).toFixed(2)}deg)`; c.style.opacity = clamp(p * 2);
+          sig.push(p.toFixed(3));
+        });
+        op = po; tr = '';
+        break;
+      }
+      case 'checklist': {
+        const its = [...n.querySelectorAll('.ci')];
+        let done = 0;
+        its.forEach((c, j) => {
+          const at = el.items[j]?.at != null ? el.items[j].at - el.start : 0.5 + j * (el.stagger ?? 0.7);
+          const p = ease.out(clamp((st.local - at) / 0.25));
+          if (p > 0.5) done++;
+          c.querySelector('.fillc').setAttribute('opacity', p.toFixed(2));
+          c.querySelector('.ck').setAttribute('stroke-dashoffset', (40 * (1 - p)).toFixed(1));
+          c.style.opacity = (0.45 + 0.55 * p).toFixed(2);
+          sig.push(p.toFixed(3));
+        });
+        const cnt = `${Math.max(1, done)} of ${its.length}`; const ce = n.querySelector('.cnt'); if (ce.textContent !== cnt) ce.textContent = cnt;
+        tr = `translateY(${(1 - pi) * 50}px) scale(${fit * (0.92 + 0.08 * ease.back(st.pin))})`;
+        break;
+      }
       default: // card, step, stat, follow, image, label
         tr = `translateY(${(1 - pi) * 50}px) scale(${fit * (0.9 + 0.1 * ease.back(st.pin))})`;
     }
@@ -402,11 +716,11 @@ window.renderAt = (t) => {
       html = `<div class="cap-ed${big ? ' big' : ''}">` + c.map(w =>
         `<span class="w${t >= w.start - 0.02 ? ' on' : ''}${w.kw ? ' kw' : ''}">${esc(w.w)}</span>`).join(' ') + '</div>';
     } else {
-      // two-tier: small words on top, keyword(s) huge with blue gradient
+      // two-tier: small words on top, keyword(s) huge (blue gradient in depth, yellow in bold)
       const vis = S.mode === 'pop' ? c.filter(w => t >= w.start - 0.03) : c;
       const smalls = vis.filter(w => !w.kw), heroes = vis.filter(w => w.kw);
       const pop = w => { const p = ease.back(clamp((t - w.start + 0.03) / 0.16)); return `transform:scale(${(0.6 + 0.4 * p).toFixed(3)});opacity:${clamp(p * 1.5).toFixed(2)}`; };
-      html = `<div class="cap-dp">` +
+      html = `<div class="${S.style === 'bd' ? 'cap-bd' : 'cap-dp'}">` +
         (smalls.length ? `<div class="small">${smalls.map(w => `<span class="w" style="${pop(w)}">${esc(w.w)}</span>`).join('')}</div>` : '') +
         (heroes.length ? `<div>${heroes.map(w => `<span class="w hero" style="${pop(w)}">${esc(w.w)}</span>`).join('')}</div>` : '') + '</div>';
     }

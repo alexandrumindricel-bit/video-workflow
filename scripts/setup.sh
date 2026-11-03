@@ -6,6 +6,10 @@ command -v ffmpeg >/dev/null || { echo "ffmpeg missing (apt-get install -y ffmpe
 python3 -c "import faster_whisper, numpy" 2>/dev/null || pip install --break-system-packages -q faster-whisper numpy
 # OpenCV 5 dropped the Haar face detector used for framing -> pin 4.x
 python3 -c "import cv2; assert hasattr(cv2,'CascadeClassifier')" 2>/dev/null || pip install --break-system-packages -q "opencv-python-headless<5"
+# segmentation (person cut-out) needs mediapipe 0.10.14, which bundles its model but only ships for Python <=3.12
+if ! /opt/vw-seg/bin/python -c "import mediapipe" 2>/dev/null; then
+  python3.12 -m venv /opt/vw-seg && /opt/vw-seg/bin/pip install -q "mediapipe==0.10.14" "opencv-python-headless<5" "numpy<2"
+fi
 node -e "require('playwright')" 2>/dev/null || { echo "Playwright (node) not found"; exit 1; }
 ls "$HERE"/renderer/fonts/*.woff2 >/dev/null 2>&1 || { echo "fonts missing in renderer/fonts"; exit 1; }
 python3 "$HERE/scripts/make_sfx.py" --keep-existing

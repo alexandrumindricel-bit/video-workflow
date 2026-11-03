@@ -4,7 +4,7 @@
 #   ./vw.sh prep RAW.mp4 WORKDIR [--language ro] [--model small]
 #                                              normalize + framing + transcribe + propose cuts
 #   ./vw.sh cut WORKDIR                        apply edit.json (silences + mistakes), lip-sync safe
-#   ./vw.sh render WORKDIR OUT.mp4             captions/graphics layer + SFX + final 1080x1920 encode
+#   ./vw.sh render WORKDIR OUT.mp4             camera fx + cut-out, graphics layers, SFX, final 1080x1920 encode
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cmd="${1:-}"; shift || true
@@ -17,6 +17,7 @@ case "$cmd" in
     python3 "$HERE/scripts/propose_cuts.py" "$work" ;;
   cut)    python3 "$HERE/scripts/cut.py" "$1" ;;
   render)
+    /opt/vw-seg/bin/python "$HERE/scripts/fx.py" "$1"
     node "$HERE/scripts/render_overlay.cjs" "$1"
     python3 "$HERE/scripts/compose.py" "$1" "$2" ;;
   *) sed -n '2,8p' "$0"; exit 1 ;;

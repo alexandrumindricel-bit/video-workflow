@@ -4,7 +4,7 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
 
 ```jsonc
 {
-  "style": "editorial",            // or "depth"
+  "style": "editorial",            // "editorial" (green/cream) | "depth" (blue 3D) | "bold" (white + yellow keyword)
   "captions": {
     "keywords": ["word", ...],     // case/punctuation-insensitive; highlighted (gold italic / blue 3D hero)
     "keyword_ids": [12, 40],       // or exact word indices (field "i" in words.json)
@@ -14,7 +14,8 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
     "enabled": true
   },
   "elements": [ ... ],
-  "transitions": [ {"at": 4.2, "kind": "flash|glitch|leak|whoosh|impact|paper|punch", "dur": 0.2, "sfx": "auto|name|null"} ],
+  "transitions": [ {"at": 4.2, "kind": "zoom_through|flash|glitch|leak|whoosh|impact|paper", "dur": 0.2, "sfx": "auto|name|null"} ],
+  "effects": [ {"kind": "push|punch|vertigo|frame_break|pull_back|sticker|outline|cutout", "start": 1.0, "end": 2.0, ...} ],
   "zooms": [ {"start": 1.1, "end": 2.2, "scale": 1.1} ],   // punch-ins, piecewise constant, 1.06-1.12
   "sfx": [ {"at": 3.0, "name": "ding", "gain_db": -12} ],  // extra manual SFX
   "sfx_gain_db": 0,                                         // global SFX offset
@@ -43,5 +44,36 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
 | `image` | `src` (absolute path or file:// URL) | framed screenshot/logo | pop |
 | `label` | `text` | small mono label | - |
 | `frame` | - | thin cream magazine border | - |
+
+### Effect elements (see EFFECTS.md for when to use them)
+| type | fields | look / animation | default layer |
+|---|---|---|---|
+| `orbit` | `items: [{icon,text,image}]`, `rx` 430, `ry` 110, `dy` 200, `speed` 0.12, `card_scale` | cards circle the speaker; far side passes behind them | both |
+| `wall` | `items: ["text" or {text,image,head}]`, `kind: paper\|screen`, `stagger` | taped notes / screenshot cards pop onto the wall, skipping the face | back |
+| `app` | `title`, `tiles: ["Raw 1" or {text,image}]`, `chip`, `chip_at`, `input`, `cps` | app window: tiles pop in, chip stamps, input types | front |
+| `phone` | `title`, `messages: [{from: me\|them, text, at}]`, `button`, `side`, `y`, `scale` | phone slides in from the side, bubbles pop | front |
+| `checklist` | `title`, `items: ["a" or {text,at}]`, `stagger` | dark card, items tick green one by one, "1 of 3" | front |
+| `chart` | `title`, `values`, `labels`, `tag`, `grow`, `color` | line chart draws itself, tag pops at the end | front |
+| `backdrop` | `kind: app\|paper\|image\|gradient\|color`; app: `label`, `title`, `timer` (s), `items`; image: `src` | full background replacement (wipes in) | back |
+| `doodle` | `shapes: [{shape, x, y, size, color, width}]` - star, sparkle, circle, spiral, arrow, underline, scribble, x, heart, clapper | hand-drawn strokes draw on, then "boil" (jitter 10x/s) | front |
+| `tiles` | `text` ("100%"), `stagger` | typewriter tiles, alternating dark/cream, one per character | front |
+| `glass` | `text`, `size` | giant translucent glass letters with a light sweep | back |
+| `cover` | `text`, `size`, `issue`, `y`, `lines: []`, `lines_y` | magazine masthead, letters drop in | back |
+
+`layer: "front" | "back"` overrides the default on any element. Back-layer elements automatically turn the
+person cut-out on while they are visible.
+
+### Camera / compositing effects (`effects[]`, rendered by scripts/fx.py)
+| kind | fields | result |
+|---|---|---|
+| `punch` | `scale` 1.06-1.12 | constant punch-in (same as `zooms`) |
+| `push` | `from`, `to` | smooth digital zoom over the effect duration |
+| `vertigo` | `amount` 0.15-0.25 | dolly zoom: background zooms, person stays the same size |
+| `frame_break` | `rect: [x,y,w,h]`, `color`, `radius`, `border` | video shown inside a frame on a dark blurred canvas; the person extends out of it |
+| `pull_back` | `scale` 0.5-0.65, `y` (center of the window), `bg` (hex or "blur") | video shrinks into a floating rounded window; put an `app`/`card` above it |
+| `sticker` | `width` 16 | white sticker border around the person (use with a `backdrop`) |
+| `outline` | `gap` 22, `width` 7, `color` | boiling hand-drawn outline around the person |
+| `cutout` | - | force the cut-out (rarely needed) |
+Transition `zoom_through` (`at`, `dur` 0.36): zoom + radial blur into and out of a cut.
 
 `flash` / `leak` can also be used as elements, but prefer `transitions`.

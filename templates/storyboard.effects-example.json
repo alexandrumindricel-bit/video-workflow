@@ -1,0 +1,27 @@
+{
+  "style": "bold",
+  "captions": { "keywords": ["26", "effects", "internet", "studio"] },
+  "elements": [
+    { "type": "cover", "start": 0.0, "end": 0.95, "text": "STUDIO", "issue": "No. 26 · Video effects", "size": 250 },
+    { "type": "glass", "start": 0.95, "end": 1.9, "text": "26", "size": 520, "layer": "back" },
+    { "type": "orbit", "start": 1.9, "end": 2.6, "items": [ {"icon": "🎬", "text": "orbit"}, {"icon": "📈", "text": "chart"}, {"icon": "🧾", "text": "checklist"}, {"icon": "✂️", "text": "paper cut"}, {"icon": "📱", "text": "phone"} ] },
+    { "type": "wall", "start": 3.4, "end": 4.2, "items": ["Last time it broke the internet", "26 effects", "Comment STUDIO", "Claude did this", "No editor", "Waitlist open", "One prompt"] },
+    { "type": "chart", "start": 4.25, "end": 5.2, "title": "Views this week", "tag": "SCALE ↗", "grow": 0.6 },
+    { "type": "backdrop", "kind": "paper", "start": 5.2, "end": 5.9 },
+    { "type": "tiles", "start": 5.2, "end": 5.9, "text": "100%", "pos": "top" },
+    { "type": "doodle", "start": 5.9, "end": 6.8, "shapes": [ {"shape": "star", "x": 190, "y": 330, "size": 150, "color": "#F7E15A"}, {"shape": "arrow", "x": 860, "y": 420, "size": 220}, {"shape": "clapper", "x": 200, "y": 1150, "size": 170}, {"shape": "sparkle", "x": 900, "y": 1200, "size": 110, "color": "#F7E15A"} ] },
+    { "type": "app", "start": 6.8, "end": 7.4, "title": "Claude", "tiles": ["Raw 1", "Raw 2", "Raw 3"], "chip": "RAW CLIPS", "input": "edit this", "chip_at": 0.3, "y": 150, "h": 520 },
+    { "type": "backdrop", "kind": "app", "start": 7.4, "end": 8.2, "label": "Write the sales page", "title": "Everything else waits.", "timer": 2997, "items": ["Drop your clips", "Pick a style", "Render"] },
+    { "type": "checklist", "start": 8.2, "end": 9.56, "title": "All you need to do", "items": ["Comment STUDIO", "Get the waitlist", "Edit with Claude"], "stagger": 0.35 },
+    { "type": "phone", "start": 8.2, "end": 9.56, "title": "Claude", "y": 760, "messages": [ {"from": "me", "text": "studio"}, {"from": "them", "text": "You're on the list ✓"} ] }
+  ],
+  "effects": [
+    { "kind": "push", "start": 0.95, "end": 1.9, "from": 1.0, "to": 1.12 },
+    { "kind": "frame_break", "start": 2.6, "end": 3.4, "rect": [140, 560, 800, 760] },
+    { "kind": "vertigo", "start": 3.4, "end": 4.2, "amount": 0.2 },
+    { "kind": "sticker", "start": 5.2, "end": 5.9 },
+    { "kind": "outline", "start": 5.9, "end": 6.8 },
+    { "kind": "pull_back", "start": 6.8, "end": 7.4, "scale": 0.6, "y": 1250 }
+  ],
+  "transitions": [ { "at": 4.2, "kind": "zoom_through" }, { "at": 0.95, "kind": "flash", "peak": 0.6 } ]
+}
