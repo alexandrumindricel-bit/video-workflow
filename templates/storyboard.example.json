@@ -1,0 +1,23 @@
+{
+  "style": "editorial",
+  "captions": { "keywords": ["edit", "Claude", "sentence", "aesthetic"] },
+  "elements": [
+    { "type": "title", "start": 0.0, "end": 1.1, "lines": [ { "text": "I didn't", "font": "serif" }, { "text": "edit", "font": "serif" } ] },
+    { "type": "title", "start": 1.1, "end": 2.2, "lines": [ { "text": "a single", "font": "heavy" }, { "text": "second", "font": "heavy" } ] },
+    { "type": "title", "start": 2.2, "end": 2.95, "anim": "pop", "lines": [ { "text": "Claude did.", "font": "italic", "gold": true } ] },
+    { "type": "strike", "start": 2.95, "end": 3.6, "text": "CapCut", "strike_at": 0.15 },
+    { "type": "strike", "start": 3.6, "end": 4.2, "text": "Edits", "strike_at": 0.15 },
+    { "type": "counter", "start": 4.25, "end": 6.4, "from": 1, "to": 1, "label": "sentence", "count_end": 4.3 },
+    { "type": "prompt", "start": 6.5, "end": 9.0, "label": "To Claude", "text": "Make it more aesthetic." },
+    { "type": "title", "start": 9.0, "end": 10.5, "anim": "drop", "lines": [ { "text": "WARM", "font": "serif" } ] }
+  ],
+  "transitions": [
+    { "at": 2.2, "kind": "flash", "peak": 0.7 },
+    { "at": 4.25, "kind": "glitch" },
+    { "at": 9.0, "kind": "leak" }
+  ],
+  "zooms": [
+    { "start": 1.1, "end": 2.2, "scale": 1.12 },
+    { "start": 6.5, "end": 9.0, "scale": 1.08 }
+  ]
+}

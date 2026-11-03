@@ -1,0 +1,422 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="fonts.css">
+<style>
+  :root {
+    /* editorial preset (ref C) */
+    --green: #1F3B2D; --green-2: #2A4A3A; --cream: #F1EBDD; --gold: #D2BC82; --dim: #8FA596;
+    /* depth preset (ref B) */
+    --blue-1: #9BD8FF; --blue-2: #2F86F0; --blue-3: #1557C9;
+    --glass: rgba(14, 18, 28, 0.78); --glass-border: rgba(255, 255, 255, 0.18);
+  }
+  html, body { margin: 0; width: 1080px; height: 1920px; background: transparent; overflow: hidden; }
+  #stage { position: absolute; inset: 0; }
+  .el { position: absolute; left: 0; width: 1080px; display: flex; justify-content: center;
+        align-items: center; transform-origin: 50% 50%; will-change: transform, opacity; }
+  .full { inset: 0; width: auto; }
+
+  /* ---------- captions ---------- */
+  #cap { position: absolute; left: 60px; right: 60px; display: flex; justify-content: center; }
+  .cap-ed { font-family: 'Playfair Display', serif; font-weight: 400; font-size: 62px; line-height: 1.12;
+            background: var(--green); color: var(--cream); padding: 10px 22px 16px; text-align: center;
+            max-width: 900px; letter-spacing: -0.01em; }
+  .cap-ed .w { color: var(--dim); }
+  .cap-ed .w.on { color: var(--cream); }
+  .cap-ed .w.kw { font-style: italic; color: var(--gold); font-weight: 700; }
+  .cap-ed .w.kw:not(.on) { opacity: .55; }
+  .cap-ed.big { font-size: 96px; }
+
+  .cap-dp { text-align: center; font-family: 'Montserrat', sans-serif; max-width: 960px; }
+  .cap-dp .small { font-weight: 800; font-size: 50px; color: #fff; letter-spacing: -0.01em;
+                   text-shadow: 0 4px 18px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.6); line-height: 1.05; }
+  .cap-dp .hero { font-weight: 900; font-size: 150px; line-height: .95; text-transform: uppercase;
+                  letter-spacing: -0.02em; display: inline-block;
+                  background: linear-gradient(180deg, var(--blue-1) 0%, var(--blue-2) 55%, var(--blue-3) 100%);
+                  -webkit-background-clip: text; background-clip: text; color: transparent;
+                  filter: drop-shadow(0 8px 14px rgba(0,0,0,.45)) drop-shadow(0 2px 0 rgba(10,40,110,.7)); }
+  .cap-dp .w { display: inline-block; margin: 0 .12em; }
+
+  /* ---------- titles ---------- */
+  .title { flex-direction: column; text-align: center; padding: 0 50px; }
+  .line { overflow: hidden; display: block; padding: 0 .04em; }
+  .line > span { display: inline-block; }
+  .f-serif { font-family: 'Playfair Display', serif; font-weight: 400; text-transform: uppercase;
+             letter-spacing: -0.03em; line-height: .9; }
+  .f-heavy { font-family: 'Inter', sans-serif; font-weight: 900; text-transform: uppercase;
+             letter-spacing: -0.045em; line-height: .88; }
+  .f-italic { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 400; letter-spacing: -0.02em; line-height: 1; }
+  .f-mono { font-family: 'JetBrains Mono', monospace; font-weight: 500; letter-spacing: .18em; text-transform: uppercase; }
+  /* gradient text must sit on the animated span itself (background-clip:text ignores transformed children) */
+  .f-depth, .f-depth-white { font-family: 'Montserrat', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em;
+             line-height: .92; filter: drop-shadow(0 10px 18px rgba(0,0,0,.5)); }
+  .f-depth > span { background: linear-gradient(180deg, var(--blue-1), var(--blue-2) 55%, var(--blue-3));
+             -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .f-depth-white > span { background: linear-gradient(180deg, #fff, #c9ced6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .ed .title-c { color: var(--cream); text-shadow: 0 6px 30px rgba(0,0,0,.35); }
+  .ed .gold { color: var(--gold); }
+  .boxed > span { background: var(--green); padding: .02em .14em .06em; }
+
+  /* ---------- cards / UI ---------- */
+  .card { display: flex; align-items: center; gap: 26px; padding: 26px 34px; border-radius: 28px; max-width: 900px; }
+  .ed .card { background: var(--cream); color: #1d2a22; box-shadow: 0 18px 50px rgba(0,0,0,.35); }
+  .dp .card { background: var(--glass); color: #fff; border: 1.5px solid var(--glass-border);
+              box-shadow: 0 0 0 1px rgba(47,134,240,.25), 0 20px 60px rgba(0,0,0,.5), 0 0 40px rgba(47,134,240,.25); }
+  .card .ico { width: 104px; height: 104px; border-radius: 24px; display: flex; align-items: center; justify-content: center;
+               font-size: 62px; flex: none; overflow: hidden; }
+  .ed .card .ico { background: var(--green); color: var(--cream); }
+  .dp .card .ico { background: linear-gradient(160deg, var(--blue-2), var(--blue-3)); }
+  .card .ico img { width: 100%; height: 100%; object-fit: cover; }
+  .card .tt { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 48px; line-height: 1.05; letter-spacing: -0.02em; }
+  .card .st { font-family: 'JetBrains Mono', monospace; font-size: 26px; letter-spacing: .08em; text-transform: uppercase; opacity: .65; margin-top: 8px; }
+
+  .prompt { width: 900px; border-radius: 34px; padding: 22px 26px 26px 36px; display: flex; align-items: flex-end; gap: 20px; }
+  .ed .prompt { background: #FBF8F1; color: #1d2a22; box-shadow: 0 18px 50px rgba(0,0,0,.35); }
+  .dp .prompt { background: var(--glass); color: #fff; border: 1.5px solid var(--glass-border); box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .prompt .lbl { font-family: 'JetBrains Mono', monospace; font-size: 22px; letter-spacing: .2em; opacity: .55; text-transform: uppercase; margin-bottom: 8px; }
+  .prompt .txt { font-family: 'Inter', sans-serif; font-size: 42px; font-weight: 600; line-height: 1.2; min-height: 50px; }
+  .prompt .caret { display: inline-block; width: 3px; height: 44px; background: currentColor; vertical-align: -6px; margin-left: 3px; }
+  .prompt .send { width: 76px; height: 76px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center;
+                  font-family: 'Inter'; font-weight: 800; font-size: 40px; }
+  .ed .prompt .send { background: var(--green); color: var(--cream); }
+  .dp .prompt .send { background: var(--blue-2); color: #fff; }
+
+  .strike { position: relative; font-family: 'Inter', sans-serif; font-weight: 900; font-size: 120px; letter-spacing: -0.04em;
+            text-transform: uppercase; padding: 0 20px; }
+  .ed .strike { color: var(--cream); text-shadow: 0 6px 30px rgba(0,0,0,.35); }
+  .dp .strike { color: #fff; text-shadow: 0 6px 30px rgba(0,0,0,.55); }
+  .strike .bar { position: absolute; left: 0; top: 52%; height: 16px; background: #E5383B; border-radius: 8px;
+                 transform-origin: 0 50%; width: 100%; transform: rotate(-6deg) scaleX(0); box-shadow: 0 3px 10px rgba(0,0,0,.4); }
+
+  .counter { flex-direction: column; text-align: center; }
+  .counter .num { font-family: 'Inter', sans-serif; font-weight: 900; font-size: 210px; line-height: .9; letter-spacing: -0.04em;
+                  font-variant-numeric: tabular-nums; }
+  .counter .lab { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 64px; margin-top: 4px; }
+  .ed .counter .num { background: var(--green); color: var(--cream); padding: 6px 34px 16px; font-family: 'JetBrains Mono'; font-weight: 500; font-size: 170px; letter-spacing: 0; }
+  .ed .counter .lab { color: var(--cream); font-family: 'Playfair Display'; font-style: italic; font-weight: 400; text-shadow: 0 4px 20px rgba(0,0,0,.4); }
+  .dp .counter .num { background: linear-gradient(180deg, var(--blue-1), var(--blue-2) 55%, var(--blue-3)); -webkit-background-clip: text;
+                      background-clip: text; color: transparent; filter: drop-shadow(0 10px 16px rgba(0,0,0,.5)); }
+  .dp .counter .lab { color: #e9ecf1; text-shadow: 0 4px 16px rgba(0,0,0,.6); }
+
+  .step { display: flex; align-items: center; gap: 24px; }
+  .step .badge { width: 104px; height: 104px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                 font-family: 'Inter'; font-weight: 800; font-size: 56px; flex: none; }
+  .ed .step .badge { background: var(--green); color: var(--cream); border: 3px solid var(--cream); }
+  .dp .step .badge { background: rgba(10,14,24,.75); color: #fff; border: 4px solid var(--blue-2); box-shadow: 0 0 24px rgba(47,134,240,.6); }
+  .step .lbl { font-family: 'Inter'; font-weight: 800; font-size: 60px; letter-spacing: -0.02em; padding: 12px 26px; border-radius: 18px; }
+  .ed .step .lbl { background: var(--cream); color: var(--green); }
+  .dp .step .lbl { background: var(--glass); color: #fff; border: 1.5px solid var(--glass-border); }
+
+  .list { flex-direction: column; align-items: stretch; gap: 16px; width: 860px; }
+  .list .it { display: flex; align-items: center; gap: 20px; padding: 18px 26px; border-radius: 20px; font-family: 'Inter'; font-weight: 700; font-size: 44px; }
+  .ed .list .it { background: var(--cream); color: var(--green); }
+  .dp .list .it { background: var(--glass); color: #fff; border: 1.5px solid var(--glass-border); }
+  .list .ck { width: 52px; height: 52px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 900; }
+  .ed .list .ck { background: var(--green); color: var(--cream); }
+  .dp .list .ck { background: var(--blue-2); color: #fff; }
+
+  .stat { flex-direction: column; text-align: center; }
+  .stat .v { font-family: 'Inter'; font-weight: 900; font-size: 230px; line-height: .85; letter-spacing: -0.05em; }
+  .stat .l { font-family: 'Inter'; font-weight: 700; font-size: 52px; margin-top: 16px; }
+  .ed .stat .v { color: var(--cream); text-shadow: 0 8px 30px rgba(0,0,0,.4); }
+  .ed .stat .l { font-family: 'Playfair Display'; font-style: italic; font-weight: 400; color: var(--gold); text-shadow: 0 4px 20px rgba(0,0,0,.5); font-size: 64px; }
+  .dp .stat .v { background: linear-gradient(180deg, var(--blue-1), var(--blue-2) 55%, var(--blue-3)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 10px 16px rgba(0,0,0,.5)); }
+  .dp .stat .l { color: #fff; text-shadow: 0 4px 16px rgba(0,0,0,.6); }
+
+  .comment { flex-direction: column; align-items: center; gap: 18px; }
+  .cta { font-family: 'Inter'; font-weight: 800; font-size: 50px; text-align: center; line-height: 1.12; padding: 18px 30px; border-radius: 18px; max-width: 860px; }
+  .ed .cta { background: #fff; color: #111; }
+  .dp .cta { background: #fff; color: #111; }
+  .bubble { display: flex; align-items: center; gap: 18px; background: #fff; color: #111; border-radius: 40px; padding: 14px 28px 14px 14px;
+            font-family: 'Inter'; font-size: 40px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.35); min-width: 420px; }
+  .bubble .av { width: 62px; height: 62px; border-radius: 50%; background: linear-gradient(135deg, #2F86F0, #1F3B2D); flex: none; }
+  .bubble.reply { font-size: 34px; min-width: 0; align-self: center; margin-left: 160px; }
+
+  .follow { display: flex; align-items: center; gap: 22px; background: rgba(255,255,255,.96); color: #111; border-radius: 26px; padding: 20px 28px; box-shadow: 0 14px 40px rgba(0,0,0,.4); }
+  .follow .av { width: 92px; height: 92px; border-radius: 50%; background: linear-gradient(135deg, #2F86F0, #1F3B2D); flex: none; overflow: hidden; }
+  .follow .av img { width: 100%; height: 100%; object-fit: cover; }
+  .follow .h { font-family: 'Inter'; font-weight: 800; font-size: 42px; }
+  .follow .tg { font-family: 'Inter'; font-weight: 500; font-size: 30px; opacity: .6; }
+  .follow .btn { margin-left: 26px; font-family: 'Inter'; font-weight: 800; font-size: 32px; padding: 14px 28px; border-radius: 40px; }
+  .ed .follow .btn { background: var(--green); color: var(--cream); }
+  .dp .follow .btn { background: var(--blue-2); color: #fff; }
+
+  .image img { max-width: 860px; max-height: 640px; border-radius: 28px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .ed .image img { border: 6px solid var(--cream); }
+  .dp .image img { border: 2px solid var(--glass-border); }
+
+  .label { font-family: 'JetBrains Mono', monospace; font-size: 28px; letter-spacing: .22em; text-transform: uppercase; color: #fff;
+           opacity: .85; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
+
+  .flash { background: #fff; }
+  .leak { background:
+      radial-gradient(60% 45% at 20% 30%, rgba(255,150,40,.95), rgba(255,90,0,0) 70%),
+      radial-gradient(55% 50% at 80% 70%, rgba(255,60,20,.85), rgba(255,60,0,0) 70%),
+      radial-gradient(80% 60% at 50% 50%, rgba(255,200,120,.6), rgba(255,140,0,0) 75%); }
+  .frame { border: 3px solid rgba(241,235,221,.85); position: absolute; inset: 70px 50px 330px 50px; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+/* Deterministic frame renderer: window.renderAt(t) draws the state at time t (seconds).
+   Nothing depends on wall-clock time, so every frame is reproducible. */
+const ease = {
+  out: p => 1 - Math.pow(1 - p, 3),
+  back: p => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); },
+  inout: p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2,
+};
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const normW = w => w.toLowerCase().replace(/[^\p{L}\p{N}']/gu, '');
+
+let S = null; // state
+
+window.init = async (data) => {
+  const { storyboard: sb, words, layout } = data;
+  const style = sb.style === 'depth' ? 'dp' : 'ed';
+  document.body.className = style;
+  await document.fonts.ready;
+  const stage = document.getElementById('stage');
+  const Z = layout.zones;
+  const zones = {
+    top: [Z.top.y0, Math.max(Z.top.y1, Z.top.y0 + 260)],
+    lower: [Z.captions_y - 470, Z.captions_y - 50],
+    center: [700, 1250],
+  };
+  const capY = sb.captions?.y ?? Z.captions_y;
+
+  // ---- build elements
+  const els = (sb.elements || []).map((el, k) => {
+    const n = document.createElement('div');
+    n.className = 'el';
+    const T = el.type;
+    if (T === 'title') {
+      n.classList.add('title');
+      n.innerHTML = el.lines.map(l => {
+        const f = l.font || (style === 'dp' ? 'depth' : 'serif');
+        const sz = l.size || ({serif: 210, heavy: 170, italic: 170, mono: 34, depth: 190, 'depth-white': 150}[f] || 160);
+        const cls = ['line', 'f-' + f, l.gold ? 'gold' : '', l.boxed ? 'boxed' : '', style === 'ed' && f !== 'mono' ? 'title-c' : ''].join(' ');
+        const inner = (el.anim === 'drop')
+          ? [...l.text].map(ch => `<span class="ch">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('')
+          : `<span>${esc(l.text)}</span>`;
+        return `<div class="${cls}" style="font-size:${sz}px;${f === 'mono' ? 'color:' + (style === 'ed' ? 'var(--cream)' : '#fff') + ';opacity:.8' : ''}">${inner}</div>`;
+      }).join('');
+    } else if (T === 'card') {
+      const ico = el.image ? `<img src="${esc(el.image)}">` : esc(el.icon || '★');
+      n.innerHTML = `<div class="card"><div class="ico">${ico}</div><div><div class="tt">${esc(el.title || '')}</div>${el.subtitle ? `<div class="st">${esc(el.subtitle)}</div>` : ''}</div></div>`;
+    } else if (T === 'prompt') {
+      n.innerHTML = `<div class="prompt"><div style="flex:1"><div class="lbl">${esc(el.label || 'Prompt')}</div><div class="txt"><span class="ty"></span><span class="caret"></span></div></div><div class="send">↑</div></div>`;
+    } else if (T === 'strike') {
+      n.innerHTML = `<div class="strike" style="${el.size ? 'font-size:' + el.size + 'px' : ''}">${esc(el.text)}<div class="bar"></div></div>`;
+    } else if (T === 'counter') {
+      n.classList.add('counter');
+      n.innerHTML = `<div class="num"></div>${el.label ? `<div class="lab">${esc(el.label)}</div>` : ''}`;
+    } else if (T === 'step') {
+      n.innerHTML = `<div class="step"><div class="badge">${esc(el.n)}</div><div class="lbl">${esc(el.text || '')}</div></div>`;
+    } else if (T === 'list') {
+      n.classList.add('list');
+      n.innerHTML = el.items.map(it => `<div class="it"><div class="ck">✓</div><div>${esc(it.text ?? it)}</div></div>`).join('');
+    } else if (T === 'stat') {
+      n.classList.add('stat');
+      n.innerHTML = `<div class="v">${esc(el.value)}</div>${el.label ? `<div class="l">${esc(el.label)}</div>` : ''}`;
+    } else if (T === 'comment') {
+      n.classList.add('comment');
+      n.innerHTML = `${el.cta ? `<div class="cta">${esc(el.cta)}</div>` : ''}<div class="bubble"><div class="av"></div><span class="ty"></span></div>${el.reply ? `<div class="bubble reply"><div class="av" style="width:48px;height:48px"></div>${esc(el.reply)}</div>` : ''}`;
+    } else if (T === 'follow') {
+      n.innerHTML = `<div class="follow"><div class="av">${el.avatar ? `<img src="${esc(el.avatar)}">` : ''}</div><div><div class="h">${esc(el.handle)}</div>${el.tagline ? `<div class="tg">${esc(el.tagline)}</div>` : ''}</div><div class="btn">${esc(el.button || 'Follow')}</div></div>`;
+    } else if (T === 'image') {
+      n.classList.add('image');
+      n.innerHTML = `<img src="${esc(el.src)}">`;
+    } else if (T === 'label') {
+      n.innerHTML = `<div class="label">${esc(el.text)}</div>`;
+    } else if (T === 'flash' || T === 'leak') {
+      n.className = 'el full ' + T;
+      if (el.color) n.style.background = el.color;
+    } else if (T === 'frame') {
+      n.className = 'el full';
+      n.innerHTML = '<div class="frame"></div>';
+    }
+    n.style.opacity = 0;
+    stage.appendChild(n);
+    // place in zone + fit
+    if (!n.classList.contains('full')) {
+      const [y0, y1] = el.y != null ? [el.y, el.y + (el.h || 300)] : (zones[el.pos || 'top'] || zones.top);
+      const h = n.offsetHeight, zh = y1 - y0;
+      const fit = Math.max(0.5, Math.min(1, zh / h, 1000 / Math.max(1, n.scrollWidth)));
+      n.dataset.fit = fit * (el.scale || 1);
+      n.style.top = (y0 + zh / 2 - h / 2) + 'px';
+    }
+    return { el, n, k };
+  });
+
+  // ---- caption chunks
+  const cs = sb.captions || {};
+  const kwSet = new Set((cs.keywords || []).map(normW));
+  const kwIdx = new Set(cs.keyword_ids || []);
+  const maxW = cs.max_words || (style === 'dp' ? 3 : 4);
+  const maxC = cs.max_chars || (style === 'dp' ? 22 : 24);
+  const chunks = [];
+  let cur = [];
+  words.forEach((w, i) => {
+    const prev = words[i - 1];
+    const chars = cur.reduce((a, x) => a + x.w.length + 1, 0) + w.w.length;
+    if (cur.length && (cur.length >= maxW || chars > maxC || /[.!?,;:]$/.test(prev.w) || w.start - prev.end > 0.35)) {
+      chunks.push(cur); cur = [];
+    }
+    cur.push({ ...w, kw: kwSet.has(normW(w.w)) || kwIdx.has(w.i) });
+  });
+  if (cur.length) chunks.push(cur);
+  chunks.forEach((c, i) => {
+    c.t0 = c[0].start - 0.04;
+    const next = chunks[i + 1];
+    c.t1 = next ? Math.min(next[0].start - 0.04, c[c.length - 1].end + 0.6) : c[c.length - 1].end + 0.5;
+  });
+  const cap = document.createElement('div');
+  cap.id = 'cap';
+  stage.appendChild(cap);
+
+  S = { sb, style, els, chunks, cap, capY, capOn: cs.enabled !== false, mode: cs.mode || (style === 'dp' ? 'pop' : 'karaoke'), lastChunk: -1 };
+  return { chunks: chunks.length, elements: els.length };
+};
+
+function inOut(t, s, e, tin = 0.32, tout = 0.18) {
+  if (t < s || t >= e) return null;
+  return { pin: clamp((t - s) / tin), pout: clamp((e - t) / tout), local: t - s };
+}
+
+function typed(text, local, cps = 22, delay = 0.25) {
+  const n = Math.floor(clamp((local - delay) * cps, 0, text.length));
+  return text.slice(0, n);
+}
+
+window.renderAt = (t) => {
+  const sig = [];
+  let hideCaps = false;
+  for (const { el, n } of S.els) {
+    const st = inOut(t, el.start, el.end, el.in || (el.type === 'flash' ? 0.001 : 0.32), el.out || 0.18);
+    if (!st) { if (n.style.opacity !== '0') n.style.opacity = 0; continue; }
+    if (el.hide_captions) hideCaps = true;
+    const fit = parseFloat(n.dataset.fit || 1);
+    const pi = ease.out(st.pin), po = st.pout;
+    let op = Math.min(st.pin * 1.6, 1) * po, tr = '';
+    switch (el.type) {
+      case 'title': {
+        if (el.anim === 'drop') {
+          [...n.querySelectorAll('.ch')].forEach((c, j) => {
+            const p = ease.back(clamp((st.local - j * 0.045) / 0.38));
+            c.style.transform = `translateY(${(1 - p) * -90}px)`; c.style.opacity = clamp(p * 2);
+            sig.push(p.toFixed(3));
+          });
+          tr = `scale(${fit})`;
+        } else if (el.anim === 'pop') {
+          tr = `scale(${fit * (0.82 + 0.18 * ease.back(st.pin))})`;
+        } else { // rise (default): each line slides up out of its mask
+          [...n.querySelectorAll('.line > span')].forEach((s, j) => {
+            const p = ease.out(clamp((st.local - j * 0.09) / 0.38));
+            s.style.transform = `translateY(${(1 - p) * 105}%)`;
+            sig.push(p.toFixed(3));
+          });
+          tr = `scale(${fit})`; op = po;
+        }
+        break;
+      }
+      case 'prompt': {
+        const ty = n.querySelector('.ty');
+        const txt = typed(el.text, st.local, el.cps || 24);
+        if (ty.textContent !== txt) ty.textContent = txt;
+        n.querySelector('.caret').style.opacity = (Math.floor(st.local * 3) % 2 || txt.length < el.text.length) ? 1 : 0;
+        tr = `translateY(${(1 - pi) * 40}px) scale(${fit * (0.94 + 0.06 * pi)})`;
+        sig.push(txt.length, Math.floor(st.local * 3) % 2);
+        break;
+      }
+      case 'comment': {
+        const ty = n.querySelector('.ty');
+        const txt = typed(el.text, st.local, 12, 0.5);
+        if (ty.textContent !== txt) ty.textContent = txt;
+        const rp = n.querySelector('.reply');
+        if (rp) rp.style.opacity = clamp((st.local - (el.reply_at || 1.6)) / 0.25);
+        tr = `translateY(${(1 - pi) * 40}px) scale(${fit})`;
+        sig.push(txt.length, rp ? rp.style.opacity : 0);
+        break;
+      }
+      case 'strike': {
+        const p = ease.out(clamp((st.local - (el.strike_at ?? 0.45)) / 0.22));
+        n.querySelector('.bar').style.transform = `rotate(-6deg) scaleX(${p})`;
+        tr = `scale(${fit * (0.85 + 0.15 * ease.back(st.pin))})`;
+        sig.push(p.toFixed(3));
+        break;
+      }
+      case 'counter': {
+        const dur = (el.count_end ?? el.end) - el.start;
+        const v = el.from + (el.to - el.from) * clamp(st.local / Math.max(0.01, dur));
+        const iv = el.to >= el.from ? Math.floor(v) : Math.ceil(v);
+        const txt = el.format === 'clock' ? `00:${String(iv).padStart(2, '0')}` : `${el.prefix || ''}${iv}${el.suffix || ''}`;
+        const num = n.querySelector('.num');
+        if (num.textContent !== txt) num.textContent = txt;
+        tr = `scale(${fit * (0.8 + 0.2 * ease.back(st.pin))})`;
+        sig.push(txt);
+        break;
+      }
+      case 'list': {
+        const items = [...n.querySelectorAll('.it')];
+        items.forEach((it, j) => {
+          const at = el.items[j]?.at != null ? el.items[j].at - el.start : j * (el.stagger || 0.6);
+          const p = ease.out(clamp((st.local - at) / 0.3));
+          it.style.opacity = p; it.style.transform = `translateX(${(1 - p) * -60}px)`;
+          sig.push(p.toFixed(3));
+        });
+        tr = `scale(${fit})`;
+        break;
+      }
+      case 'flash': {
+        const d = el.end - el.start;
+        op = (el.peak ?? 1) * (1 - clamp(st.local / d)) ** 1.5; tr = '';
+        break;
+      }
+      case 'leak': {
+        const d = el.end - el.start, p = st.local / d;
+        op = Math.sin(Math.PI * clamp(p)) * 0.9;
+        tr = `translateX(${(p - 0.5) * 500}px) scale(1.4)`;
+        break;
+      }
+      case 'frame': op = po * pi; break;
+      default: // card, step, stat, follow, image, label
+        tr = `translateY(${(1 - pi) * 50}px) scale(${fit * (0.9 + 0.1 * ease.back(st.pin))})`;
+    }
+    n.style.opacity = op.toFixed(3);
+    n.style.transform = tr;
+    sig.push(op.toFixed(3), tr);
+  }
+
+  // captions
+  let ci = -1;
+  if (S.capOn && !hideCaps) ci = S.chunks.findIndex(c => t >= c.t0 && t < c.t1);
+  if (ci < 0) { if (S.cap.innerHTML) S.cap.innerHTML = ''; }
+  else {
+    const c = S.chunks[ci];
+    let html;
+    if (S.style === 'ed') {
+      const big = c.length <= 2 && c.some(w => w.kw);
+      html = `<div class="cap-ed${big ? ' big' : ''}">` + c.map(w =>
+        `<span class="w${t >= w.start - 0.02 ? ' on' : ''}${w.kw ? ' kw' : ''}">${esc(w.w)}</span>`).join(' ') + '</div>';
+    } else {
+      // two-tier: small words on top, keyword(s) huge with blue gradient
+      const vis = S.mode === 'pop' ? c.filter(w => t >= w.start - 0.03) : c;
+      const smalls = vis.filter(w => !w.kw), heroes = vis.filter(w => w.kw);
+      const pop = w => { const p = ease.back(clamp((t - w.start + 0.03) / 0.16)); return `transform:scale(${(0.6 + 0.4 * p).toFixed(3)});opacity:${clamp(p * 1.5).toFixed(2)}`; };
+      html = `<div class="cap-dp">` +
+        (smalls.length ? `<div class="small">${smalls.map(w => `<span class="w" style="${pop(w)}">${esc(w.w)}</span>`).join('')}</div>` : '') +
+        (heroes.length ? `<div>${heroes.map(w => `<span class="w hero" style="${pop(w)}">${esc(w.w)}</span>`).join('')}</div>` : '') + '</div>';
+    }
+    if (S.cap.innerHTML !== html) S.cap.innerHTML = html;
+    const h = S.cap.offsetHeight;
+    S.cap.style.top = (S.capY - h / 2) + 'px';
+    sig.push(html);
+  }
+  return sig.join('|');
+};
+</script>
+</body>
+</html>
