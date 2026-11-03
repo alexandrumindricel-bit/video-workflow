@@ -80,7 +80,16 @@ families. Put one in the hook. Example with all of them: `templates/storyboard.e
 
 **CTA / ending** (if the user said what they want): `comment` (keyword CTA) and/or `follow` card in the last 4-6 s.
 
-**Captions (user's standing choice)**: `"captions": {"style": "depth", "palette": "mindricel", "mode": "pop"}` -
+**Brand theme (user's standing choice) - everything on screen**: storyboard `"style": "depth", "palette": "mindricel"`
+→ titles, cards, steps, tiles/numbers, charts, checklists, notes, orbit cards, glass text and products all use the
+depth-reference look in the mindricel.ro palette (orange #FF6600 gradient, ink #0A0A0A panels, white text, fine dark
+outlines). Editorial font names in title lines are mapped automatically; use orange (#FF6600/#FF8533) or white for
+doodles. Never mix in the green/cream editorial colours.
+
+**Captions (user's standing choice)**: `"captions": {"style": "depth", "palette": "mindricel", "mode": "pop",
+"behind": "auto"}` - white words have a fine dark outline + shadow; with `behind: "auto"` some keywords go behind
+the person (back layer + cut-out): only where the measured body silhouette hides at most 25% of the word, both ends
+stay visible, nothing on screen overlaps it, and never two in a row. Check those frames in QA. Details:
 font and look of the depth reference (Montserrat: white words popping in one by one, ONE big 3D keyword per
 sentence), in the mindricel.ro palette (#FF6600 orange gradient, black edge), **no background box**. Keep about one
 keyword per sentence (not every important word).

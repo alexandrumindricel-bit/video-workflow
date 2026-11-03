@@ -4,10 +4,12 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
 
 ```jsonc
 {
-  "style": "editorial",            // "editorial" (green/cream) | "depth" (blue 3D) | "bold" (white + yellow keyword)
+  "style": "depth",                // "editorial" (green/cream) | "depth" (3D gradient) | "bold" (white + yellow keyword)
+  "palette": "mindricel",          // brand theme for ALL graphics (orange #FF6600, ink #0A0A0A, white)
   "captions": {
     "style": "depth",              // caption style, independent of the title style: "editorial" | "depth" | "bold"
     "palette": "mindricel",        // brand colours for the keyword gradient (mindricel = #FF6600 orange, black 3D edge)
+    "behind": "auto",              // some keywords behind the person (auto | [word indices] | false); behind_max_hidden 0.25
     "keywords": ["word", ...],     // case/punctuation-insensitive; highlighted (gold italic / blue 3D hero)
     "keyword_ids": [12, 40],       // or exact word indices (field "i" in words.json)
     "max_words": 4,                // per caption chunk (default 4 editorial, 3 depth)

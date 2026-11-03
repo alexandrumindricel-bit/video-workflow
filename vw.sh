@@ -17,8 +17,9 @@ case "$cmd" in
     python3 "$HERE/scripts/propose_cuts.py" "$work" ;;
   cut)    python3 "$HERE/scripts/cut.py" "$1" ;;
   render)
-    /opt/vw-seg/bin/python "$HERE/scripts/fx.py" "$1"
+    /opt/vw-seg/bin/python "$HERE/scripts/body_profile.py" "$1"
     node "$HERE/scripts/render_overlay.cjs" "$1"
+    /opt/vw-seg/bin/python "$HERE/scripts/fx.py" "$1"
     python3 "$HERE/scripts/compose.py" "$1" "$2" ;;
   *) sed -n '2,8p' "$0"; exit 1 ;;
 esac

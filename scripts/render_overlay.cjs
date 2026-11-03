@@ -62,10 +62,17 @@ async function renderRange(browser, data, f0, f1, outFile, layer) {
   const BACK_TYPES = new Set(['backdrop', 'glass', 'cover', 'wall']);
   const layerOf = el => el.type === 'orbit' ? 'both' : (el.layer || (BACK_TYPES.has(el.type) ? 'back' : 'front'));
   const layers = ['front'];
-  if (sb.elements.some(el => layerOf(el) !== 'front')) layers.push('back');
+  const browser = await chromium.launch({ args: ['--allow-file-access-from-files'] });  // CSS masks on local product images
+  // which caption keywords go behind the person? (decided in the page) -> back layer + windows for fx.py's cut-out
+  const probe = await browser.newPage({ viewport: { width: 1080, height: 1920 } });
+  await probe.goto('file://' + path.join(__dirname, '..', 'renderer', 'overlay.html'));
+  await probe.evaluate(d => window.init(d), { ...data, layer: 'back' });
+  const capBack = await probe.evaluate(() => window.backWindows || []);
+  await probe.close();
+  fs.writeFileSync(path.join(work, 'back_windows.json'), JSON.stringify(capBack));
+  if (sb.elements.some(el => layerOf(el) !== 'front') || capBack.length) layers.push('back');
   const backFile = path.join(work, 'overlay_back.mov');
   if (!layers.includes('back') && fs.existsSync(backFile)) fs.unlinkSync(backFile);
-  const browser = await chromium.launch({ args: ['--allow-file-access-from-files'] });  // CSS masks on local product images
   const t0 = Date.now();
   for (const layer of layers) {
     const per = Math.ceil(total / WORKERS);

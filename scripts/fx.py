@@ -106,6 +106,9 @@ def main():
     BACK_TYPES = {"backdrop", "glass", "cover", "wall"}
     back_windows = [(el["start"], el["end"]) for el in sb.get("elements", [])
                     if el["type"] == "orbit" or el.get("layer", "back" if el["type"] in BACK_TYPES else "front") == "back"]
+    bw = os.path.join(work, "back_windows.json")  # captions placed behind the person (from render_overlay.cjs)
+    if os.path.exists(bw):
+        back_windows += [tuple(x) for x in json.load(open(bw))]
     CUT_KINDS = {"vertigo", "frame_break", "cutout", "sticker", "outline"}
 
     def active(t, kinds):
