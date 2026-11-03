@@ -66,6 +66,13 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
 
 | `product3d` | `product` (slug from `products/catalog.json`), `pos: side\|hero\|top`, `side: left\|right`, `mode: cutout\|card`, `views: [i…]`, `depth` 14, `glow`, `name`, `price: false`, `price_text`, `info: false`, `info_at`, `site_text`, `box: {x,y,w,h}` | mindricel.ro product: extruded cut-out turns between its photo angles (turntable), floats, glow, shadow, reflection, light sweep; info card with name, price, sizes; card mode = 3D-tilted photo card | front |
 
+| `combo` | `top` (lead-in words), `hero`, `accent`, `bottom`, `font: cond\|tall\|heavy`, `look: solid\|grad\|neon`, `size` 300, `y`, `accent_x/accent_y/accent_size`, `pixels` 9, `neon_color`, `hide_captions` | reference "edited" title: spaced small words, huge word blurring/scaling in, handwritten accent written on with swoosh, pixel squares | front |
+| `photos` | `items: [{src, caption, at}]` (src = WORK-relative path from images.py), `side`, `x`, `y`, `stagger` | white-bordered rounded photo cards fanned beside the person, glow flash entry, slow drift | front |
+| `numcards` | `items: [{n, label, at}]`, `stagger` | white folded-corner paper cards with big italic numbers + labels | front |
+
+`grade` (top level): `"mindricel"` or `{"preset": ..., "clips": [...], "strength": 0.85, "subject_pop": true}` - see EFFECTS.md.
+Effect `track`: `{"kind": "track", "start", "end", "scale": 1.3, "smooth": 0.88}` - face-following zoomed crop.
+
 `layer: "front" | "back"` overrides the default on any element. Back-layer elements automatically turn the
 person cut-out on while they are visible.
 

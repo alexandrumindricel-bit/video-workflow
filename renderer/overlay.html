@@ -320,6 +320,35 @@
       filter: drop-shadow(2px 0 0 #0A0A0A) drop-shadow(-2px 0 0 #0A0A0A) drop-shadow(0 2px 0 #0A0A0A) drop-shadow(0 -2px 0 #0A0A0A)
               drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
   .th-mindricel .stat .l, .th-mindricel .counter .lab { font-family: 'Montserrat'; color: #fff; }
+
+  /* ---------- "edited" reference: combo titles, photo stacks, number cards, pixel accents ---------- */
+  .combo { position: absolute; left: 0; right: 0; text-align: center; }
+  .combo .ctop { display: flex; justify-content: space-between; width: var(--cw, 640px); margin: 0 auto 6px; font-family: 'Montserrat'; font-weight: 700;
+                 font-size: 46px; color: #fff; text-shadow: 1.5px 0 0 #0A0A0A, -1.5px 0 0 #0A0A0A, 0 1.5px 0 #0A0A0A, 0 -1.5px 0 #0A0A0A, 0 4px 14px rgba(0,0,0,.5); }
+  .combo .chero { display: inline-block; line-height: .82; letter-spacing: -0.01em; color: #fff; }
+  .combo .chero.f-cond { font-family: 'Bebas Neue', 'Anton', sans-serif; font-weight: 400; }
+  .combo .chero.f-tall { font-family: 'Anton', sans-serif; font-weight: 400; text-transform: uppercase; }
+  .combo .chero.f-heavy { font-family: 'Montserrat'; font-weight: 900; text-transform: uppercase; letter-spacing: -0.03em; }
+  .combo .chero.solid { color: #F4F1EA; filter: drop-shadow(2px 0 0 #0A0A0A) drop-shadow(-2px 0 0 #0A0A0A) drop-shadow(0 2px 0 #0A0A0A) drop-shadow(0 12px 22px rgba(0,0,0,.45)); }
+  .combo .chero.grad { background: linear-gradient(180deg, var(--blue-1), var(--blue-2) 55%, var(--blue-3)); -webkit-background-clip: text; background-clip: text; color: transparent;
+                       filter: drop-shadow(2px 0 0 #0A0A0A) drop-shadow(-2px 0 0 #0A0A0A) drop-shadow(0 12px 22px rgba(0,0,0,.45)); }
+  .combo .chero.neon { color: #FFF3E6; text-shadow: 0 0 8px var(--neon, #FF6600), 0 0 22px var(--neon, #FF6600), 0 0 48px var(--neon, #FF6600), 0 0 90px var(--neon, #FF6600); }
+  .combo .cacc { position: absolute; font-family: 'Kaushan Script', 'Yellowtail', cursive; color: var(--acc, #FF6600); white-space: nowrap;
+                 text-shadow: 2px 0 0 #0A0A0A, -2px 0 0 #0A0A0A, 0 2px 0 #0A0A0A, 0 -2px 0 #0A0A0A, 3px 3px 0 rgba(10,10,10,.85), 0 6px 18px rgba(0,0,0,.45); transform: rotate(-8deg); }
+  .combo .swoosh { position: absolute; overflow: visible; }
+  .pix { position: absolute; width: 22px; height: 22px; }
+  .photos .ph { position: absolute; width: 270px; height: 340px; border-radius: 24px; overflow: hidden; background: #111;
+                border: 6px solid #fff; box-shadow: 0 18px 40px rgba(0,0,0,.45); }
+  .photos .ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photos .ph .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 12px; font-family: 'Montserrat'; font-weight: 800; font-size: 26px; color: #fff;
+                     background: linear-gradient(transparent, rgba(0,0,0,.75)); }
+  .photos .ph .flash { position: absolute; inset: 0; background: #fff; }
+  .numcards { display: flex; gap: 22px; }
+  .numcards .nc { position: relative; width: 200px; height: 250px; background: #FAFAF7; border-radius: 10px; box-shadow: 0 12px 26px rgba(0,0,0,.4);
+                  display: flex; flex-direction: column; align-items: center; justify-content: center; clip-path: polygon(0 0, 78% 0, 100% 16%, 100% 100%, 0 100%); }
+  .numcards .nc::after { content: ''; position: absolute; right: 0; top: 0; width: 22%; height: 16%; background: var(--fold, #FF6600); clip-path: polygon(0 0, 100% 100%, 0 100%); }
+  .numcards .nc b { font-family: 'Montserrat'; font-weight: 900; font-style: italic; font-size: 130px; line-height: .9; color: #0A0A0A; }
+  .numcards .nc span { font-family: 'Montserrat'; font-weight: 700; font-size: 26px; line-height: 1.05; text-align: center; color: #0A0A0A; padding: 0 8px; margin-top: 6px; }
 </style>
 </head>
 <body>
@@ -366,6 +395,7 @@ window.init = async (data) => {
   const BACK_TYPES = new Set(['backdrop', 'glass', 'cover', 'wall']);
   const layerOf = el => el.type === 'orbit' ? 'both' : (el.layer || (BACK_TYPES.has(el.type) ? 'back' : 'front'));
   const mine = (sb.elements || []).filter(el => layerOf(el) === 'both' || layerOf(el) === LAYER);
+  const S0 = sb;
   const els = mine.map((el, k) => {
     useLayout(el.start);
     el._fcx = fcx; el._fcy = fcy;
@@ -528,6 +558,29 @@ window.init = async (data) => {
           <div class="glow"></div><div class="shadow"></div>${refl}<div class="stage">${imgs}</div></div>
         ${showInfo ? `<div class="pinfo" style="left:${infoX}px;top:${infoY}px;max-width:${el.pos === 'hero' || el.pos === 'top' ? 960 : 1080 - infoX - 30}px">
           <div class="pn">${esc(el.name || m.name || '')}</div><div class="row">${price}${sizes}</div>${el.site !== false ? `<div class="site">${esc(el.site_text || 'mindricel.ro')}</div>` : ''}</div>` : ''}`;
+    } else if (T === 'combo') {
+      // reference "edited" title: small words row + huge word + handwritten accent word with swoosh (+ pixel squares)
+      n.className = 'el full';
+      const hs = el.size || 300, font = el.font || 'cond', look = el.look || (S0.palette ? 'solid' : 'solid');
+      const y = el.y ?? Math.max(60, Z.top.y0 - 20);
+      const acc = el.accent ? `<div class="cacc" style="font-size:${el.accent_size || Math.round(hs * 0.36)}px">${esc(el.accent)}</div>
+          <svg class="swoosh" width="420" height="80"><path d="M10 60 C 120 20, 260 10, 410 40" fill="none" stroke="${el.accent_color || 'var(--acc, #FF6600)'}" stroke-width="7" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>` : '';
+      const pix = Array.from({ length: el.pixels ?? 9 }, () => `<div class="pix" style="background:${rnd() < .6 ? 'var(--blue-2, #FF6600)' : '#fff'}"></div>`).join('');
+      n.innerHTML = `<div class="combo" style="top:${y}px">${el.top ? `<div class="ctop">${el.top.split(/\s+/).map(w => `<span>${esc(w)}</span>`).join('')}</div>` : ''}
+          <div style="position:relative;display:inline-block"><div class="chero f-${font} ${look}" style="font-size:${hs}px;${el.neon_color ? '--neon:' + esc(el.neon_color) : ''}">${esc(el.hero)}</div>${acc}${pix}</div>${el.bottom ? `<div class="ctop" style="justify-content:center;margin-top:10px">${esc(el.bottom)}</div>` : ''}</div>`;
+      n.dataset.seed = String(k);
+    } else if (T === 'photos') {
+      // real images (internet / user) as white-bordered rounded cards, fanned beside the person, glow-flash in
+      n.className = 'el full';
+      const side = el.side || (fcx > 540 ? 'left' : 'right');
+      const bx = el.x ?? (side === 'left' ? 30 : 1080 - 330), by = el.y ?? Math.max(Z.top.y0 + 60, fcy - 250);
+      n.innerHTML = `<div class="photos">${(el.items || []).map((it, j) => {
+        const o = typeof it === 'string' ? { src: it } : it;
+        const rot = ((j % 2 ? 1 : -1) * (4 + rnd() * 6)).toFixed(1);
+        return `<div class="ph" style="left:${bx + (side === 'left' ? j * 26 : -j * 26)}px;top:${by + j * 120}px;--r:${rot}deg">${o.src ? `<img src="${esc(o.src)}">` : ''}${o.caption ? `<div class="cap">${esc(o.caption)}</div>` : ''}<div class="flash"></div></div>`;
+      }).join('')}</div>`;
+    } else if (T === 'numcards') {
+      n.innerHTML = `<div class="numcards">${(el.items || []).map(it => `<div class="nc"><b>${esc(it.n)}</b><span>${esc(it.label || '')}</span></div>`).join('')}</div>`;
     } else if (T === 'checklist') {
       n.innerHTML = `<div class="checklist"><div class="ch-h"><span>${esc(el.title || 'All you need to do')}</span><span class="cnt"></span></div>${el.items.map(it => `<div class="ci"><div class="bx"><svg width="50" height="50"><circle cx="25" cy="25" r="22" fill="#2FBF71" class="fillc" opacity="0"/><path class="ck" d="M14 26 L22 34 L37 17" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="40" stroke-dashoffset="40"/></svg></div><span>${esc(it.text ?? it)}</span></div>`).join('')}</div>`;
     }
@@ -627,6 +680,7 @@ window.init = async (data) => {
     if (behindIds.size) { c.behind = behindIds.has(hero.i); return; }
     // auto: alternate eligible keywords; eligible = the body hides at most 25% of the word at its best spot
     if (cs.behind === 'auto') {
+      if ((sb.elements || []).some(e => e.hide_captions && e.start < c.t1 && e.end > c.t0)) return;
       const pb = placeBehind(c, hero);
       const prev = chunks[chunks.indexOf(c) - 1];
       if (pb && pb.frac <= (cs.behind_max_hidden ?? 0.25) && !(prev && prev.behind)) { c.behind = true; c.capY = pb.y + 40; c.dx = pb.dx; c.heroFirst = true; }
@@ -639,7 +693,9 @@ window.init = async (data) => {
   if (pal) Object.entries(pal).forEach(([k, v]) => cap.style.setProperty(k, v));
   stage.appendChild(cap);
 
-  S = { sb, style, els, chunks, cap, capY, layer: LAYER, fcx, fcy, face,
+  // windows where captions are hidden - taken from ALL elements, so the back layer also obeys front-layer titles
+  const hideWins = (sb.elements || []).filter(e => e.hide_captions || (e.type === 'product3d' && e.pos === 'hero' && e.hide_captions !== false)).map(e => [e.start, e.end]);
+  S = { sb, style, els, chunks, cap, capY, layer: LAYER, hideWins, fcx, fcy, face,
         capStyle, capOn: cs.enabled !== false && (LAYER === 'front' || chunks.some(c => c.behind)), mode: cs.mode || (capStyle === 'ed' ? 'karaoke' : 'pop'), lastChunk: -1 };
   return { chunks: chunks.length, elements: els.length };
 };
@@ -902,6 +958,69 @@ window.renderAt = (t) => {
         op = po; tr = ''; sig.push(L.toFixed(3));
         break;
       }
+      case 'combo': {
+        const L = st.local;
+        const top = [...n.querySelectorAll('.ctop span')];
+        top.forEach((w, j) => { const p = ease.out(clamp((L - j * 0.07) / 0.25)); w.style.opacity = p; w.style.transform = `translateY(${((1 - p) * -24).toFixed(1)}px)`; sig.push(p.toFixed(2)); });
+        const hero = n.querySelector('.chero');
+        const ph = ease.back(clamp((L - 0.08) / 0.4));
+        hero.style.transform = `scale(${(1.25 - 0.25 * ph).toFixed(3)})`;
+        hero.style.opacity = clamp(ph * 1.6).toFixed(2);
+        const blur = Math.max(0, (1 - clamp((L - 0.08) / 0.3)) * 14);
+        hero.style.filter = blur > 0.3 ? `blur(${blur.toFixed(1)}px)` : '';
+        const ac = n.querySelector('.cacc');
+        if (ac) {
+          const hw = hero.offsetWidth, hh = hero.offsetHeight;
+          ac.style.left = (hw * (el.accent_x ?? 0.42)) + 'px'; ac.style.top = (hh * (el.accent_y ?? 0.8)) + 'px';
+          const pa = clamp((L - 0.35) / 0.45);
+          ac.style.clipPath = `inset(-20% ${((1 - pa) * 100).toFixed(1)}% -20% -5%)`;   // "written" left to right
+          const sw = n.querySelector('.swoosh');
+          sw.style.left = (hw * (el.accent_x ?? 0.42) - 20) + 'px'; sw.style.top = (hh * (el.accent_y ?? 0.8) + ac.offsetHeight * 0.85) + 'px';
+          sw.querySelector('path').setAttribute('stroke-dashoffset', (1 - ease.out(clamp((L - 0.6) / 0.35))).toFixed(3));
+          sig.push(pa.toFixed(3));
+        }
+        // pixel squares flicker around the hero word during the entrance, then fade
+        const px = [...n.querySelectorAll('.pix')];
+        let seed = Number(n.dataset.seed) * 7919 + Math.floor(L * 12);
+        const r2 = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+        const hw2 = hero.offsetWidth, hh2 = hero.offsetHeight;
+        px.forEach(p2 => {
+          const on = L < 1.1 && r2() < 0.7;
+          const side2 = r2() < 0.5 ? -1 : 1;
+          p2.style.opacity = on ? (0.6 + r2() * 0.4).toFixed(2) : 0;
+          p2.style.left = (side2 < 0 ? -40 - r2() * 90 : hw2 + 10 + r2() * 90).toFixed(0) + 'px';
+          p2.style.top = (r2() * hh2).toFixed(0) + 'px';
+          const sz = 12 + r2() * 22; p2.style.width = p2.style.height = sz.toFixed(0) + 'px';
+        });
+        sig.push(Math.floor(L * 12), ph.toFixed(3), blur.toFixed(1));
+        op = po; tr = '';
+        break;
+      }
+      case 'photos': {
+        [...n.querySelectorAll('.ph')].forEach((c, j) => {
+          const at = el.items[j]?.at != null ? el.items[j].at - el.start : j * (el.stagger ?? 0.22);
+          const p = ease.back(clamp((st.local - at) / 0.35));
+          const drift = Math.sin((st.local + j) * 1.3) * 6;
+          c.style.opacity = clamp(p * 2).toFixed(2);
+          c.style.transform = `translate(${((1 - p) * (j % 2 ? 80 : -80)).toFixed(1)}px, ${((1 - p) * 140 + drift).toFixed(1)}px) rotate(${c.style.getPropertyValue('--r')}) scale(${(0.6 + 0.4 * p).toFixed(3)})`;
+          const fl = c.querySelector('.flash'); const fp = clamp((st.local - at) / 0.4);
+          fl.style.opacity = (fp < 1 ? (1 - fp) * 0.9 : 0).toFixed(2);
+          c.style.boxShadow = `0 18px 40px rgba(0,0,0,.45), 0 0 ${(60 * (1 - fp)).toFixed(0)}px rgba(255,255,255,${(0.9 * (1 - fp)).toFixed(2)})`;
+          sig.push(p.toFixed(3), drift.toFixed(1), fp.toFixed(2));
+        });
+        op = po; tr = '';
+        break;
+      }
+      case 'numcards': {
+        [...n.querySelectorAll('.nc')].forEach((c, j) => {
+          const at = el.items[j]?.at != null ? el.items[j].at - el.start : j * (el.stagger ?? 0.3);
+          const p = ease.back(clamp((st.local - at) / 0.3));
+          c.style.opacity = clamp(p * 2).toFixed(2); c.style.transform = `translateY(${((1 - p) * -60).toFixed(1)}px) rotate(${((1 - p) * -12).toFixed(1)}deg)`;
+          sig.push(p.toFixed(3));
+        });
+        tr = `scale(${fit})`;
+        break;
+      }
       case 'checklist': {
         const its = [...n.querySelectorAll('.ci')];
         let done = 0;
@@ -928,6 +1047,7 @@ window.renderAt = (t) => {
 
   // captions
   let ci = -1;
+  if (S.hideWins.some(([a, b]) => t >= a && t < b)) hideCaps = true;
   if (S.capOn && !hideCaps) ci = S.chunks.findIndex(c => t >= c.t0 && t < c.t1);
   if (ci >= 0 && S.layer === 'back' && !S.chunks[ci].behind) ci = -1;
   if (ci < 0) { if (S.cap.innerHTML) S.cap.innerHTML = ''; }

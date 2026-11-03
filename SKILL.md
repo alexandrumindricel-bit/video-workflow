@@ -74,6 +74,11 @@ reply at the end. Rules from the style guide:
 `layout.json`) or `"lower"` (chest area, above captions). Never `center` over the face. Titles may overlap the top
 of the head slightly (that is the look), never the eyes/mouth.
 
+**"Edited" reference rules (`EFFECTS.md`, bottom) - mandatory in every video**: always a colour `grade`
+(never raw-looking footage; preset per clip), face `track`ing 1-3 times per 30 s, internet `photos` for concrete
+things that are named (`scripts/images.py`, look at them first, credits in the reply), `combo` titles for the hook
+and section headers, `numcards` for enumerations.
+
 **Effects library (`EFFECTS.md`) - mandatory in every video**: about one effect moment every 4-6 s of final video
 (30 s → 5-7, 60 s → 9-12), each matched to what is being said, no repeat within ~15 s, mixing camera, cut-out and UI
 families. Put one in the hook. Example with all of them: `templates/storyboard.effects-example.json`.

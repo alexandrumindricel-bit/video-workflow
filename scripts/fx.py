@@ -19,6 +19,9 @@ storyboard.effects[]:  {"kind": ..., "start": s, "end": e, ...}
   frame_break  rect [x,y,w,h], color, radius      video shown inside a frame, person breaks out of it
   pull_back    scale 0.58, y, bg "#ECE8DF"         video shrinks into a floating window on a canvas
   cutout       -                                  force person cut-out (for back-layer elements)
+  track        scale 1.3, smooth 0.88             zoomed crop that follows the face (face tracking)
+storyboard.grade: "cinematic" | {"preset": ..., "strength": 0.85, "clips": [per-clip presets], "subject_pop": true}
+  presets: cinematic (teal-orange), warm (golden/night), olive, clean (bright high-key), mindricel (brand), none
   sticker      width 16                           white sticker border around the person (paper cut)
   outline      width 7, color                     boiling hand-drawn outline around the person
 Usage: fx.py WORKDIR
@@ -78,6 +81,86 @@ def hex_bgr(h):
     return (int(h[4:6], 16), int(h[2:4], 16), int(h[0:2], 16))
 
 
+# ------------------------------------------------------------------ colour grade (applied to the footage only)
+# lift/gain are per-channel offsets in BGR order (shadows / highlights), contrast = S-curve amount,
+# sat = saturation (skin tones protected), vig = vignette strength, pop = darken+soften background (needs mask)
+GRADES = {
+    "cinematic": dict(lift=(0.075, 0.02, -0.045), gain=(-0.07, 0.0, 0.075), contrast=0.55, sat=1.2, vig=0.45, pop=0.14, bright=-0.02, hl=0.22),
+    "warm":      dict(lift=(-0.03, -0.015, 0.0), gain=(-0.09, 0.035, 0.09), contrast=0.6, sat=1.2, vig=0.6, pop=0.18, bright=-0.05, hl=0.2),
+    "olive":     dict(lift=(-0.035, 0.045, 0.012), gain=(-0.04, 0.015, 0.05), contrast=0.42, sat=1.0, vig=0.4, pop=0.12, bright=-0.02, hl=0.2),
+    "clean":     dict(lift=(0.01, 0.01, 0.01), gain=(0.02, 0.0, 0.0), contrast=0.32, sat=1.08, vig=0.2, pop=0.08, bright=0.02, hl=0.08),
+    "mindricel": dict(lift=(0.05, 0.02, -0.03), gain=(-0.085, 0.015, 0.08), contrast=0.55, sat=1.2, vig=0.48, pop=0.14, bright=-0.03, hl=0.22),
+    "none":      None,
+}
+
+
+def build_luts(g, strength):
+    x = np.linspace(0, 1, 256, dtype=np.float32)
+    s = x * x * (3 - 2 * x)                                   # smoothstep S-curve
+    base = np.clip(x + (s - x) * g["contrast"] * 1.6 + g.get("bright", 0), 0, 1)
+    # highlight roll-off: bright walls / overcast sky get detail back instead of clipping to white
+    hl = g.get("hl", 0)
+    knee = np.clip((base - 0.62) / 0.38, 0, 1)
+    base = base - hl * knee ** 1.5 * (base - 0.62)
+    luts = []
+    for c in range(3):                                        # B, G, R
+        y = base + g["lift"][c] * (1 - base) ** 2 + g["gain"][c] * base ** 2
+        y = np.clip(x + (y - x) * strength, 0, 1)
+        luts.append((y * 255).astype(np.uint8))
+    return luts
+
+
+_VIG = {}
+
+
+def vignette(h, w, amount):
+    key = (h, w, round(amount, 3))
+    if key not in _VIG:
+        yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
+        r = np.sqrt(((xx - w / 2) / (w / 2)) ** 2 + ((yy - h * 0.45) / (h / 2)) ** 2)
+        _VIG[key] = (1 - amount * np.clip(r - 0.35, 0, None) ** 1.6).clip(0.3, 1)[..., None]
+    return _VIG[key]
+
+
+def apply_grade(F, g, luts, strength, M=None):
+    out = cv2.merge([cv2.LUT(ch, lut) for ch, lut in zip(cv2.split(F), luts)])
+    if g["sat"] != 1.0:
+        hsv = cv2.cvtColor(out, cv2.COLOR_BGR2HSV)
+        hch, sch, vch = cv2.split(hsv)
+        skin = ((hch < 25) | (hch > 170)).astype(np.float32)   # warm hues: keep skin natural
+        k = 1 + (g["sat"] - 1) * strength
+        sf = sch.astype(np.float32) * (k * (1 - skin) + min(k, 1.04) * skin)
+        out = cv2.cvtColor(cv2.merge([hch, np.clip(sf, 0, 255).astype(np.uint8), vch]), cv2.COLOR_HSV2BGR)
+    if M is not None and g.get("pop"):
+        small = cv2.resize(out, (W // 6, H // 6), interpolation=cv2.INTER_AREA)
+        soft = cv2.resize(cv2.GaussianBlur(small, (0, 0), 2.2), (W, H))
+        bgw = (1 - M)[..., None] * strength
+        out = (out * (1 - bgw * 0.45) + soft * (bgw * 0.45)) * (1 - bgw * g["pop"])
+        out = out.astype(np.float32)
+    if g["vig"]:
+        out = out.astype(np.float32) * vignette(H, W, g["vig"] * strength)
+    return np.clip(out, 0, 255).astype(np.uint8)
+
+
+class FaceTracker:
+    """Smoothly follows the face (MediaPipe full-range detector) for the 'track' effect."""
+    def __init__(self, cx, cy):
+        import mediapipe as mp
+        self.fd = mp.solutions.face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
+        self.cx, self.cy = cx, cy
+
+    def update(self, F, smooth):
+        res = self.fd.process(cv2.cvtColor(cv2.resize(F, (W // 3, H // 3)), cv2.COLOR_BGR2RGB))
+        if res.detections:
+            b = max(res.detections, key=lambda d: d.location_data.relative_bounding_box.width).location_data.relative_bounding_box
+            tx, ty = (b.xmin + b.width / 2) * W, (b.ymin + b.height / 2) * H
+            # dead zone: ignore small jitters, glide towards bigger moves
+            if abs(tx - self.cx) > 18 or abs(ty - self.cy) > 18:
+                self.cx = smooth * self.cx + (1 - smooth) * tx
+                self.cy = smooth * self.cy + (1 - smooth) * ty
+        return self.cx, self.cy
+
+
 def main():
     work = sys.argv[1]
     sb = json.load(open(os.path.join(work, "storyboard.json")))
@@ -115,11 +198,28 @@ def main():
         return [e for e in fx if e["kind"] in kinds and e["start"] <= t < e["end"]]
 
     need_cut = bool(back_windows) or any(e["kind"] in CUT_KINDS for e in fx)
+    # grade: storyboard "grade": {"preset": "cinematic", "strength": 0.85, "clips": ["warm", ...]} (per clip optional)
+    gcfg = sb.get("grade", {"preset": "none"})
+    if isinstance(gcfg, str):
+        gcfg = {"preset": gcfg}
+    g_strength = gcfg.get("strength", 0.85)
+    def grade_at(t):
+        name = gcfg.get("preset", "none")
+        per = gcfg.get("clips")
+        if per:
+            for k, c in enumerate(clips):
+                if c["start"] - 1e-3 <= t < c["end"] and k < len(per):
+                    name = per[k]
+        return GRADES.get(name)
+    lut_cache = {}
+    need_pop = any(g and g.get("pop") for g in [GRADES.get(gcfg.get("preset", "none"))] + [GRADES.get(n) for n in gcfg.get("clips", [])]) \
+        and gcfg.get("subject_pop", True)
+    tracker = None
     use_sticker = any(e["kind"] == "sticker" for e in fx)
     use_outline = any(e["kind"] == "outline" for e in fx)
 
     seg = None
-    if need_cut:
+    if need_cut or need_pop:
         import mediapipe as mp
         seg = mp.solutions.selfie_segmentation.SelfieSegmentation(model_selection=0)
 
@@ -145,6 +245,20 @@ def main():
             ema = res if ema is None else 0.55 * res + 0.45 * ema  # temporal smoothing: less edge flicker
             m = np.clip((ema - 0.35) / 0.3, 0, 1)
             M = cv2.GaussianBlur(cv2.resize(m, (W, H)), (0, 0), 1.6)
+
+        g = grade_at(t)
+        if g:
+            key = id(g)
+            if key not in lut_cache:
+                lut_cache[key] = build_luts(g, g_strength)
+            F = apply_grade(F, g, lut_cache[key], g_strength, M if need_pop else None)
+        tr = active(t, {"track"})
+        if tr:
+            if tracker is None:
+                tracker = FaceTracker(cx, cy)
+            cx, cy = tracker.update(F, tr[0].get("smooth", 0.88))
+        elif tracker is not None:
+            tracker.cx, tracker.cy = cx, cy
 
         bg, person, matte = F, F, None
         cut_on = any(a <= t < b for a, b in back_windows) or bool(active(t, CUT_KINDS))
@@ -230,6 +344,10 @@ def main():
                 s = e.get("from", 1.0) + (e.get("to", 1.15) - e.get("from", 1.0)) * ease_io((t - e["start"]) / max(0.01, e["end"] - e["start"]))
             elif pc:
                 s = pc[0].get("scale", 1.1)
+            if tr:  # face tracking: zoomed crop that follows the face, eased in/out
+                e = tr[0]
+                k = ease_io((t - e["start"]) / 0.4) * ease_io((e["end"] - t) / 0.4)
+                s *= 1 + (e.get("scale", 1.3) - 1) * k
             bg = person = zoom(F, s, cx, cy)
             if M is not None and s != 1.0:
                 M = zoom(M, s, cx, cy)

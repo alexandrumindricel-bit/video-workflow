@@ -45,6 +45,11 @@ async function renderRange(browser, data, f0, f1, outFile, layer) {
     type: t.kind, start: t.at - (t.kind === 'leak' ? 0.25 : 0), end: t.at + (t.dur || (t.kind === 'leak' ? 0.35 : 0.2)),
     peak: t.peak, color: t.color, sfx: null }));
   sb.elements = [...(sb.elements || []), ...extra];
+  // photo cards: relative image paths are resolved against the work dir
+  for (const el of sb.elements.filter(e => e.type === 'photos')) {
+    el.items = (el.items || []).map(it => { const o = typeof it === 'string' ? { src: it } : { ...it };
+      if (o.src && !/^(https?|file):/.test(o.src)) o.src = 'file://' + path.resolve(work, o.src); return o; });
+  }
   // 3D products: attach scraped product data + cut-out views (products/<slug>, see scripts/product.py)
   for (const el of sb.elements.filter(e => e.type === 'product3d')) {
     const dirs = [path.join(work, 'products', el.product), path.join(__dirname, '..', 'products', el.product)];

@@ -24,6 +24,7 @@ AUTO_SFX = {
     "orbit": ("riser", -14), "wall": ("paper", -11), "app": ("pop", -10), "phone": ("pop", -10),
     "chart": ("riser", -14), "backdrop": ("whoosh", -11), "doodle": ("paper", -14), "tiles": ("click", -9),
     "glass": ("whoosh", -11), "cover": ("impact", -12), "checklist": ("pop", -10), "product3d": ("riser", -12),
+    "combo": ("whoosh", -10), "photos": None, "numcards": None,
 }
 TRANSITION_SFX = {"zoom_through": ("whoosh", -7), "flash": ("shutter", -8), "leak": ("whoosh", -9), "glitch": ("glitch", -10),
                   "punch": None, "whoosh": ("whoosh", -9), "impact": ("impact", -8), "paper": ("paper", -8)}
@@ -47,6 +48,15 @@ def sfx_events(sb):
         if el["type"] == "product3d" and el.get("info", True) is not False:
             ev.append((el["start"] + el.get("info_at", 0.45), "ding", -15 + off))
             ev.append((el["start"] + 0.05, "whoosh", -12 + off))
+        if el["type"] == "combo":
+            ev.append((el["start"] + 0.08, "glitch", -16 + off))          # pixel squares
+            if el.get("accent"):
+                ev.append((el["start"] + 0.35, "swoosh_down", -15 + off))  # handwritten accent
+        if el["type"] in ("photos", "numcards"):
+            for j, it in enumerate(el.get("items", [])):
+                at = it.get("at") if isinstance(it, dict) else None
+                t0 = at if at is not None else el["start"] + j * el.get("stagger", 0.22 if el["type"] == "photos" else 0.3)
+                ev.append((t0, "shutter" if el["type"] == "photos" else "click", (-12 if el["type"] == "photos" else -9) + off))
         if el["type"] == "strike":
             ev.append((el["start"] + el.get("strike_at", 0.45), "click", -12 + off))
         if el["type"] == "list":

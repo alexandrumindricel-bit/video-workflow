@@ -36,3 +36,27 @@ Use these **in every video, chosen to fit what is being said**. Each row says ho
 - Keep each effect 0.7-2.5 s, aligned to the words it illustrates (start = word start).
 - Captions stay on; if an effect fills the caption area (orbit at chest, phone), move it (`dy`, `y`) or set `hide_captions`.
 - Text the viewer must read stays on the front layer; back-layer elements are partly hidden by the person by design.
+
+
+# "Edited" reference (raw vs edited) - apply in EVERY video
+
+1. **Never deliver raw-looking footage - always grade.** `"grade"` in the storyboard (fx.py, footage only, graphics untouched):
+   `cinematic` (teal shadows / warm skin - outdoor, daylight, gym), `warm` (golden, deep blacks - night, indoor lamps),
+   `olive` (grey studio), `clean` (white studio / high-key), `mindricel` (brand: warm highlights, teal-neutral shadows).
+   Per clip: `{"preset": "mindricel", "clips": ["cinematic", "warm", ...], "strength": 0.85}`. Highlights roll off (white
+   walls / overcast sky keep detail), skin tones are protected, vignette, background slightly darker/softer (subject pop).
+   Check graded QA frames: skin natural, no crushed faces, walls not grey-muddy. Lower `strength` (0.6) if it looks heavy.
+2. **Face tracking sometimes** - effect `track` (`scale` 1.25-1.4, 2-4 s): a zoomed crop that follows the face.
+   Use it when the person is small in frame (full-body / far shots), on emphasis lines, and to vary long static shots.
+   1-3 times per 30 s; not during `frame_break` / `pull_back`.
+3. **Images from the internet for what is said** - for concrete things the speaker names (places, objects, vehicles,
+   terrain, food, brands as examples, "these gyms", "this formula"): `python3 scripts/images.py WORK "<english query>"
+   --name <slug> --n 3`, LOOK at the downloaded cards (relevant? no watermark/text/strangers' faces?), then element
+   `photos` at the word's time beside the person (white-bordered rounded cards, fanned, glow flash in, shutter SFX).
+   2-4 image moments per 30 s. Credits (WORK/images/credits.txt) go in the delivery message for the post description.
+4. **Text style** - section headers and the hook use `combo` (replaces captions while shown, `hide_captions: true`):
+   small spoken lead-in words spread above (`top`), ONE huge word (`hero`, fonts `cond` Bebas / `tall` Anton / `heavy`
+   Montserrat; looks `solid` cream, `grad` orange 3D, `neon` glow for dark scenes), optional handwritten `accent`
+   (1-2 spoken words, Kaushan Script, orange, swoosh underline) and flickering pixel squares. All words must be spoken.
+   `layer: "back"` puts the combo behind the person (like "LEG Day") when the head would cover only a little.
+5. **Numbered cards** - `numcards` (`items: [{n, label, at}]`) for "3 ways / steps / reasons" enumerations.
