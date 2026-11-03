@@ -79,6 +79,24 @@ Pick per user request; otherwise editorial.
 shutter on flash, glitch sound on glitch, etc. Override per element with `"sfx": "name"` or `"sfx": null`.
 Optional `music: {file, gain_db}` only if the user supplies a track (it is ducked under the voice).
 
+## 4b. Products from mindricel.ro → 3D product (mandatory whenever one is presented)
+Whenever the speaker presents, names, holds up or recommends a product sold on **mindricel.ro** (helmets / căști,
+goggles / ochelari, gear / echipament, backpacks / rucsac, balaclavas / cagulă, beanie / fes, keyring / breloc,
+cables, phone/GPS mounts, extinguisher mounts…), show it as a **3D product** taken from the site:
+1. `python3 $VW/scripts/product.py catalog` - fresh list of all products (prices change: always re-fetch per video).
+2. Match what is said (and what is held in the frames - colour!) to the exact product/variant. If several variants
+   fit and neither the speech nor the footage decides it, ask the user which one - never guess a colour.
+3. `python3 $VW/scripts/product.py fetch <slug> WORK` → name, price, sizes, images from the page's schema.org data;
+   cut-out per angle (`view_N.png`) + `qa_cutout.jpg`. **Look at `qa_cutout.jpg`**: if a view is bad, pick good
+   ones with `"views": [0, 2]`, or use `"mode": "card"` (3D photo card) - `quality: "low"` defaults to card.
+4. Storyboard element `product3d` from the word that names the product, 2.5-5 s:
+   `{"type": "product3d", "product": "<slug>", "start": …, "end": …, "pos": "side"|"hero"|"top"}`
+   - `side` (default): next to the head, turntable through the angles; info card (name, price, sizes, mindricel.ro) above it.
+   - `hero`: the big reveal - below the chin, captions hidden; use once per product, on the main mention.
+   - Price/sizes/name come only from the site (never invent or round them); `price: false` hides the price.
+5. Add a `zoom_through` or `flash` into the hero reveal, and a closing CTA naming **mindricel.ro** if the video sells.
+Never recolour or alter the product image. If mindricel.ro is unreachable, tell the user and skip (no stand-ins).
+
 ## 5. Render
 ```
 $VW/vw.sh render WORK OUT.mp4

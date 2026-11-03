@@ -23,7 +23,7 @@ AUTO_SFX = {
     "flash": ("shutter", -8), "leak": ("whoosh", -10),
     "orbit": ("riser", -14), "wall": ("paper", -11), "app": ("pop", -10), "phone": ("pop", -10),
     "chart": ("riser", -14), "backdrop": ("whoosh", -11), "doodle": ("paper", -14), "tiles": ("click", -9),
-    "glass": ("whoosh", -11), "cover": ("impact", -12), "checklist": ("pop", -10),
+    "glass": ("whoosh", -11), "cover": ("impact", -12), "checklist": ("pop", -10), "product3d": ("riser", -12),
 }
 TRANSITION_SFX = {"zoom_through": ("whoosh", -7), "flash": ("shutter", -8), "leak": ("whoosh", -9), "glitch": ("glitch", -10),
                   "punch": None, "whoosh": ("whoosh", -9), "impact": ("impact", -8), "paper": ("paper", -8)}
@@ -44,6 +44,9 @@ def sfx_events(sb):
         else:
             name, g = spec, -10
         ev.append((el["start"], name, g + off))
+        if el["type"] == "product3d" and el.get("info", True) is not False:
+            ev.append((el["start"] + el.get("info_at", 0.45), "ding", -15 + off))
+            ev.append((el["start"] + 0.05, "whoosh", -12 + off))
         if el["type"] == "strike":
             ev.append((el["start"] + el.get("strike_at", 0.45), "click", -12 + off))
         if el["type"] == "list":

@@ -60,6 +60,8 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
 | `glass` | `text`, `size` | giant translucent glass letters with a light sweep | back |
 | `cover` | `text`, `size`, `issue`, `y`, `lines: []`, `lines_y` | magazine masthead, letters drop in | back |
 
+| `product3d` | `product` (slug from `products/catalog.json`), `pos: side\|hero\|top`, `side: left\|right`, `mode: cutout\|card`, `views: [i…]`, `depth` 14, `glow`, `name`, `price: false`, `price_text`, `info: false`, `info_at`, `site_text`, `box: {x,y,w,h}` | mindricel.ro product: extruded cut-out turns between its photo angles (turntable), floats, glow, shadow, reflection, light sweep; info card with name, price, sizes; card mode = 3D-tilted photo card | front |
+
 `layer: "front" | "back"` overrides the default on any element. Back-layer elements automatically turn the
 person cut-out on while they are visible.
 

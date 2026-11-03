@@ -45,6 +45,17 @@ async function renderRange(browser, data, f0, f1, outFile, layer) {
     type: t.kind, start: t.at - (t.kind === 'leak' ? 0.25 : 0), end: t.at + (t.dur || (t.kind === 'leak' ? 0.35 : 0.2)),
     peak: t.peak, color: t.color, sfx: null }));
   sb.elements = [...(sb.elements || []), ...extra];
+  // 3D products: attach scraped product data + cut-out views (products/<slug>, see scripts/product.py)
+  for (const el of sb.elements.filter(e => e.type === 'product3d')) {
+    const dirs = [path.join(work, 'products', el.product), path.join(__dirname, '..', 'products', el.product)];
+    const dir = dirs.find(d => fs.existsSync(path.join(d, 'meta.json')));
+    if (!dir) throw new Error(`product "${el.product}" not fetched - run: python3 scripts/product.py fetch ${el.product} WORK`);
+    const meta = JSON.parse(fs.readFileSync(path.join(dir, 'meta.json'), 'utf8'));
+    el._meta = meta;
+    const pick = el.views ? el.views.map(i => meta.views[i]).filter(Boolean) : meta.views;
+    el._views = pick.map(v => 'file://' + path.join(fs.realpathSync(dir), v));
+    el._photo = meta.images[0] ? 'file://' + path.join(fs.realpathSync(dir), meta.images[el.photo || 0] || meta.images[0]) : '';
+  }
   const data = { storyboard: sb, words: read('words.json'), layout: read('layout.json') };
   const duration = read('segments.json').duration;
   const total = Math.round(duration * FPS);
@@ -54,7 +65,7 @@ async function renderRange(browser, data, f0, f1, outFile, layer) {
   if (sb.elements.some(el => layerOf(el) !== 'front')) layers.push('back');
   const backFile = path.join(work, 'overlay_back.mov');
   if (!layers.includes('back') && fs.existsSync(backFile)) fs.unlinkSync(backFile);
-  const browser = await chromium.launch();
+  const browser = await chromium.launch({ args: ['--allow-file-access-from-files'] });  // CSS masks on local product images
   const t0 = Date.now();
   for (const layer of layers) {
     const per = Math.ceil(total / WORKERS);
