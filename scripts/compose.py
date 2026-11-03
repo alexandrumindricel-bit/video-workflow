@@ -16,18 +16,21 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SFX_DIR = os.path.join(HERE, "..", "sfx")
 
 # default sound for each element type / transition kind  (name, gain dB)
+# Sound palette modelled on the "Essential SFX" reference: pop, whoosh, swoosh, snap, flash, deep_bass, charge,
+# rewind, metallic_hit, synth_hit, gear, gunshot (+ older tick/click/paper/glitch/ding for small UI details)
 AUTO_SFX = {
-    "title": ("whoosh", -12), "card": ("pop", -10), "prompt": ("pop", -12), "strike": ("swoosh_down", -12),
-    "counter": ("pop", -10), "step": ("click", -8), "list": ("click", -10), "stat": ("pop", -9),
-    "comment": ("pop", -10), "follow": ("ding", -14), "image": ("pop", -10), "label": None, "frame": None,
-    "flash": ("shutter", -8), "leak": ("whoosh", -10),
-    "orbit": ("riser", -14), "wall": ("paper", -11), "app": ("pop", -10), "phone": ("pop", -10),
-    "chart": ("riser", -14), "backdrop": ("whoosh", -11), "doodle": ("paper", -14), "tiles": ("click", -9),
-    "glass": ("whoosh", -11), "cover": ("impact", -12), "checklist": ("pop", -10), "product3d": ("riser", -12),
-    "combo": ("whoosh", -10), "photos": None, "numcards": None,
+    "title": ("synth_hit", -13), "card": ("pop", -11), "prompt": ("pop", -12), "strike": ("metallic_hit", -14),
+    "counter": ("charge", -15), "step": ("snap", -9), "list": ("snap", -11), "stat": ("synth_hit", -13),
+    "comment": ("pop", -11), "follow": ("ding", -14), "image": ("pop", -11), "label": None, "frame": None,
+    "flash": ("flash", -9), "leak": ("swoosh", -11),
+    "orbit": ("charge", -15), "wall": ("paper", -11), "app": ("pop", -11), "phone": ("swoosh", -12),
+    "chart": ("charge", -15), "backdrop": ("whoosh", -11), "doodle": ("paper", -14), "tiles": ("charge", -15),
+    "glass": ("deep_bass", -12), "cover": ("deep_bass", -11), "checklist": ("gear", -13), "product3d": ("charge", -14),
+    "combo": ("synth_hit", -11), "photos": None, "numcards": None,
 }
-TRANSITION_SFX = {"zoom_through": ("whoosh", -7), "flash": ("shutter", -8), "leak": ("whoosh", -9), "glitch": ("glitch", -10),
-                  "punch": None, "whoosh": ("whoosh", -9), "impact": ("impact", -8), "paper": ("paper", -8)}
+TRANSITION_SFX = {"zoom_through": ("whoosh", -7), "flash": ("flash", -8), "flash_blur": ("flash", -8), "pixelate": ("rewind", -12),
+                  "leak": ("swoosh", -9), "glitch": ("glitch", -10), "punch": ("snap", -12), "whoosh": ("whoosh", -9),
+                  "swoosh": ("swoosh", -9), "impact": ("deep_bass", -8), "rewind": ("rewind", -9), "paper": ("paper", -8)}
 
 
 def sfx_events(sb):
@@ -46,17 +49,19 @@ def sfx_events(sb):
             name, g = spec, -10
         ev.append((el["start"], name, g + off))
         if el["type"] == "product3d" and el.get("info", True) is not False:
-            ev.append((el["start"] + el.get("info_at", 0.45), "ding", -15 + off))
+            ev.append((el["start"] + el.get("info_at", 0.45), "pop", -13 + off))
             ev.append((el["start"] + 0.05, "whoosh", -12 + off))
         if el["type"] == "combo":
-            ev.append((el["start"] + 0.08, "glitch", -16 + off))          # pixel squares
+            ev.append((el["start"] + 0.08, "glitch", -18 + off))          # pixel squares
+            if el is next((e for e in sb.get("elements", []) if e["type"] == "combo"), None):
+                ev.append((el["start"], "deep_bass", -10 + off))           # hook impact
             if el.get("accent"):
                 ev.append((el["start"] + 0.35, "swoosh_down", -15 + off))  # handwritten accent
         if el["type"] in ("photos", "numcards"):
             for j, it in enumerate(el.get("items", [])):
                 at = it.get("at") if isinstance(it, dict) else None
                 t0 = at if at is not None else el["start"] + j * el.get("stagger", 0.22 if el["type"] == "photos" else 0.3)
-                ev.append((t0, "shutter" if el["type"] == "photos" else "click", (-12 if el["type"] == "photos" else -9) + off))
+                ev.append((t0, "flash" if el["type"] == "photos" else "snap", (-14 if el["type"] == "photos" else -9) + off))
         if el["type"] == "strike":
             ev.append((el["start"] + el.get("strike_at", 0.45), "click", -12 + off))
         if el["type"] == "list":
@@ -79,8 +84,8 @@ def sfx_events(sb):
         d = TRANSITION_SFX.get(tr["kind"]) if spec == "auto" else ((spec, -9) if spec else None)
         if d:
             ev.append((tr["at"], d[0], d[1] + off))
-    EFFECT_SFX = {"pull_back": ("swoosh_down", -10), "frame_break": ("whoosh", -10), "vertigo": ("riser", -12),
-                  "sticker": ("paper", -9), "outline": ("tick", -12), "push": None, "punch": None, "cutout": None}
+    EFFECT_SFX = {"pull_back": ("swoosh", -10), "frame_break": ("whoosh", -10), "vertigo": ("charge", -13),
+                  "sticker": ("paper", -9), "outline": ("tick", -12), "push": None, "punch": ("snap", -13), "cutout": None, "track": None}
     for e in sb.get("effects", []):
         spec = e.get("sfx", "auto")
         d = EFFECT_SFX.get(e["kind"]) if spec == "auto" else ((spec, -10) if spec else None)

@@ -15,11 +15,12 @@ storyboard.effects[]:  {"kind": ..., "start": s, "end": e, ...}
   punch        scale (1.06-1.12)                  constant punch-in (also: storyboard.zooms)
   push         from, to (e.g. 1.0 -> 1.15)        smooth digital zoom
   zoom_through at (transition time), dur 0.36     zoom + radial blur into the cut and out of it
-  vertigo      amount 0.18                        dolly zoom: background zooms, person stays
+  vertigo      amount 0.12 (max 0.14)             dolly-zoom feel: person grows, background stays sharp
   frame_break  rect [x,y,w,h], color, radius      video shown inside a frame, person breaks out of it
   pull_back    scale 0.58, y, bg "#ECE8DF"         video shrinks into a floating window on a canvas
   cutout       -                                  force person cut-out (for back-layer elements)
   track        scale 1.3, smooth 0.88             zoomed crop that follows the face (face tracking)
+transitions (storyboard.transitions[]): zoom_through, flash_blur (overexposed defocus), pixelate (pixel dissolve)
 storyboard.grade: "cinematic" | {"preset": ..., "strength": 0.85, "clips": [per-clip presets], "subject_pop": true}
   presets: cinematic (teal-orange), warm (golden/night), olive, clean (bright high-key), mindricel (brand), none
   sticker      width 16                           white sticker border around the person (paper cut)
@@ -143,6 +144,36 @@ def apply_grade(F, g, luts, strength, M=None):
     if g["vig"]:
         out = out.astype(np.float32) * vignette(H, W, g["vig"] * strength)
     return np.clip(out, 0, 255).astype(np.uint8)
+
+
+def sharpen(img, s):
+    """Unsharp mask after a zoom (upscaling softens) - stronger for bigger zooms, none at 1.0."""
+    if s <= 1.03:
+        return img
+    amt = min(0.9, (s - 1) * 2.4)
+    blur = cv2.GaussianBlur(img, (0, 0), 1.1)
+    return cv2.addWeighted(img, 1 + amt, blur, -amt, 0)
+
+
+def flash_blur(img, p):
+    """Overexposed defocus (reference transition): p 0..1..0 -> blur + push to white."""
+    if p <= 0.01:
+        return img
+    small = cv2.resize(img, (W // 4, H // 4), interpolation=cv2.INTER_AREA)
+    small = cv2.GaussianBlur(small, (0, 0), 0.5 + 9 * p)
+    out = cv2.resize(small, (W, H), interpolation=cv2.INTER_LINEAR).astype(np.float32)
+    out = out * (1 + 1.6 * p) + 255 * 0.55 * p ** 1.5          # bloom towards white
+    mix = min(1.0, p * 1.8)
+    return np.clip(img * (1 - mix) + out * mix, 0, 255).astype(np.uint8)
+
+
+def pixelate(img, p):
+    """Pixel-dissolve (reference transition): block size grows to ~70 px at p=1."""
+    if p <= 0.02:
+        return img
+    b = max(2, int(4 + 66 * p ** 1.3))
+    small = cv2.resize(img, (max(1, W // b), max(1, H // b)), interpolation=cv2.INTER_AREA)
+    return cv2.resize(small, (W, H), interpolation=cv2.INTER_NEAREST)
 
 
 class FaceTracker:
@@ -324,21 +355,15 @@ def main():
             bg = person = (acc / taps).astype(np.uint8)
             cut_on = False
         elif vg:
+            # dolly-zoom feel without blur: the background stays untouched and sharp, the cut-out person grows
+            # around the face (relative zoom). The grown silhouette covers the original one, so no ghost/smear.
             e = vg[0]
             p = ease_io((t - e["start"]) / max(0.01, e["end"] - e["start"]))
-            s = 1 + e.get("amount", 0.18) * p
-            # clean plate: fill the person area with blurred surroundings before zooming the background
-            small_f = cv2.resize(F, (W // 4, H // 4)).astype(np.float32)
-            small_m = cv2.resize(M, (W // 4, H // 4))
-            small_m = cv2.dilate(small_m, np.ones((9, 9), np.uint8))
-            keep = (1 - small_m)[..., None]
-            num = cv2.GaussianBlur(small_f * keep, (0, 0), 14)
-            den = cv2.GaussianBlur(keep, (0, 0), 14)[..., None] + 1e-4
-            fill = cv2.resize((num / den).astype(np.uint8), (W, H))
-            mm = cv2.resize(small_m, (W, H))[..., None]
-            plate = (F * (1 - mm) + fill * mm).astype(np.uint8)
-            bg = zoom(plate, s, cx, cy)
-            person = F
+            s = 1 + min(0.14, e.get("amount", 0.12)) * p
+            bg = F
+            person = sharpen(zoom(F, s, cx, cy, cv2.INTER_CUBIC), s)
+            if M is not None:
+                M = zoom(M, s, cx, cy)
             cut_on = True
         else:
             s = 1.0
@@ -351,10 +376,18 @@ def main():
                 e = tr[0]
                 k = ease_io((t - e["start"]) / 0.4) * ease_io((e["end"] - t) / 0.4)
                 s *= 1 + (e.get("scale", 1.3) - 1) * k
-            bg = person = zoom(F, s, cx, cy)
+            bg = person = sharpen(zoom(F, s, cx, cy, cv2.INTER_CUBIC), s)
             if M is not None and s != 1.0:
                 M = zoom(M, s, cx, cy)
 
+        # reference transitions on the footage: overexposed blur / pixel dissolve around the cut point
+        for trn in sb.get("transitions", []):
+            if trn["kind"] in ("flash_blur", "pixelate"):
+                d = trn.get("dur", 0.5 if trn["kind"] == "flash_blur" else 0.4) / 2
+                if abs(t - trn["at"]) < d:
+                    p = 1 - abs(t - trn["at"]) / d
+                    fn = flash_blur if trn["kind"] == "flash_blur" else pixelate
+                    bg = fn(bg, ease_io(p)); person = fn(person, ease_io(p)) if person is not bg else bg
         out_bg.stdin.write(bg.tobytes())
         if need_cut:
             mat = (M * 255).astype(np.uint8) if (cut_on and M is not None) else zero

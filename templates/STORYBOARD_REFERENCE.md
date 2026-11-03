@@ -7,7 +7,8 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
   "style": "depth",                // "editorial" (green/cream) | "depth" (3D gradient) | "bold" (white + yellow keyword)
   "palette": "mindricel",          // brand theme for ALL graphics (orange #FF6600, ink #0A0A0A, white)
   "captions": {
-    "style": "depth",              // caption style, independent of the title style: "editorial" | "depth" | "bold"
+    "style": "clean",              // caption style: "clean" (default) | "depth" | "bold" | "editorial"
+    "headline_hold": 1.1,          // clean: seconds a headline stays after its keyword; headline_accent "alt"|"all"|"none"
     "palette": "mindricel",        // brand colours for the keyword gradient (mindricel = #FF6600 orange, black 3D edge)
     "behind": "auto",              // some keywords behind the person (auto | [word indices] | false); behind_max_hidden 0.25
     "keywords": ["word", ...],     // case/punctuation-insensitive; highlighted (gold italic / blue 3D hero)
@@ -18,7 +19,7 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
     "enabled": true
   },
   "elements": [ ... ],
-  "transitions": [ {"at": 4.2, "kind": "zoom_through|flash|glitch|leak|whoosh|impact|paper", "dur": 0.2, "sfx": "auto|name|null"} ],
+  "transitions": [ {"at": 4.2, "kind": "flash_blur|pixelate|zoom_through|flash|glitch|leak|whoosh|swoosh|impact|rewind|paper", "dur": 0.5, "sfx": "auto|name|null"} ],
   "effects": [ {"kind": "push|punch|vertigo|frame_break|pull_back|sticker|outline|cutout", "start": 1.0, "end": 2.0, ...} ],
   "zooms": [ {"start": 1.1, "end": 2.2, "scale": 1.1} ],   // punch-ins, piecewise constant, 1.06-1.12
   "sfx": [ {"at": 3.0, "name": "ding", "gain_db": -12} ],  // extra manual SFX
@@ -60,7 +61,7 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
 | `chart` | `title`, `values`, `labels`, `tag`, `grow`, `color` | line chart draws itself, tag pops at the end | front |
 | `backdrop` | `kind: app\|paper\|image\|gradient\|color`; app: `label`, `title`, `timer` (s), `items`; image: `src` | full background replacement (wipes in) | back |
 | `doodle` | `shapes: [{shape, x, y, size, color, width}]` - star, sparkle, circle, spiral, arrow, underline, scribble, x, heart, clapper | hand-drawn strokes draw on, then "boil" (jitter 10x/s) | front |
-| `tiles` | `text` ("100%"), `stagger` | typewriter tiles, alternating dark/cream, one per character | front |
+| `tiles` | `text` ("400-600"), `unit` ("cm³"), `count` 0.7, `look: "classic"` | modern: dark rounded pill, big digits counting up, unit in orange (classic = old squares) | front |
 | `glass` | `text`, `size` | giant translucent glass letters with a light sweep | back |
 | `cover` | `text`, `size`, `issue`, `y`, `lines: []`, `lines_y` | magazine masthead, letters drop in | back |
 
@@ -81,7 +82,7 @@ person cut-out on while they are visible.
 |---|---|---|
 | `punch` | `scale` 1.06-1.12 | constant punch-in (same as `zooms`) |
 | `push` | `from`, `to` | smooth digital zoom over the effect duration |
-| `vertigo` | `amount` 0.15-0.25 | dolly zoom: background zooms, person stays the same size |
+| `vertigo` | `amount` 0.08-0.14 | dolly-zoom feel: the cut-out person grows, background stays sharp (no smear) |
 | `frame_break` | `rect: [x,y,w,h]`, `color`, `radius`, `border` | video shown inside a frame on a dark blurred canvas; the person extends out of it |
 | `pull_back` | `scale` 0.5-0.65, `y` (center of the window), `bg` (hex or "blur") | video shrinks into a floating rounded window; put an `app`/`card` above it |
 | `sticker` | `width` 16 | white sticker border around the person (use with a `backdrop`) |

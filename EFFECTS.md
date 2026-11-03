@@ -14,13 +14,13 @@ Use these **in every video, chosen to fit what is being said**. Each row says ho
 | 06 | **phone mockup** | element `phone` with `messages` (chat bubbles appear) | DMs, texts, "send me…", app on phone | pop |
 | 07 | **checklist** | element `checklist` (items tick off, "1 of 3" counter) | steps, requirements, "all you need to do" | pop |
 | 08 | **headline wall** | element `wall`, `kind: "paper"` (taped notes with headlines) - back layer | ideas, quotes, headlines, reactions, "people said…" | paper |
-| 09 | **zoom-through cut** | transition `{kind: "zoom_through", at}` (zoom + radial blur through the cut) | section change, time skip, "and then…" | whoosh |
+| 09 | **zoom-through cut** | transition `{kind: "zoom_through", at}` (zoom + radial blur through the cut); also `flash_blur` and `pixelate` | section change, time skip, "and then…" | whoosh |
 | 10 | **chart grow** | element `chart` (`values`, `labels`, `tag: "SCALE ↗"`) | growth, numbers over time, results | riser |
 | 11 | **pull-back reveal** | effect `pull_back` (video shrinks into a window) + element `app`/`card` above it | "this video was made in…", showing the tool behind the scenes | swoosh down |
 | 12 | **green screen** | element `backdrop` (`kind: app/image/gradient`) - back layer, person cut out | "imagine…", talking about a page/product/app, a scene change | whoosh |
 | 13 | **paper cut** | `backdrop` `kind: paper` + effect `sticker` + elements `tiles` ("100%") / `doodle` | playful/creative moments, stats, scrapbook energy | paper + clicks |
 | 14 | **doodle boil** | effect `outline` (boiling outline around the person) + element `doodle` (`shapes`) | fun, casual, "creative" lines; pointing at something | paper |
-| 15 | **vertigo** | effect `vertigo` (`amount` 0.15-0.25; background dolly-zooms, person stays) | dramatic realization, "this changes everything", tension | riser |
+| 15 | **vertigo** | effect `vertigo` (`amount` 0.08-0.14; person grows, background stays sharp) | dramatic realization, "this changes everything", tension | riser |
 | 16 | **cover story** | element `cover` (magazine masthead **behind the head**, `issue` line, optional `lines`) | introducing a topic/title, "the story of…", hook | impact |
 | 17 | **glass type** | element `glass` (giant translucent glass word with shine) - back layer | a single huge keyword or number ("26", "DESIGN") | whoosh |
 

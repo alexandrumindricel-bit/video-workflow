@@ -138,10 +138,111 @@ def paper():
     return norm(x * np.sin(np.pi * t) ** 0.5, -6)
 
 
+# ---- sound set modelled on the "Essential SFX" reference (synthesized from scratch, not copied) ----
+def pop2():          # quick pitch-drop pop, ~0.35 s (850 Hz -> 45 Hz)
+    n = int(0.35 * SR); t = np.arange(n) / SR
+    f = 45 + 805 * np.exp(-t * 28)
+    x = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 11)
+    x[:int(0.004 * SR)] *= np.linspace(0, 1, int(0.004 * SR))
+    return norm(np.tanh(x * 1.5), -3)
+
+
+def deep_bass():     # sub boom ~30-40 Hz, 1.1 s
+    n = int(1.1 * SR); t = np.arange(n) / SR
+    f = 32 + 60 * np.exp(-t * 9)
+    body = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 2.6)
+    click = bandpass_noise(n, 1500, 6000) * np.exp(-t * 80) * 0.25
+    return norm(np.tanh((body + click) * 2.5), -1.5)
+
+
+def charge():        # rising high whine, 1 s (4 -> 6.5 kHz) + soft noise bed
+    n = int(1.0 * SR); t = np.linspace(0, 1, n)
+    f = 3800 + 2700 * t ** 1.5
+    x = 0.6 * np.sin(2 * np.pi * np.cumsum(f) / SR) * (0.4 + 0.6 * np.sin(2 * np.pi * 9 * t) ** 2)
+    x += 0.25 * sweep_noise(1.0, 2500, 7000, bw=0.3)[:n]
+    return norm(x * t ** 1.2 * (1 - np.clip((t - 0.93) / 0.07, 0, 1)), -7)
+
+
+def flash():         # camera-flash burst: bright crack -> darker thump, 1.1 s
+    n = int(1.1 * SR); t = np.arange(n) / SR
+    crack = bandpass_noise(n, 3000, 12000) * np.exp(-t * 25)
+    whine = 0.3 * np.sin(2 * np.pi * np.cumsum(9000 - 7000 * np.clip(t * 3, 0, 1)) / SR) * np.exp(-t * 8)
+    thump = np.sin(2 * np.pi * np.cumsum(70 + 80 * np.exp(-t * 20)) / SR) * np.exp(-t * 5) * 0.8
+    return norm(np.tanh((crack + whine + thump) * 1.8), -2)
+
+
+def whoosh2():       # mid air whoosh, ~1 s, swells then fades
+    n = int(0.95 * SR); t = np.linspace(0, 1, n)
+    x = sweep_noise(0.95, 500, 2600, bw=0.7)[:n]
+    return norm(x * np.sin(np.pi * t ** 0.8) ** 2.2, -3)
+
+
+def swoosh2():       # bright -> dark descending swoosh, 1.2 s
+    n = int(1.2 * SR); t = np.linspace(0, 1, n)
+    x = sweep_noise(1.2, 6000, 300, bw=0.6)[:n]
+    return norm(x * np.exp(-((t - 0.3) / 0.22) ** 2), -3)
+
+
+def snap():          # finger-snap style click with a short body around 2.3 kHz
+    n = int(0.25 * SR); t = np.arange(n) / SR
+    x = bandpass_noise(n, 1800, 9000) * np.exp(-t * 90)
+    x += 0.5 * np.sin(2 * np.pi * 2300 * t) * np.exp(-t * 60)
+    return norm(x, -4)
+
+
+def rewind():        # tape rewind: warbling, accelerating pitch rise, 1.5 s
+    n = int(1.5 * SR); t = np.linspace(0, 1, n)
+    f = 160 + 140 * t ** 2 + 60 * np.sin(2 * np.pi * (6 + 30 * t) * t)
+    x = np.sign(np.sin(2 * np.pi * np.cumsum(f) / SR)) * 0.4 + sweep_noise(1.5, 800, 4000, bw=0.5)[:n] * 0.5
+    return norm(x * np.sin(np.pi * t) ** 0.6, -8)
+
+
+def metallic_hit():  # inharmonic metal ring, 2.2 s, bright -> dark
+    n = int(2.2 * SR); t = np.arange(n) / SR
+    partials = [(523, 1), (1187, .7), (1999, .5), (2873, .35), (4210, .25), (6011, .15)]
+    x = sum(a * np.sin(2 * np.pi * f * t) * np.exp(-t * (1.6 + f / 900)) for f, a in partials)
+    x += bandpass_noise(n, 2000, 10000) * np.exp(-t * 60) * 0.6
+    return norm(x, -4)
+
+
+def synth_hit():     # saw-chord stab with filter-like decay, 1 s
+    n = int(1.0 * SR); t = np.arange(n) / SR
+    x = np.zeros(n)
+    for f in (110, 164.8, 220, 277.2):
+        ph = (f * t) % 1
+        saw = 2 * ph - 1
+        x += saw * np.exp(-t * (3 + f / 110))
+    sub = np.sin(2 * np.pi * 55 * t) * np.exp(-t * 4)
+    x = np.convolve(x, np.ones(12) / 12, mode="same") + sub
+    return norm(np.tanh(x * 1.4), -2)
+
+
+def gear():          # mechanical ratchet: 9 clicks slowing down, bright -> dark
+    out = np.zeros(int(1.0 * SR))
+    pos = 0.0
+    for k in range(9):
+        n = int(0.03 * SR); t = np.arange(n) / SR
+        c = bandpass_noise(n, 2500 - k * 200, 9000 - k * 600) * np.exp(-t * 140) + 0.4 * np.sin(2 * np.pi * (1400 - 90 * k) * t) * np.exp(-t * 120)
+        i = int(pos * SR); out[i:i + n] += c[: len(out[i:i + n])] * (1 - k * 0.06)
+        pos += 0.06 + k * 0.012
+    return norm(out, -5)
+
+
+def gunshot():       # crack + low body + reverb-ish tail, 0.9 s (use rarely)
+    n = int(0.9 * SR); t = np.arange(n) / SR
+    crack = bandpass_noise(n, 1000, 12000) * np.exp(-t * 45)
+    body = np.sin(2 * np.pi * np.cumsum(90 + 120 * np.exp(-t * 30)) / SR) * np.exp(-t * 9)
+    tail = bandpass_noise(n, 300, 5000) * np.exp(-t * 5) * 0.25
+    return norm(np.tanh((crack + body + tail) * 2), -2)
+
+
 SOUNDS = {
     "whoosh": whoosh, "swoosh_down": swoosh_down, "pop": pop, "click": click,
     "tick": tick, "shutter": shutter, "impact": impact, "riser": riser,
     "glitch": glitch, "ding": ding, "paper": paper,
+    # "Essential SFX" reference set (pop/whoosh/swoosh replaced by the new versions)
+    "pop": pop2, "whoosh": whoosh2, "swoosh": swoosh2, "deep_bass": deep_bass, "charge": charge, "flash": flash,
+    "snap": snap, "rewind": rewind, "metallic_hit": metallic_hit, "synth_hit": synth_hit, "gear": gear, "gunshot": gunshot,
 }
 
 

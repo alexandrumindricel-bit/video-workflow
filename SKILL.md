@@ -91,13 +91,28 @@ depth-reference look in the mindricel.ro palette (orange #FF6600 gradient, ink #
 outlines). Editorial font names in title lines are mapped automatically; use orange (#FF6600/#FF8533) or white for
 doodles. Never mix in the green/cream editorial colours.
 
-**Captions (user's standing choice)**: `"captions": {"style": "depth", "palette": "mindricel", "mode": "pop",
-"behind": "auto"}` - white words have a fine dark outline + shadow; with `behind: "auto"` some keywords go behind
-the person (back layer + cut-out): only where the measured body silhouette hides at most 25% of the word, both ends
-stay visible, nothing on screen overlaps it, and never two in a row. Check those frames in QA. Details:
-font and look of the depth reference (Montserrat: white words popping in one by one, ONE big 3D keyword per
-sentence), in the mindricel.ro palette (#FF6600 orange gradient, black edge), **no background box**. Keep about one
-keyword per sentence (not every important word).
+**Captions (user's standing choice, from the real-estate reference)**: `"captions": {"style": "clean", "palette":
+"mindricel", "keywords": [...]}` - 1-2 white Inter words at a time on the chest, each appearing with a short blur-in,
+thin dark contour (no background box). Each keyword (about one per sentence) becomes a HEADLINE over the head: up to
+2 spoken lead words small + the keyword huge (Inter 800, tight), every 2nd one in brand orange; it goes behind the
+head when the silhouette hides <= 30% of it, otherwise above the head. Headlines never overlap titles/graphics in the
+head zone (that keyword stays a chest caption). Older styles (`depth`, `bold`, `editorial`) only on request.
+
+**Numbers**: `tiles` now render as ONE dark rounded pill with big clean digits counting up and an optional `unit`
+in orange (e.g. `{"type": "tiles", "text": "400-600", "unit": "cm³"}`); the old squares only with `"look": "classic"`.
+
+**Transitions (real-estate reference)**: on clip changes / section changes use `flash_blur` (overexposed defocus),
+`pixelate` (pixel dissolve, also good when an element/image leaves), `zoom_through`, and zoom-jump cuts (`punch`
+alternating 1.0 / 1.1-1.15 on jump cuts). Keep `glitch` rare.
+
+**Sounds (Essential SFX reference, synthesized)**: pop, whoosh, swoosh, snap, flash, deep_bass, charge, rewind,
+metallic_hit, synth_hit, gear, gunshot - mapped automatically (compose.py): flash_blur → flash, pixelate → rewind,
+zoom_through → whoosh, punch cut → snap, combo/title/stat → synth_hit (first combo + deep_bass), strike → metallic_hit,
+checklist → gear, cards/headline info → pop, charts/counters/tiles/products → charge, glass/cover → deep_bass.
+`gunshot` only if the user asks. Never extract sounds from reference videos - always use the synthesized library.
+
+**No blur on footage**: never smear or soften the image. `vertigo` now keeps the background sharp and grows the
+cut-out person (max 0.14); all zooms are sharpened. Check QA frames for softness.
 
 **Style preset** (titles/graphics): `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles),
 `"bold"` (white heavy words + big yellow keyword, like the effects reference) or `"depth"` (blue gradient 3D hero words).
