@@ -10,4 +10,4 @@ keywords, motion graphics, sound effects and the final render.
 - `templates/`: storyboard reference and example
 
 Requirements: ffmpeg, Python 3 (`faster-whisper`, `opencv-python-headless<5`, `numpy`), Node with Playwright + Chromium.
-Transcription downloads a Whisper model from huggingface.co on first use.
+Transcription downloads a Whisper model on first use: allow huggingface.co and *.hf.co (CDN) in the network policy.

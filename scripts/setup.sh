@@ -20,6 +20,6 @@ elif curl -sS -m 10 -o /dev/null -w "%{http_code}" https://huggingface.co/api/mo
   echo "huggingface.co reachable - the model downloads on first transcription"
 else
   echo "WARNING: huggingface.co is blocked and no model is cached - transcription will fail."
-  echo "         Allow huggingface.co in the environment's network settings (Allowed domains)."
+  echo "         Allow huggingface.co and *.hf.co (the model CDN) in the environment's network settings."
 fi
 echo "Setup OK"
