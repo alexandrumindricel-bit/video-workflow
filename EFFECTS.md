@@ -40,11 +40,14 @@ Use these **in every video, chosen to fit what is being said**. Each row says ho
 
 # "Edited" reference (raw vs edited) - apply in EVERY video
 
-1. **Never deliver raw-looking footage - always grade.** `"grade"` in the storyboard (fx.py, footage only, graphics untouched):
+1. **Never deliver raw-looking footage - always grade. Default (user's choice): `"grade": {"preset": "simple",
+   "strength": 1.0, "subject_pop": false}`** - Instagram-"simple"-like: natural colours, gentle contrast, slightly
+   darker, touch of warmth, true blacks, NO vignette, NO background blur around the person. Use the stronger presets
+   below only if the user asks for them. `"grade"` in the storyboard (fx.py, footage only, graphics untouched):
    `cinematic` (teal shadows / warm skin - outdoor, daylight, gym), `warm` (golden, deep blacks - night, indoor lamps),
    `olive` (grey studio), `clean` (white studio / high-key), `mindricel` (brand: warm highlights, teal-neutral shadows).
-   Per clip: `{"preset": "mindricel", "clips": ["cinematic", "warm", ...], "strength": 0.85}`. Highlights roll off (white
-   walls / overcast sky keep detail), skin tones are protected, vignette, background slightly darker/softer (subject pop).
+   Per clip: `{"preset": ..., "clips": [...], "strength": 0.85}`. Highlights roll off, skin tones are protected;
+   `subject_pop: true` (darker/softer background) only on request - the user does not want it by default.
    Check graded QA frames: skin natural, no crushed faces, walls not grey-muddy. Lower `strength` (0.6) if it looks heavy.
 2. **Face tracking sometimes** - effect `track` (`scale` 1.25-1.4, 2-4 s): a zoomed crop that follows the face.
    Use it when the person is small in frame (full-body / far shots), on emphasis lines, and to vary long static shots.

@@ -90,6 +90,9 @@ GRADES = {
     "olive":     dict(lift=(-0.035, 0.045, 0.012), gain=(-0.04, 0.015, 0.05), contrast=0.42, sat=1.0, vig=0.4, pop=0.12, bright=-0.02, hl=0.2),
     "clean":     dict(lift=(0.01, 0.01, 0.01), gain=(0.02, 0.0, 0.0), contrast=0.32, sat=1.08, vig=0.2, pop=0.08, bright=0.02, hl=0.08),
     "mindricel": dict(lift=(0.05, 0.02, -0.03), gain=(-0.085, 0.015, 0.08), contrast=0.55, sat=1.2, vig=0.48, pop=0.14, bright=-0.03, hl=0.22),
+    # "simple" (Instagram-style simple filter, approximated): natural colours, gentle contrast, slightly darker,
+    # a touch of warmth, true blacks, no vignette, no background blur
+    "simple":    dict(lift=(0.0, 0.0, 0.0), gain=(-0.012, 0.0, 0.014), contrast=0.2, sat=1.06, vig=0.0, pop=0, bright=-0.04, hl=0.08),
     "none":      None,
 }
 
@@ -213,7 +216,7 @@ def main():
         return GRADES.get(name)
     lut_cache = {}
     need_pop = any(g and g.get("pop") for g in [GRADES.get(gcfg.get("preset", "none"))] + [GRADES.get(n) for n in gcfg.get("clips", [])]) \
-        and gcfg.get("subject_pop", True)
+        and gcfg.get("subject_pop", False)
     tracker = None
     use_sticker = any(e["kind"] == "sticker" for e in fx)
     use_outline = any(e["kind"] == "outline" for e in fx)

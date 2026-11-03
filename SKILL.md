@@ -75,7 +75,7 @@ reply at the end. Rules from the style guide:
 of the head slightly (that is the look), never the eyes/mouth.
 
 **"Edited" reference rules (`EFFECTS.md`, bottom) - mandatory in every video**: always a colour `grade`
-(never raw-looking footage; preset per clip), face `track`ing 1-3 times per 30 s, internet `photos` for concrete
+(never raw-looking footage; default `simple` preset, no background blur, no vignette), face `track`ing 1-3 times per 30 s, internet `photos` for concrete
 things that are named (`scripts/images.py`, look at them first, credits in the reply), `combo` titles for the hook
 and section headers, `numcards` for enumerations.
 
