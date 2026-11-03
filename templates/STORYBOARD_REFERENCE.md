@@ -9,7 +9,7 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
   "captions": {
     "style": "clean",              // caption style: "clean" (default) | "depth" | "bold" | "editorial"
     "headline_hold": 1.1,          // clean: seconds a headline stays after its keyword; headline_accent "alt"|"all"|"none"
-    "palette": "mindricel",        // brand colours for the keyword gradient (mindricel = #FF6600 orange, black 3D edge)
+    "palette": "scene",            // caption colours: "scene" (from the RAW footage, default) | "mindricel" (brand)
     "behind": "auto",              // some keywords behind the person (auto | [word indices] | false); behind_max_hidden 0.25
     "keywords": ["word", ...],     // case/punctuation-insensitive; highlighted (gold italic / blue 3D hero)
     "keyword_ids": [12, 40],       // or exact word indices (field "i" in words.json)

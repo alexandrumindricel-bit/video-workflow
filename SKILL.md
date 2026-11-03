@@ -91,12 +91,20 @@ depth-reference look in the mindricel.ro palette (orange #FF6600 gradient, ink #
 outlines). Editorial font names in title lines are mapped automatically; use orange (#FF6600/#FF8533) or white for
 doodles. Never mix in the green/cream editorial colours.
 
-**Captions (user's standing choice, from the real-estate reference)**: `"captions": {"style": "clean", "palette":
-"mindricel", "keywords": [...]}` - 1-2 white Inter words at a time on the chest, each appearing with a short blur-in,
-thin dark contour (no background box). Each keyword (about one per sentence) becomes a HEADLINE over the head: up to
-2 spoken lead words small + the keyword huge (Inter 800, tight), every 2nd one in brand orange; it goes behind the
-head when the silhouette hides <= 30% of it, otherwise above the head. Headlines never overlap titles/graphics in the
-head zone (that keyword stays a chest caption). Older styles (`depth`, `bold`, `editorial`) only on request.
+**Captions (user's standing choice, real-estate reference)**: `"captions": {"style": "clean", "palette": "scene",
+"keywords": [...]}`.
+- Chest: 1-2 words at a time, Inter Bold, white, tight tracking, blur-in, thin dark contour, no box.
+- Headline per keyword (~1 per sentence): up to 2 spoken lead words (Inter Medium, small, white) OVERLAPPING the top
+  of ONE huge word (Inter ExtraBold ~220 px, letter-spacing -0.06em, lowercase unless <= 6 letters / numbers ->
+  UPPERCASE). Mixed sizes are the point: small lead, huge word, mid chest words.
+- Depth: the huge word sits at head height BEHIND the person (back layer + cut-out); the head may cover some middle
+  letters (<= 40%) but the first/last letters stay visible; otherwise it goes above the head on the front layer.
+- Colours = the RAW footage of THAT clip (`body_profile.py` → `layout.clips[].palette`: dominant non-skin accents +
+  neutral): headlines cycle neutral-grey gradient / accent gradient / white / second accent gradient, auto-toned
+  darker on bright backgrounds and lighter on dark ones, slightly transparent. Never invent colours; `"palette":
+  "mindricel"` only if the user asks for brand colours on captions.
+- Storyboard planning: keep the head zone free of titles/cards for ~1.5 s around chosen keywords (headlines never
+  overlap titles - a blocked keyword just stays a chest word). Aim for 4-8 headlines per 30 s, most of them behind.
 
 **Numbers**: `tiles` now render as ONE dark rounded pill with big clean digits counting up and an optional `unit`
 in orange (e.g. `{"type": "tiles", "text": "400-600", "unit": "cm³"}`); the old squares only with `"look": "classic"`.

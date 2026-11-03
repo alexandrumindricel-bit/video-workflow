@@ -352,14 +352,16 @@
 
   /* ---------- "clean" captions (real-estate reference): 1-2 white words on the chest + headline over the head ---------- */
   .cap-cl { text-align: center; font-family: 'Inter', sans-serif; max-width: 940px; }
-  .cap-cl .w { display: inline-block; margin: 0 .13em; font-weight: 600; font-size: 58px; color: #fff; letter-spacing: -0.015em;
-               text-shadow: 1.2px 0 0 rgba(10,10,10,.75), -1.2px 0 0 rgba(10,10,10,.75), 0 1.2px 0 rgba(10,10,10,.75), 0 -1.2px 0 rgba(10,10,10,.75), 0 4px 14px rgba(0,0,0,.45); }
-  #hl { position: absolute; left: 40px; right: 40px; text-align: center; font-family: 'Inter', sans-serif; pointer-events: none; }
-  #hl .lead { font-weight: 600; font-size: 50px; color: #fff; letter-spacing: -0.02em; line-height: 1; margin-bottom: 2px;
-              text-shadow: 0 0 1px rgba(10,10,10,.8), 0 4px 14px rgba(0,0,0,.45); }
-  #hl .big { display: inline-block; font-weight: 800; font-size: 168px; line-height: .86; letter-spacing: -0.05em; color: #fff; white-space: nowrap;
-             text-shadow: 0 6px 26px rgba(0,0,0,.35); }
-  #hl .big.acc { color: var(--hl-acc, #FF6600); }
+  .cap-cl .w { display: inline-block; margin: 0 .12em; font-weight: 700; font-size: 64px; color: rgba(255,255,255,.96); letter-spacing: -0.035em;
+               text-shadow: 1px 0 0 rgba(10,10,10,.55), -1px 0 0 rgba(10,10,10,.55), 0 1px 0 rgba(10,10,10,.55), 0 -1px 0 rgba(10,10,10,.55), 0 4px 16px rgba(0,0,0,.4); }
+  /* headline (real-estate reference): small lead words overlapping the top of a huge, tight, scene-coloured word */
+  #hl { position: absolute; left: 30px; right: 30px; text-align: center; font-family: 'Inter', sans-serif; pointer-events: none; }
+  #hl .wrap { position: relative; display: inline-block; }
+  #hl .lead { position: relative; z-index: 2; font-weight: 500; font-size: 64px; color: #fff; letter-spacing: -0.035em; line-height: 1;
+              margin-bottom: -0.42em; padding: 0 .12em; text-shadow: 0 2px 12px rgba(0,0,0,.35); }
+  #hl .big { display: inline-block; font-weight: 800; font-size: 220px; line-height: .84; letter-spacing: -0.06em; white-space: nowrap;
+             padding: 0 .06em .04em; background: var(--hlfill, #fff); -webkit-background-clip: text; background-clip: text; color: transparent;
+             filter: drop-shadow(0 4px 16px var(--hlshadow, rgba(0,0,0,.2))); }
   /* modern number display (replaces the square tiles) */
   .tpill { display: inline-flex; align-items: baseline; gap: 14px; background: rgba(10,10,10,.88); border-radius: 30px; padding: 14px 40px 22px;
            box-shadow: 0 18px 40px rgba(0,0,0,.4), inset 0 0 0 2px rgba(255,255,255,.08); }
@@ -737,22 +739,49 @@ window.init = async (data) => {
     }
   });
   meas.remove();
-  // headline placement: behind the head (like the reference) when the measured silhouette hides <= 30%, else above it
+  // headline placement (reference): huge word at head height BEHIND the head - the head may cover middle letters
+  // (<= 40% hidden) but the first/last letters stay visible; otherwise it goes above the head on the front layer
+  const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const lum = ([r, g, b]) => (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  const tone = (hex, target, bright) => {             // push a colour darker (bright scenes) or lighter (dark scenes)
+    let c = hexRgb(hex), L = lum(c);
+    if (bright && L > target) c = c.map(v => Math.round(v * target / L));
+    if (!bright && L < target) c = c.map(v => Math.round(255 - (255 - v) * (1 - target) / (1 - L)));
+    return '#' + c.map(v => Math.max(0, Math.min(255, v)).toString(16).padStart(2, '0')).join('');
+  };
   const hlMeas = document.createElement('div'); hlMeas.id = 'hl'; hlMeas.style.left = '-5000px'; stage.appendChild(hlMeas);
-  headlines.forEach(h => {
-    hlMeas.innerHTML = `<div class="big">${esc(h.big)}</div>`;
-    const bw = Math.min(1000, hlMeas.firstChild.offsetWidth), bh = 150;
+  headlines.forEach((h, k) => {
+    const word = h.big;
+    h.text = (/\d/.test(word) || word.replace(/[^\p{L}]/gu, '').length <= 6) ? word.toUpperCase() : word.toLowerCase();
+    hlMeas.innerHTML = `<div class="big">${esc(h.text)}</div>`;
+    const raw = hlMeas.firstChild.offsetWidth; h.size = Math.round(220 * Math.min(1, 1000 / raw));
+    const bw = Math.min(1000, raw), bh = h.size * 0.8;
     const cl = clipAt(h.start), f = cl.face || layout.face || { x: 440, y: 500, w: 200, h: 200 }, occ = cl.occ || layout.occ;
-    const yBehind = f.y + f.h * 0.05, yAbove = Math.max((cl.zones || layout.zones).top.y0 + 120, f.y - f.h * 0.45 - 30);
-    let frac = 1;
+    const zn = cl.zones || layout.zones;
+    const yBehind = f.y + f.h * 0.12, yAbove = Math.max(zn.top.y0 + h.size * 0.8, f.y - f.h * 0.35);
+    let ok = false;
     if (occ && cs.behind !== false) {
-      const x0 = 540 - bw / 2, x1 = 540 + bw / 2; let hid = 0, tot = 0;
-      for (let r = Math.max(0, Math.floor((yBehind - bh / 2) / 40)); r <= Math.min(47, Math.floor((yBehind + bh / 2) / 40)); r++)
-        for (let q = Math.max(0, Math.floor(x0 / 20)); q <= Math.min(53, Math.floor(x1 / 20)); q++) { hid += occ[r][q]; tot++; }
-      frac = tot ? hid / tot : 1;
+      const x0 = 540 - bw / 2, x1 = 540 + bw / 2;
+      const q0 = Math.max(0, Math.floor(x0 / 20)), q1 = Math.min(53, Math.floor(x1 / 20)), qe = Math.max(1, Math.round((q1 - q0) * 0.12));
+      let hid = 0, tot = 0, eL = 0, eR = 0, ne = 0;
+      for (let r = Math.max(0, Math.floor((yBehind - bh / 2) / 40)); r <= Math.min(47, Math.floor((yBehind + bh / 2) / 40)); r++) {
+        for (let q = q0; q <= q1; q++) { hid += occ[r][q]; tot++; }
+        for (let j = 0; j < qe; j++) { eL += occ[r][q0 + j]; eR += occ[r][q1 - j]; ne++; }
+      }
+      ok = tot && hid / tot <= 0.4 && Math.max(eL, eR) / Math.max(1, ne) <= 0.15;
     }
-    h.behind = frac <= 0.3; h.y = h.behind ? yBehind : yAbove;
-    if (h.y - 140 < 60) { h.y = 200; h.behind = false; }
+    h.behind = ok; h.y = ok ? yBehind : yAbove;
+    // colours: cycle neutral / accent gradient / white / second accent gradient, toned against the background
+    const pal = cs.palette === 'mindricel' ? { accents: ['#FF8533', '#FF6600', '#C24E00'], neutral: '#8A8A8A' } : (cl.palette || layout.palette || { accents: [], neutral: '#8A8A8A' });
+    const bright = (zn.top_luma ?? 0.5) > 0.55;
+    const tgt = bright ? 0.42 : 0.68;
+    const A = pal.accents.map(c => tone(c, tgt, bright)), N = tone(pal.neutral || '#8A8A8A', bright ? 0.45 : 0.72, bright);
+    const kind = ['neutral', 'accent', 'white', 'accent2'][k % 4];
+    if (kind === 'white') { h.fill = 'linear-gradient(180deg,#FFFFFF,#F1F1F1)'; h.shadow = bright ? 'rgba(0,0,0,.45)' : 'rgba(0,0,0,.25)'; }
+    else if (kind === 'neutral' || !A.length) { h.fill = `linear-gradient(100deg, ${N}, ${tone(N, bright ? 0.32 : 0.82, bright)})`; h.shadow = 'rgba(0,0,0,.18)'; }
+    else { const c1 = A[(kind === 'accent2' ? 1 : 0) % A.length], c2 = A[(kind === 'accent2' ? 0 : 1) % A.length] || N;
+           h.fill = `linear-gradient(100deg, ${c1} 15%, ${c2 === c1 ? N : c2} 95%)`; h.shadow = 'rgba(0,0,0,.18)'; }
+    h.leadAlign = ['left', 'right', 'center'][k % 3];
   });
   hlMeas.remove();
   window.backWindows = chunks.filter(c => c.behind).map(c => [c.t0, c.t1]).concat(headlines.filter(h => h.behind).map(h => [h.t0, h.t1]));
@@ -762,7 +791,7 @@ window.init = async (data) => {
   stage.appendChild(cap);
   const hl = document.createElement('div'); hl.id = 'hl';
   if (pal) Object.entries(pal).forEach(([k, v]) => hl.style.setProperty(k, v));
-  if (pal) hl.style.setProperty('--hl-acc', pal['--cap-2'] || '#FF6600');
+
   stage.appendChild(hl);
 
   // windows where captions are hidden - taken from ALL elements, so the back layer also obeys front-layer titles
@@ -1170,21 +1199,19 @@ window.renderAt = (t) => {
     S.cap.style.transform = c.dx ? `translateX(${c.dx}px)` : '';
     sig.push(html);
   }
-  // headline over the head (clean style)
+  // headline (clean style): lead words overlap the top of the huge word; blur-in, short blur-out
   if (S.headlines && S.headlines.length) {
     const h = !hideCaps && S.capOn ? S.headlines.find(x => t >= x.t0 && t < x.t1) : null;
     let hh = '';
     if (h && (h.behind ? S.layer === 'back' : S.layer === 'front')) {
-      const pin = clamp((t - h.t0) / 0.22), pout = clamp((h.t1 - t) / 0.2);
-      const pb = clamp((t - h.start + 0.06) / 0.25);
-      hh = (h.lead.length ? `<div class="lead" style="opacity:${(pin * pout).toFixed(2)};filter:blur(${((1 - pin) * 6).toFixed(1)}px)">${esc(h.lead.join(' '))}</div>` : '') +
-           `<div class="big${h.acc ? ' acc' : ''}" style="opacity:${(clamp(pb * 1.5) * pout).toFixed(2)};filter:blur(${((1 - pb) * 12 + (1 - pout) * 8).toFixed(1)}px);transform:scale(${(1.08 - 0.08 * ease.out(pb)).toFixed(3)})">${esc(h.big)}</div>`;
+      const pin = clamp((t - h.t0) / 0.22), pout = clamp((h.t1 - t) / 0.22);
+      const pb = clamp((t - h.start + 0.06) / 0.28);
+      const lead = h.lead.length ? `<div class="lead" style="text-align:${h.leadAlign};opacity:${(pin * pout).toFixed(2)};filter:blur(${((1 - pin) * 6 + (1 - pout) * 6).toFixed(1)}px)">${esc(h.lead.join(' '))}</div>` : '';
+      hh = `<div class="wrap">${lead}<div class="big" style="font-size:${h.size}px;--hlfill:${h.fill};--hlshadow:${h.shadow};opacity:${(clamp(pb * 1.4) * pout * 0.94).toFixed(2)};` +
+           `transform:scale(${(1.06 - 0.06 * ease.out(pb)).toFixed(3)});${pb < 1 || pout < 1 ? `filter:blur(${((1 - pb) * 14 + (1 - pout) * 10).toFixed(1)}px) drop-shadow(0 4px 16px ${h.shadow});` : ''}">${esc(h.text)}</div></div>`;
     }
-    if (S.hl.innerHTML !== hh) {
-      S.hl.innerHTML = hh;
-      const b = S.hl.querySelector('.big'); if (b && b.offsetWidth > 1000) b.style.fontSize = (168 * 1000 / b.offsetWidth).toFixed(0) + 'px';
-    }
-    if (h) S.hl.style.top = (h.y - S.hl.offsetHeight + 40) + 'px';
+    if (S.hl.innerHTML !== hh) S.hl.innerHTML = hh;
+    if (h) S.hl.style.top = (h.y - S.hl.offsetHeight * 0.62) + 'px';
     sig.push(hh);
   }
   return sig.join('|');
