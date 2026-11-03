@@ -80,7 +80,12 @@ families. Put one in the hook. Example with all of them: `templates/storyboard.e
 
 **CTA / ending** (if the user said what they want): `comment` (keyword CTA) and/or `follow` card in the last 4-6 s.
 
-**Style preset**: `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles),
+**Captions (user's standing choice)**: `"captions": {"style": "depth", "palette": "mindricel", "mode": "pop"}` -
+font and look of the depth reference (Montserrat: white words popping in one by one, ONE big 3D keyword per
+sentence), in the mindricel.ro palette (#FF6600 orange gradient, black edge), **no background box**. Keep about one
+keyword per sentence (not every important word).
+
+**Style preset** (titles/graphics): `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles),
 `"bold"` (white heavy words + big yellow keyword, like the effects reference) or `"depth"` (blue gradient 3D hero words).
 Pick per user request; otherwise editorial.
 

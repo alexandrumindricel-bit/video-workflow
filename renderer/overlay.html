@@ -33,9 +33,9 @@
                    text-shadow: 0 4px 18px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.6); line-height: 1.05; }
   .cap-dp .hero { font-weight: 900; font-size: 150px; line-height: .95; text-transform: uppercase;
                   letter-spacing: -0.02em; display: inline-block;
-                  background: linear-gradient(180deg, var(--blue-1) 0%, var(--blue-2) 55%, var(--blue-3) 100%);
+                  background: linear-gradient(180deg, var(--cap-1, var(--blue-1)) 0%, var(--cap-2, var(--blue-2)) 55%, var(--cap-3, var(--blue-3)) 100%);
                   -webkit-background-clip: text; background-clip: text; color: transparent;
-                  filter: drop-shadow(0 8px 14px rgba(0,0,0,.45)) drop-shadow(0 2px 0 rgba(10,40,110,.7)); }
+                  filter: drop-shadow(0 8px 14px rgba(0,0,0,.45)) drop-shadow(0 2px 0 var(--cap-edge, rgba(10,40,110,.7))); }
   .cap-dp .w { display: inline-block; margin: 0 .12em; }
 
   /* ---------- titles ---------- */
@@ -506,10 +506,17 @@ window.init = async (data) => {
 
   // ---- caption chunks
   const cs = sb.captions || {};
+  // captions can use their own style ("editorial" | "depth" | "bold") and a brand palette, independent of the titles
+  const capStyle = ({ editorial: 'ed', depth: 'dp', bold: 'bd' })[cs.style] || style;
+  const PALETTES = {
+    // mindricel.ro: brand #FF6600 / brand-light #FF8533, ink #0A0A0A, white
+    mindricel: { '--cap-1': '#FFB27A', '--cap-2': '#FF6600', '--cap-3': '#C24E00', '--cap-edge': 'rgba(10,10,10,.85)', '--cap-text': '#FFFFFF' },
+  };
+  const pal = typeof cs.palette === 'string' ? PALETTES[cs.palette] : cs.palette;
   const kwSet = new Set((cs.keywords || []).map(normW));
   const kwIdx = new Set(cs.keyword_ids || []);
-  const maxW = cs.max_words || (style === 'dp' ? 3 : 4);
-  const maxC = cs.max_chars || (style === 'dp' ? 22 : 24);
+  const maxW = cs.max_words || (capStyle === 'dp' ? 3 : 4);
+  const maxC = cs.max_chars || (capStyle === 'dp' ? 22 : 24);
   const chunks = [];
   let cur = [];
   words.forEach((w, i) => {
@@ -531,10 +538,11 @@ window.init = async (data) => {
   });
   const cap = document.createElement('div');
   cap.id = 'cap';
+  if (pal) Object.entries(pal).forEach(([k, v]) => cap.style.setProperty(k, v));
   stage.appendChild(cap);
 
   S = { sb, style, els, chunks, cap, capY, layer: LAYER, fcx, fcy, face,
-        capOn: cs.enabled !== false && LAYER === 'front', mode: cs.mode || (style === 'ed' ? 'karaoke' : 'pop'), lastChunk: -1 };
+        capStyle, capOn: cs.enabled !== false && LAYER === 'front', mode: cs.mode || (capStyle === 'ed' ? 'karaoke' : 'pop'), lastChunk: -1 };
   return { chunks: chunks.length, elements: els.length };
 };
 
@@ -827,7 +835,7 @@ window.renderAt = (t) => {
   else {
     const c = S.chunks[ci];
     let html;
-    if (S.style === 'ed') {
+    if (S.capStyle === 'ed') {
       const big = c.length <= 2 && c.some(w => w.kw);
       html = `<div class="cap-ed${big ? ' big' : ''}">` + c.map(w =>
         `<span class="w${t >= w.start - 0.02 ? ' on' : ''}${w.kw ? ' kw' : ''}">${esc(w.w)}</span>`).join(' ') + '</div>';
@@ -836,11 +844,18 @@ window.renderAt = (t) => {
       const vis = S.mode === 'pop' ? c.filter(w => t >= w.start - 0.03) : c;
       const smalls = vis.filter(w => !w.kw), heroes = vis.filter(w => w.kw);
       const pop = w => { const p = ease.back(clamp((t - w.start + 0.03) / 0.16)); return `transform:scale(${(0.6 + 0.4 * p).toFixed(3)});opacity:${clamp(p * 1.5).toFixed(2)}`; };
-      html = `<div class="${S.style === 'bd' ? 'cap-bd' : 'cap-dp'}">` +
-        (smalls.length ? `<div class="small">${smalls.map(w => `<span class="w" style="${pop(w)}">${esc(w.w)}</span>`).join('')}</div>` : '') +
-        (heroes.length ? `<div>${heroes.map(w => `<span class="w hero" style="${pop(w)}">${esc(w.w)}</span>`).join('')}</div>` : '') + '</div>';
+      // like the reference: no trailing . , ; : (keep ? and !), and words with digits keep their case ("4x4")
+      const txt = w => esc(w.w.replace(/[.,;:]+$/, ''));
+      const keepCase = w => /\d/.test(w.w) ? 'text-transform:none;' : '';
+      html = `<div class="${S.capStyle === 'bd' ? 'cap-bd' : 'cap-dp'}">` +
+        (smalls.length ? `<div class="small">${smalls.map(w => `<span class="w" style="${pop(w)}">${txt(w)}</span>`).join('')}</div>` : '') +
+        (heroes.length ? `<div>${heroes.map(w => `<span class="w hero" style="${keepCase(w)}${pop(w)}">${txt(w)}</span>`).join('')}</div>` : '') + '</div>';
     }
-    if (S.cap.innerHTML !== html) S.cap.innerHTML = html;
+    if (S.cap.innerHTML !== html) {
+      S.cap.innerHTML = html;
+      // long keywords ("caracteristici") shrink to fit the frame width
+      S.cap.querySelectorAll('.hero').forEach(hz => { const w = hz.offsetWidth; if (w > 960) hz.style.fontSize = (parseFloat(getComputedStyle(hz).fontSize) * 960 / w).toFixed(1) + 'px'; });
+    }
     const h = S.cap.offsetHeight;
     S.cap.style.top = ((c.capY ?? S.capY) - h / 2) + 'px';
     sig.push(html);

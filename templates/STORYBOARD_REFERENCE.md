@@ -6,6 +6,8 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
 {
   "style": "editorial",            // "editorial" (green/cream) | "depth" (blue 3D) | "bold" (white + yellow keyword)
   "captions": {
+    "style": "depth",              // caption style, independent of the title style: "editorial" | "depth" | "bold"
+    "palette": "mindricel",        // brand colours for the keyword gradient (mindricel = #FF6600 orange, black 3D edge)
     "keywords": ["word", ...],     // case/punctuation-insensitive; highlighted (gold italic / blue 3D hero)
     "keyword_ids": [12, 40],       // or exact word indices (field "i" in words.json)
     "max_words": 4,                // per caption chunk (default 4 editorial, 3 depth)
