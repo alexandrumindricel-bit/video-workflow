@@ -83,9 +83,15 @@ def main():
     sb = json.load(open(os.path.join(work, "storyboard.json")))
     layout = json.load(open(os.path.join(work, "layout.json")))
     dur = json.load(open(os.path.join(work, "segments.json")))["duration"]
-    face = layout.get("face")
-    cx = face["x"] + face["w"] / 2 if face else W / 2
-    cy = face["y"] + face["h"] / 2 if face else H * 0.4
+    def center_of(f):
+        return (f["x"] + f["w"] / 2, f["y"] + f["h"] / 2) if f else (W / 2, H * 0.4)
+    clips = layout.get("clips") or [{"start": 0, "end": 1e9, "face": layout.get("face")}]
+    def center_at(t):  # multi-clip: zoom around the face of the clip on screen
+        for c in clips:
+            if c["start"] - 1e-3 <= t < c["end"]:
+                return center_of(c.get("face"))
+        return center_of(clips[-1].get("face"))
+    cx, cy = center_at(0)
 
     fx = list(sb.get("effects", []))
     for z in sb.get("zooms", []):
@@ -129,6 +135,7 @@ def main():
         if not ok:
             break
         t = f / FPS
+        cx, cy = center_at(t)
         M = None
         if seg is not None:
             res = seg.process(cv2.cvtColor(cv2.resize(F, (W // 2, H // 2)), cv2.COLOR_BGR2RGB)).segmentation_mask

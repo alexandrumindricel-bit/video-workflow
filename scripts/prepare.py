@@ -52,6 +52,10 @@ def main():
     info = probe(raw)
     v = next(s for s in info["streams"] if s["codec_type"] == "video")
     has_audio = any(s["codec_type"] == "audio" for s in info["streams"])
+    rot = 0
+    for sd in v.get("side_data_list", []):
+        if "rotation" in sd:
+            rot = int(sd["rotation"])
     if not has_audio:
         sys.exit("ERROR: the video has no audio track - nothing to transcribe.")
     src = os.path.join(work, "source.mov")  # mov so the audio can stay lossless PCM
@@ -63,11 +67,22 @@ def main():
     run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", src, "-vn", "-ac", "1", "-ar", "16000",
          os.path.join(work, "audio16k.wav")])
 
-    boxes = detect_faces(src)
+    boxes = None
+    venv_py = "/opt/vw-seg/bin/python"
+    if os.path.exists(venv_py):  # MediaPipe full-range face detector: reliable for small/far faces
+        r = subprocess.run([venv_py, os.path.join(os.path.dirname(os.path.abspath(__file__)), "detect_face.py"), src],
+                           capture_output=True, text=True)
+        try:
+            boxes = [b[:4] for b in json.loads(r.stdout.strip().splitlines()[-1])]
+        except Exception:
+            boxes = None
+    if not boxes:
+        boxes = detect_faces(src)  # fallback: OpenCV Haar cascade
     layout = {"width": W, "height": H, "fps": FPS,
-              "source": {"width": int(v["width"]), "height": int(v["height"]),
+              "source": {"width": int(v["width"]), "height": int(v["height"]), "rotation": rot,
                          "duration": float(info["format"]["duration"]),
-                         "landscape_cropped": int(v["width"]) > int(v["height"])}}
+                         # phone videos are often stored landscape + a -90/90 rotation flag (ffmpeg auto-rotates)
+                         "landscape_cropped": (int(v["height"]) > int(v["width"])) if abs(rot) == 90 else (int(v["width"]) > int(v["height"]))}}
     if boxes:
         import statistics as st
         x, y, w, h = (int(st.median(b[i] for b in boxes)) for i in range(4))
@@ -77,7 +92,7 @@ def main():
         top = int(np.percentile([b[1] for b in boxes], 15))
         bottom = int(np.percentile([b[1] + b[3] for b in boxes], 85))
         layout["face"] = {"x": x, "y": y, "w": w, "h": h, "min_top": top, "max_bottom": bottom,
-                          "detected_in": f"{len(boxes)}/24 samples"}
+                          "detected_in": f"{len(boxes)} samples"}
         # head incl. hair is ~35% taller than the Haar box on top
         head_top = max(0, top - int(0.35 * h))
         layout["zones"] = {
@@ -91,6 +106,24 @@ def main():
         layout["face"] = None
         layout["zones"] = {"top": {"y0": int(0.06 * H), "y1": int(0.26 * H)},
                            "captions_y": int(0.70 * H), "side_free": "unknown"}
+    # brightness of the title zone: on bright backgrounds (white walls, sky) light titles need a box/tint
+    try:
+        import cv2
+        cap = cv2.VideoCapture(src)
+        n = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) or 1
+        z = layout["zones"]["top"]
+        vals = []
+        for i in range(8):
+            cap.set(cv2.CAP_PROP_POS_FRAMES, int((i + 0.5) * n / 8))
+            ok, fr = cap.read()
+            if ok:
+                vals.append(float(cv2.cvtColor(fr[z["y0"]:max(z["y1"], z["y0"] + 380)], cv2.COLOR_BGR2GRAY).mean()) / 255)
+        cap.release()
+        if vals:
+            layout["zones"]["top_luma"] = round(sum(vals) / len(vals), 3)
+            layout["zones"]["top_bright"] = layout["zones"]["top_luma"] > 0.6
+    except Exception as e:
+        print("brightness check skipped:", e)
     json.dump(layout, open(os.path.join(work, "layout.json"), "w"), indent=2)
     print(json.dumps(layout, indent=2))
     if layout["source"]["landscape_cropped"]:

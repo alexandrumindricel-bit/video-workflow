@@ -304,16 +304,23 @@ window.init = async (data) => {
   const LAYER = data.layer || 'front';
   const style = sb.style === 'depth' ? 'dp' : sb.style === 'bold' ? 'bd' : 'ed';
   document.body.className = style === 'bd' ? 'dp bd' : style;
-  const face = layout.face || { x: 340, y: 600, w: 400, h: 400 };
-  const fcx = face.x + face.w / 2, fcy = face.y + face.h / 2;
+  // multi-clip videos: layout.clips[] holds the framing of each clip; elements use the clip they start in
+  const clipAt = t => (layout.clips || []).find(c => t >= c.start - 1e-3 && t < c.end) || (layout.clips || []).slice(-1)[0] || layout;
+  let face, fcx, fcy, Z, zones;
+  const useLayout = t => {
+    const c = clipAt(t);
+    face = c.face || layout.face || { x: 340, y: 600, w: 400, h: 400 };
+    fcx = face.x + face.w / 2; fcy = face.y + face.h / 2;
+    Z = c.zones || layout.zones;
+    zones = {
+      top: [Z.top.y0, Math.max(Z.top.y1, Z.top.y0 + 380)],  // may overlap the top of the hair, like the references
+      lower: [Z.captions_y - 470, Z.captions_y - 50],
+      center: [700, 1250],
+    };
+  };
+  useLayout(0);
   await document.fonts.ready;
   const stage = document.getElementById('stage');
-  const Z = layout.zones;
-  const zones = {
-    top: [Z.top.y0, Math.max(Z.top.y1, Z.top.y0 + 380)],  // may overlap the top of the hair, like the references
-    lower: [Z.captions_y - 470, Z.captions_y - 50],
-    center: [700, 1250],
-  };
   const capY = sb.captions?.y ?? Z.captions_y;
 
   // ---- build elements (only those on this layer; orbit lives on both)
@@ -321,6 +328,8 @@ window.init = async (data) => {
   const layerOf = el => el.type === 'orbit' ? 'both' : (el.layer || (BACK_TYPES.has(el.type) ? 'back' : 'front'));
   const mine = (sb.elements || []).filter(el => layerOf(el) === 'both' || layerOf(el) === LAYER);
   const els = mine.map((el, k) => {
+    useLayout(el.start);
+    el._fcx = fcx; el._fcy = fcy;
     const n = document.createElement('div');
     n.className = 'el';
     const T = el.type;
@@ -330,7 +339,8 @@ window.init = async (data) => {
       n.innerHTML = el.lines.map(l => {
         const f = l.font || (style === 'dp' ? 'depth' : style === 'bd' ? 'bold' : 'serif');
         const sz = l.size || ({serif: 210, heavy: 170, italic: 170, mono: 34, depth: 190, 'depth-white': 150, bold: 150, yellow: 170}[f] || 160);
-        const cls = ['line', 'f-' + f, l.gold ? 'gold' : '', l.boxed ? 'boxed' : '', style === 'ed' && f !== 'mono' ? 'title-c' : ''].join(' ');
+        const autoBox = style === 'ed' && Z.top_bright && (el.pos || 'top') === 'top' && f !== 'mono' && l.boxed !== false;
+        const cls = ['line', 'f-' + f, l.gold ? 'gold' : '', (l.boxed || autoBox) ? 'boxed' : '', style === 'ed' && f !== 'mono' ? 'title-c' : ''].join(' ');
         const inner = (el.anim === 'drop')
           ? [...l.text].map(ch => `<span class="ch">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('')
           : `<span>${esc(l.text)}</span>`;
@@ -342,7 +352,8 @@ window.init = async (data) => {
     } else if (T === 'prompt') {
       n.innerHTML = `<div class="prompt"><div style="flex:1"><div class="lbl">${esc(el.label || 'Prompt')}</div><div class="txt"><span class="ty"></span><span class="caret"></span></div></div><div class="send">↑</div></div>`;
     } else if (T === 'strike') {
-      n.innerHTML = `<div class="strike" style="${el.size ? 'font-size:' + el.size + 'px' : ''}">${esc(el.text)}<div class="bar"></div></div>`;
+      const sBox = el.boxed ?? (Z.top_bright && (el.pos || 'top') === 'top');
+      n.innerHTML = `<div class="strike" style="${el.size ? 'font-size:' + el.size + 'px;' : ''}${sBox ? 'background:#1F3B2D;padding:4px 30px 14px;' : ''}">${esc(el.text)}<div class="bar"></div></div>`;
     } else if (T === 'counter') {
       n.classList.add('counter');
       n.innerHTML = `<div class="num"></div>${el.label ? `<div class="lab">${esc(el.label)}</div>` : ''}`;
@@ -428,7 +439,9 @@ window.init = async (data) => {
     } else if (T === 'tiles') {
       n.innerHTML = `<div class="tiles-row">${[...String(el.text)].map((ch, j) => `<div class="tl ${j % 2 ? 'l' : 'd'}" style="transform:rotate(${((rnd() - .5) * 8).toFixed(1)}deg)">${esc(ch)}</div>`).join('')}</div>`;
     } else if (T === 'glass') {
-      n.innerHTML = `<div class="glass" style="font-size:${el.size || 300}px"><div class="g1">${esc(el.text)}</div><div class="g2">${esc(el.text)}</div></div>`;
+      // bright background: tinted (dark) glass so the letters stay readable
+      const tint = el.tint || (Z.top_bright ? 'rgba(20,35,28,.55)' : null);
+      n.innerHTML = `<div class="glass" style="font-size:${el.size || 300}px"><div class="g1" style="${tint ? 'color:' + tint + ';-webkit-text-stroke-color:rgba(255,255,255,.95)' : ''}">${esc(el.text)}</div><div class="g2">${esc(el.text)}</div></div>`;
     } else if (T === 'cover') {
       n.className = 'el full';
       n.innerHTML = `<div class="cover" style="top:${el.y ?? 110}px">${el.issue ? `<div class="iss">${esc(el.issue)}</div>` : ''}<div class="mast" style="font-size:${el.size || 300}px">${[...el.text].map(ch => `<span class="ch">${ch === ' ' ? '&nbsp;' : esc(ch)}</span>`).join('')}</div></div>${el.lines ? `<div class="cover lines" style="top:${el.lines_y ?? 1150}px">${el.lines.map(esc).join('<br>')}</div>` : ''}`;
@@ -512,6 +525,9 @@ window.init = async (data) => {
     c.t0 = c[0].start - 0.04;
     const next = chunks[i + 1];
     c.t1 = next ? Math.min(next[0].start - 0.04, c[c.length - 1].end + 0.6) : c[c.length - 1].end + 0.5;
+    c.capY = sb.captions?.y ?? (clipAt(c[0].start).zones || layout.zones).captions_y;
+    // never let a chunk hang over into the next clip (its framing differs)
+    const cl = clipAt(c[0].start); if (cl.end && c.t1 > cl.end) c.t1 = Math.max(c.t0 + 0.2, cl.end);
   });
   const cap = document.createElement('div');
   cap.id = 'cap';
@@ -627,7 +643,7 @@ window.renderAt = (t) => {
         // cards circle the speaker; the half of the ring "behind" them is drawn on the back layer
         const cards = [...n.querySelectorAll('.orbit-card')];
         const N = cards.length, rx = el.rx || 430, ry = el.ry || 110;
-        const ocx = el.cx ?? S.fcx, ocy = el.cy ?? (S.fcy + (el.dy ?? 200));
+        const ocx = el.cx ?? el._fcx, ocy = el.cy ?? (el._fcy + (el.dy ?? 200));
         const w0 = (el.speed ?? 0.12) * 2 * Math.PI;
         cards.forEach((c, j) => {
           const th = (el.phase || 0) + 2 * Math.PI * j / N + w0 * st.local;
@@ -826,7 +842,7 @@ window.renderAt = (t) => {
     }
     if (S.cap.innerHTML !== html) S.cap.innerHTML = html;
     const h = S.cap.offsetHeight;
-    S.cap.style.top = (S.capY - h / 2) + 'px';
+    S.cap.style.top = ((c.capY ?? S.capY) - h / 2) + 'px';
     sig.push(html);
   }
   return sig.join('|');

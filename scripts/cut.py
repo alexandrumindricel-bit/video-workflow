@@ -62,6 +62,22 @@ def main():
     thresh = floor + 8  # "silence" = within 8 dB of the noise floor
     dur = len(db) * hop
 
+    # Whisper often stretches a word over preceding silence (typically the first word starts at 0.00).
+    # Move long word starts to the real voice onset, and long word ends back to where the voice stops.
+    loud = np.percentile(db, 90)
+    on_th = max(thresh + 4, loud - 22)
+    for w in kept:
+        if w["end"] - w["start"] > 0.35:
+            a, b = int(w["start"] / hop), int(w["end"] / hop)
+            voiced = np.where(db[a:b] > on_th)[0]
+            if len(voiced):
+                ns = (a + voiced[0]) * hop - 0.03
+                ne = (a + voiced[-1] + 1) * hop + 0.03
+                if ns - w["start"] > 0.12:
+                    w["start"] = round(ns, 3)
+                if w["end"] - ne > 0.25:
+                    w["end"] = round(ne, 3)
+
     # group kept words into continuous runs (consecutive indices and short gaps)
     runs = []
     for w in kept:

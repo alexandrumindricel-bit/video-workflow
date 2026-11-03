@@ -18,11 +18,20 @@ Read `STYLE_GUIDE.md` (the style), `EFFECTS.md` (the 17-effect library - use sev
 ```
 $VW/vw.sh prep RAW.mp4 WORK [--language ro|en] [--model small|medium]
 ```
-- Normalizes to 30 fps CFR, 1080x1920 (cover-crop), detects the face → `layout.json` (safe zones).
+- Normalizes to 30 fps CFR, 1080x1920 (cover-crop), detects the face (MediaPipe full-range) and measures the
+  title-zone brightness → `layout.json` (safe zones; bright zones make titles boxed and glass text tinted).
 - Transcribes with word timestamps (keeps "um"/restarts visible) → `transcript.json`.
 - Auto-flags fillers, stutters, cut-off words and restarts → `edit.json` + `review.txt`.
 - Use `--model medium` for Romanian or noisy audio; auto language detection otherwise.
 - If the source was landscape (warning printed), tell the user it was center-cropped.
+
+## 1b. Several raw clips (one story)
+When the user sends several clips, transcribe each one first and work out the order from what is said
+(usually the filming order). Run steps 1-2 and `cut` **per clip** (`WORK_k`), then join them:
+`python3 $VW/scripts/merge_clips.py WORK WORK_1 WORK_2 …` → one timeline; `layout.json` keeps each clip's own
+framing (`clips[]`), and the renderer and effects use the framing of whichever clip is on screen. Fix caption text
+in the merged `words.json`, then continue at step 4 on `WORK`. Put a transition (`zoom_through`, `flash`,
+`glitch`) on every clip boundary.
 
 ## 2. Review the edit (judgment step - do not skip)
 Read `WORK/review.txt` top to bottom like an editor and fix `WORK/edit.json`:
