@@ -374,10 +374,13 @@
   .lk .ln { position: relative; display: inline-block; }
   .lk .big { display: inline-block; font-weight: 800; letter-spacing: -0.045em; padding: 0 .05em .07em; white-space: nowrap;
              background: var(--f, #fff); -webkit-background-clip: text; background-clip: text; color: transparent;
-             filter: drop-shadow(0 3px 10px rgba(0,0,0,.28)); }
+             /* fine contour + soft shadow so the colour never melts into the background or the subject */
+             filter: drop-shadow(1.6px 0 0 var(--ol, rgba(10,10,10,.78))) drop-shadow(-1.6px 0 0 var(--ol, rgba(10,10,10,.78)))
+                     drop-shadow(0 1.6px 0 var(--ol, rgba(10,10,10,.78))) drop-shadow(0 -1.6px 0 var(--ol, rgba(10,10,10,.78)))
+                     drop-shadow(0 5px 14px rgba(0,0,0,.4)); }
   .lk .sm { position: absolute; font-weight: 600; letter-spacing: -0.03em; color: #F7F7F7; white-space: nowrap; line-height: 1;
             text-shadow: 1px 0 0 rgba(10,10,10,.7), -1px 0 0 rgba(10,10,10,.7), 0 1px 0 rgba(10,10,10,.7), 0 -1px 0 rgba(10,10,10,.7), 0 2px 10px rgba(0,0,0,.45); }
-  .lk.bright .big { filter: drop-shadow(0 0 1px rgba(255,255,255,.55)) drop-shadow(0 3px 10px rgba(0,0,0,.25)); }
+  .lk.bright .big { --ol: rgba(255,255,255,.9); }
   .lk .sm.pre { left: .12em; bottom: 100%; margin-bottom: -.22em; }
   .lk .sm.post { right: .12em; top: 100%; margin-top: -.34em; }
   .lk .ghost { position: absolute; left: 0; right: 0; top: 0; pointer-events: none; }
@@ -826,7 +829,7 @@ window.init = async (data) => {
       const bright = (zb.top_luma ?? 0.5) > 0.55;           // light scenes need deeper colours, dark scenes light ones
       c.bright = bright;
       const sat = (h, amt) => { const x = hexRgb2(h), m = (x[0] + x[1] + x[2]) / 3; return '#' + x.map(v => Math.max(0, Math.min(255, Math.round(m + (v - m) * amt))).toString(16).padStart(2, '0')).join(''); };
-      lines.forEach((ln, j) => {
+      const assignFills = bright => lines.forEach((ln, j) => {
         const k = ci + j, t = ln.big.t;
         if (MONEY.test(t) || c.some(w => /\d/.test(w.w)) && /\d/.test(t))
           ln.fill = bright ? 'linear-gradient(100deg,#5FD06A 0%,#2FA84F 50%,#1C7A38 100%)' : 'linear-gradient(100deg,#E9FFE6 0%,#7FE07A 40%,#2FA84F 100%)';
@@ -839,6 +842,7 @@ window.init = async (data) => {
                            : `linear-gradient(100deg, ${mix(a, '#FFFFFF', 0.7)} 0%, ${mix(a, '#FFFFFF', 0.35)} 45%, ${mix(a, '#FFFFFF', 0.1)} 100%)`;
         }
       });
+      assignFills(bright);
       // size: big words ~170 px, shrink so the widest line fits 960 px; small words ~0.33 of their big word
       const html = sz => lines.map((ln, j) => `<div class="row" style="transform:translateX(${(j % 2 ? 1 : -1) * (lines.length > 1 ? 40 : 0)}px);margin-top:${j ? -0.1 * sz : 0}px"><span class="ln">` +
         (ln.pre.length ? `<span class="sm pre" style="font-size:${Math.round(sz * 0.34)}px">${ln.pre.map(w => esc(w.t)).join(' ')}</span>` : '') +
@@ -854,38 +858,65 @@ window.init = async (data) => {
       const f = cl.face || layout.face || { x: 440, y: 600, w: 200, h: 200 }, zn = cl.zones || layout.zones, occ = cl.occ || layout.occ;
       const topBusy = topEls.some(e => e.start < c.t1 && e.end > c.t0);
       const anchors = topBusy ? ['chest'] : ['head', 'chest', 'head', 'above'];
-      const an = anchors[anchorK++ % anchors.length];
-      let cy = an === 'head' ? f.y + f.h * 0.35 : an === 'above' ? Math.max(zn.top.y0 + c.lk.h / 2, f.y - c.lk.h / 2 - 20) : zn.captions_y;
-      cy = Math.max(c.lk.h / 2 + 60, Math.min(1560 - c.lk.h / 2, cy));
+      let an = anchors[anchorK++ % anchors.length];
+      const yOf = a => Math.max(c.lk.h / 2 + 60, Math.min(1560 - c.lk.h / 2,
+        a === 'head' ? f.y + f.h * 0.35 : a === 'above' ? Math.max(zn.top.y0 + c.lk.h / 2, f.y - f.h * 0.5 - c.lk.h / 2 - 24) : Math.max(zn.captions_y, f.y + f.h * 1.25 + c.lk.h / 2)));
+      // face zone (hair to chin, a bit wider than the face) - a phrase in FRONT may never cover it
+      const FX0 = f.x - f.w * 0.3, FX1 = f.x + f.w * 1.3, FY0 = f.y - f.h * 0.5, FY1 = f.y + f.h * 1.2;
+      const coversFace = y => !(540 + c.lk.w / 2 < FX0 || 540 - c.lk.w / 2 > FX1 || y + c.lk.h / 2 < FY0 || y - c.lk.h / 2 > FY1);
+      let cy = yOf(an);
       c.lkY = cy; c.lkAnchor = an;
-      // depth: behind the person if the silhouette hides <= 35% of the block and both side edges stay visible
-      c.lkBehind = false;
-      if (occ && cs.behind !== false && an !== 'above') {
-        const x0 = 540 - c.lk.w / 2, x1 = 540 + c.lk.w / 2, y0 = cy - c.lk.h / 2, y1 = cy + c.lk.h / 2;
-        const q0 = Math.max(0, Math.floor(x0 / 20)), q1 = Math.min(53, Math.floor(x1 / 20)), qe = Math.max(1, Math.round((q1 - q0) * 0.12));
-        let hid = 0, tot = 0, eL = 0, eR = 0, ne = 0;
-        for (let r = Math.max(0, Math.floor(y0 / 40)); r <= Math.min(47, Math.floor(y1 / 40)); r++) {
-          for (let q = q0; q <= q1; q++) { hid += occ[r][q]; tot++; }
-          for (let j = 0; j < qe; j++) { eL += occ[r][q0 + j]; eR += occ[r][q1 - j]; ne++; }
-        }
-        let okBlock = tot > 0 && hid / tot <= 0.3 && Math.max(eL, eR) / Math.max(1, ne) <= 0.12;
-        // every big word on its own: at most 25% hidden and its first/last letters visible
+      // depth: search a spot BEHIND the person (head height, slightly up/down, shifted sideways) where every big word
+      // stays readable: <= 20% hidden and its first/last letters visible. Head-anchored phrases try this first.
+      c.lkBehind = false; c.dx = 0;
+      const wordHidden = (yc, dx) => {
+        if (!occ) return 9;
         meas.innerHTML = html(sz);
-        const rowsEl = [...meas.querySelectorAll('.row')];
-        let yy = cy - c.lk.h / 2 + sz * 0.15;
-        rowsEl.forEach((rw, j) => {
-          const bEl = rw.querySelector('.big'), bw2 = bEl.offsetWidth, off = (j % 2 ? 1 : -1) * (lines.length > 1 ? 40 : 0);
+        let worst = 0, yy = yc - c.lk.h / 2 + sz * 0.15;
+        for (const [j, rw] of [...meas.querySelectorAll('.row')].entries()) {
+          const bw2 = rw.querySelector('.big').offsetWidth, off = (j % 2 ? 1 : -1) * (lines.length > 1 ? 40 : 0) + dx;
           const bx0 = 540 + off - bw2 / 2, bx1 = bx0 + bw2, by0 = yy, by1 = yy + sz * 0.8;
+          if (bx0 < 30 || bx1 > 1050) return 9;
           const p0 = Math.max(0, Math.floor(bx0 / 20)), p1 = Math.min(53, Math.floor(bx1 / 20)), pe = Math.max(1, Math.round((p1 - p0) * 0.15));
           let h2 = 0, t2 = 0, l2 = 0, r2 = 0, n2 = 0;
           for (let r = Math.max(0, Math.floor(by0 / 40)); r <= Math.min(47, Math.floor(by1 / 40)); r++) {
             for (let q = p0; q <= p1; q++) { h2 += occ[r][q]; t2++; }
             for (let m = 0; m < pe; m++) { l2 += occ[r][p0 + m]; r2 += occ[r][p1 - m]; n2++; }
           }
-          if (!t2 || h2 / t2 > (cs.behind_max_hidden ?? 0.25) || Math.max(l2, r2) / Math.max(1, n2) > 0.12) okBlock = false;
+          if (Math.max(l2, r2) / Math.max(1, n2) > 0.1) return 9;
+          worst = Math.max(worst, t2 ? h2 / t2 : 1);
           yy += rw.offsetHeight - 0.1 * sz;
-        });
-        c.lkBehind = okBlock && (ci % 2 === 0 || an === 'head');
+        }
+        return worst;
+      };
+      if (occ && cs.behind !== false && an === 'head') {
+        let best = null;
+        for (const yc of [f.y - f.h * 0.15, f.y + f.h * 0.2, f.y + f.h * 0.55]) {
+          if (yc - c.lk.h / 2 < 60) continue;
+          for (let dx = -200; dx <= 200; dx += 40) {
+            const hdn = wordHidden(yc, dx);
+            if (hdn <= (cs.behind_max_hidden ?? 0.2)) { const sc = hdn + Math.abs(dx) / 1500; if (!best || sc < best.sc) best = { yc, dx, sc }; }
+          }
+        }
+        if (best) { c.lkBehind = true; c.lkY = best.yc; c.dx = best.dx; cy = best.yc; }
+      }
+      // in front + over the face -> move it: chest first, then above the head, then whichever covers the face least
+      if (!c.lkBehind && coversFace(c.lkY)) {
+        const order = anchorK % 2 ? ['above', 'chest'] : ['chest', 'above'];
+        const alt = order.map(a => ({ a, y: yOf(a) })).find(o => !coversFace(o.y));
+        if (alt) { c.lkY = alt.y; c.lkAnchor = alt.a; }
+        else { c.lkY = Math.max(zn.captions_y, f.y + f.h * 1.25 + c.lk.h / 2); c.lkAnchor = 'chest'; }
+      }
+      // colours from the brightness EXACTLY under the phrase (not the whole clip): light fills on dark areas,
+      // deep fills on bright areas
+      const lm = cl.lum || layout.lum;
+      if (lm) {
+        const x0 = 540 + (c.dx || 0) - c.lk.w / 2, x1 = x0 + c.lk.w, y0 = c.lkY - c.lk.h / 2, y1 = c.lkY + c.lk.h / 2;
+        let sum = 0, cnt = 0;
+        for (let r = Math.max(0, Math.floor(y0 / 40)); r <= Math.min(47, Math.floor(y1 / 40)); r++)
+          for (let q = Math.max(0, Math.floor(x0 / 20)); q <= Math.min(53, Math.floor(x1 / 20)); q++) { sum += lm[r][q]; cnt++; }
+        c.bright = cnt ? sum / cnt > 0.55 : c.bright;
+        assignFills(c.bright);
       }
       c.behind = c.lkBehind;
       c.dir = ci % 2 ? -1 : 1;
@@ -893,6 +924,7 @@ window.init = async (data) => {
     // chunk timing for lockups: hold until the next phrase starts (no gaps), small tail at the end
     chunks.forEach((c, i) => { const n2 = chunks[i + 1]; c.t0 = c[0].start - 0.08; c.t1 = n2 ? Math.min(n2[0].start - 0.08, c[c.length - 1].end + 1.2) : c[c.length - 1].end + 0.5; });
     meas.remove();
+    window.lockupQA = chunks.map(c => ({ t: +c.t0.toFixed(2), text: c.map(w => w.w).join(' '), anchor: c.lkAnchor, behind: c.lkBehind, y: Math.round(c.lkY), h: Math.round(c.lk.h), w: Math.round(c.lk.w) }));
   }
   window.backWindows = chunks.filter(c => c.behind).map(c => [c.t0, c.t1]).concat(headlines.filter(h => h.behind).map(h => [h.t0, h.t1]));
   const cap = document.createElement('div');
@@ -1281,14 +1313,14 @@ window.renderAt = (t) => {
         const pin = clamp((t - c.t0) / 0.14), pout = clamp((c.t1 - t) / 0.12);
         const mv = (1 - ease.out(pin)) * 280 * c.dir - (1 - ease.out(pout)) * 280 * c.dir;
         const vis = w => clamp((t - w.start + 0.06) / 0.12);
-        const word = (w, cls, style) => { const p = vis(w); return `<span class="${cls}" style="${style};opacity:${p.toFixed(2)};${p < 1 ? `filter:blur(${((1 - p) * 6).toFixed(1)}px);` : ''}">${esc(w.t)}</span>`; };
+        const word = (w, cls, style) => { const p = vis(w); return `<span class="${cls}" style="${style};opacity:${p.toFixed(2)};${p < 1 && cls !== 'big' ? `filter:blur(${((1 - p) * 6).toFixed(1)}px);` : ''}${p < 1 && cls === 'big' ? `transform:scale(${(0.92 + 0.08 * p).toFixed(3)});` : ''}">${esc(w.t)}</span>`; };
         const body = c.lk.lines.map((ln, j) => `<div class="row" style="transform:translateX(${(j % 2 ? 1 : -1) * (c.lk.lines.length > 1 ? 40 : 0)}px);margin-top:${j ? -0.1 * c.lk.sz : 0}px"><span class="ln">` +
           (ln.pre.length ? `<span class="sm pre" style="font-size:${Math.round(c.lk.sz * 0.34)}px">${ln.pre.map(w => word(w, '', '')).join(' ')}</span>` : '') +
           word(ln.big, 'big', `font-size:${c.lk.sz}px;--f:${ln.fill}`) +
           (ln.post.length ? `<span class="sm post" style="font-size:${Math.round(c.lk.sz * 0.34)}px">${ln.post.map(w => word(w, '', '')).join(' ')}</span>` : '') + `</span></div>`).join('');
         const moving = Math.abs(mv) > 2;
         const ghosts = moving ? [0.35, 0.2, 0.1].map((o, g) => `<div class="ghost" style="opacity:${o};transform:translateX(${(-Math.sign(mv) * (g + 1) * 0.22 * Math.abs(mv)).toFixed(0)}px);filter:blur(3px)">${body}</div>`).join('') : '';
-        html = `<div class="lk${c.bright ? ' bright' : ''}" style="position:relative;transform:translateX(${mv.toFixed(0)}px)">${ghosts}<div style="position:relative">${body}</div></div>`;
+        html = `<div class="lk${c.bright ? ' bright' : ''}" style="position:relative;transform:translateX(${(mv + (c.dx || 0)).toFixed(0)}px)">${ghosts}<div style="position:relative">${body}</div></div>`;
       }
     } else if (S.capStyle === 'cl') {
       // 1-2 white words, each appearing with a short blur-in (front layer only)
@@ -1322,7 +1354,7 @@ window.renderAt = (t) => {
     }
     const h = S.cap.offsetHeight;
     S.cap.style.top = ((c.lkY ?? c.capY ?? S.capY) - h / 2) + 'px';
-    S.cap.style.transform = c.dx ? `translateX(${c.dx}px)` : '';
+    S.cap.style.transform = c.dx && S.capStyle !== 'lk' ? `translateX(${c.dx}px)` : '';
     sig.push(html);
   }
   // headline (clean style): lead words overlap the top of the huge word; blur-in, short blur-out

@@ -101,8 +101,13 @@ doodles. Never mix in the green/cream editorial colours.
   gradient, others → gradients from THAT clip's footage colours (`body_profile.py` palette) or white; automatically
   deeper/saturated on bright scenes and light on dark scenes so it always reads.
 - Position rotates head / chest / head / above-head; while titles or graphics occupy the top, phrases stay on the
-  chest. Depth: a phrase goes BEHIND the person only if each big word is at most 25% hidden and its first/last letters
-  stay visible (otherwise in front).
+  chest. A phrase in FRONT never covers the face (hair to chin): it moves to the chest or above the head instead.
+- Depth: head-anchored phrases search a spot BEHIND the person (top of head / eyes / neck height, shifted up to
+  ±200 px) where every big word is at most 20% hidden and its first/last letters stay visible; if none, in front.
+- Readability: every big word has a fine contour (dark on dark areas, light on bright areas) + soft shadow; small
+  words have a dark contour. Fill colours are chosen from the brightness EXACTLY under the phrase (`lum` map from
+  body_profile.py): light tints over dark areas, deep tints over bright areas - the palette stays the footage's.
+- QA: check that no front phrase touches the face and that behind phrases read clearly (open frames at each one).
 - Motion: the phrase whips in sideways with motion-blur ghosts, words appear as they are spoken (quick blur-in), and
   it whips out in the opposite direction when the next phrase starts (no gaps between phrases).
 - Older caption styles (`clean` headlines, `depth`, `bold`, `editorial`) only on request.

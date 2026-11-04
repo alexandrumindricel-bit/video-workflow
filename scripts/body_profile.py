@@ -72,6 +72,7 @@ fps = cap.get(cv2.CAP_PROP_FPS) or 30
 with mp.solutions.selfie_segmentation.SelfieSegmentation(model_selection=0) as seg:
     for c in clips:
         acc, n, frames = np.zeros((ROWS, COLS), np.float32), 0, []
+        lum = np.zeros((ROWS, COLS), np.float32)
         for k in range(12):
             t = c["start"] + (k + 0.5) * (c["end"] - c["start"]) / 12
             cap.set(cv2.CAP_PROP_POS_FRAMES, int(t * fps))
@@ -79,15 +80,18 @@ with mp.solutions.selfie_segmentation.SelfieSegmentation(model_selection=0) as s
             if not ok:
                 continue
             frames.append(cv2.resize(fr, (90, 160), interpolation=cv2.INTER_AREA))
+            lum += cv2.resize(cv2.cvtColor(fr, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255, (COLS, ROWS), interpolation=cv2.INTER_AREA)
             m = seg.process(cv2.cvtColor(cv2.resize(fr, (W // 4, H // 4)), cv2.COLOR_BGR2RGB)).segmentation_mask
             acc += cv2.resize((m > 0.5).astype(np.float32), (COLS, ROWS), interpolation=cv2.INTER_AREA)
             n += 1
         c["occ"] = np.round(acc / max(1, n), 2).tolist()
         c["palette"] = scene_palette(frames)
+        c["lum"] = np.round(lum / max(1, n), 2).tolist()   # where the picture is bright/dark (caption colour choice)
 if layout.get("clips"):
     layout["clips"] = clips
 else:
     layout["occ"] = clips[0]["occ"]
     layout["palette"] = clips[0]["palette"]
+    layout["lum"] = clips[0]["lum"]
 json.dump(layout, open(lay_p, "w"), indent=1)
 print("body occupancy map:", len(clips), "clip(s)")
