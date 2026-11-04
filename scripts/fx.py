@@ -262,6 +262,8 @@ def main():
     if need_cut or need_pop:
         import mediapipe as mp
         seg = mp.solutions.selfie_segmentation.SelfieSegmentation(model_selection=0)
+        head_fd = mp.solutions.face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
+    head_box, head_age = None, 99
 
     cap = cv2.VideoCapture(os.path.join(work, "cut.mov"))
     out_bg = writer(os.path.join(work, "fx_bg.mov"))
@@ -281,9 +283,29 @@ def main():
         cx, cy = center_at(t)
         M = None
         if seg is not None:
-            res = seg.process(cv2.cvtColor(cv2.resize(F, (W // 2, H // 2)), cv2.COLOR_BGR2RGB)).segmentation_mask
-            ema = res if ema is None else 0.55 * res + 0.45 * ema  # temporal smoothing: less edge flicker
-            m = np.clip((ema - 0.35) / 0.3, 0, 1)
+            half = cv2.cvtColor(cv2.resize(F, (W // 2, H // 2)), cv2.COLOR_BGR2RGB)
+            res = seg.process(half).segmentation_mask
+            # temporal smoothing that grows at once and shrinks slowly: a moving head is never left uncovered
+            # (lagging matte = text drawn over the face/hair for a few frames)
+            ema = res if ema is None else np.maximum(res, 0.55 * res + 0.45 * ema)
+            m = np.clip((ema - 0.28) / 0.27, 0, 1)
+            # head protection: solid head (hair + face + ears) from the face detector, limited to the dilated
+            # segmentation so no halo; text behind the person can never cut into the head or face
+            det = head_fd.process(half).detections
+            if det:
+                b = max(det, key=lambda d: d.location_data.relative_bounding_box.width).location_data.relative_bounding_box
+                nb = np.array([b.xmin * W / 2, b.ymin * H / 2, b.width * W / 2, b.height * H / 2])
+                head_box = nb if head_box is None or head_age > 3 else 0.5 * head_box + 0.5 * nb
+                head_age = 0
+            else:
+                head_age += 1
+            if head_box is not None and head_age <= 8:
+                x, y, w, h = head_box
+                hm = np.zeros(m.shape, np.float32)
+                cv2.ellipse(hm, (int(x + w / 2), int(y + 0.4 * h)), (int(0.6 * w), int(0.68 * h)), 0, 0, 360, 1.0, -1)
+                near = cv2.dilate((ema > 0.12).astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9)))
+                hm = cv2.GaussianBlur(hm * near, (0, 0), 2)
+                m = np.maximum(m, np.clip(hm * 1.6, 0, 1))
             M = cv2.GaussianBlur(cv2.resize(m, (W, H)), (0, 0), 1.6)
 
         g = grade_at(t)

@@ -912,7 +912,7 @@ window.init = async (data) => {
           return Math.max(v, (base[sr] || [])[sq] ?? 0);
         }));
       })();
-      const rej = { frame: 0, ends: 0, hidden: 0, notouch: 0, low: 0 };
+      const rej = { frame: 0, ends: 0, hidden: 0, notouch: 0, low: 0, face: 0 };
       c.rej = rej;
       meas.innerHTML = html(sz);
       const rowM = [...meas.querySelectorAll('.row')].map(rw => ({ bw: rw.querySelector('.big').offsetWidth, h: rw.offsetHeight }));
@@ -944,6 +944,10 @@ window.init = async (data) => {
           // does the HEAD itself (hair to chin) overlap this word? -> visible depth
           const hx0 = f.x - f.w * 0.1, hx1 = f.x + f.w * 1.1, hy0 = f.y - f.h * 0.35, hy1 = f.y + f.h * 1.05;
           if (bx0 < hx1 && bx1 > hx0 && by0 < hy1 && by1 > hy0) headTouch = true;
+          // never behind the FACE itself (eyes to mouth): text may only tuck behind hair, forehead top or the sides
+          // of the head - crossing the face looks like the words cut into it (user feedback)
+          const fx0 = f.x + f.w * 0.08, fx1 = f.x + f.w * 0.92, fy0 = f.y + f.h * 0.12, fy1 = f.y + f.h * 0.95;
+          if (bx0 < fx1 && bx1 > fx0 && by0 + (by1 - by0) * 0.2 < fy1 && by1 - (by1 - by0) * 0.2 > fy0) { rej.face++; return 9; }
           yy += rw.h - 0.1 * sz;
         }
         if (!headTouch) rej.notouch++;
@@ -1013,6 +1017,7 @@ window.init = async (data) => {
     meas.remove();
     window.lockupQA = chunks.map(c => ({ rej: c.rej, t: +c.t0.toFixed(2), text: c.map(w => w.w).join(' '), anchor: c.lkAnchor, behind: c.lkBehind, y: Math.round(c.lkY), h: Math.round(c.lk.h), w: Math.round(c.lk.w) }));
   }
+  window.captionEvents = chunks.map(c => [+c.t0.toFixed(2), !!c.behind, c.map(w => w.w).join(' ')]);
   window.backWindows = chunks.filter(c => c.behind).map(c => [c.t0, c.t1]).concat(headlines.filter(h => h.behind).map(h => [h.t0, h.t1]));
   const cap = document.createElement('div');
   cap.id = 'cap';

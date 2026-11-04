@@ -102,6 +102,50 @@ def sfx_events(sb):
     return sorted((t, n if os.path.exists(os.path.join(SFX_DIR, n + ".wav")) else SFX_ALIAS.get(n, n), g) for t, n, g in ev)
 
 
+FRONT_TOP = {"title", "card", "stat", "counter", "tiles", "checklist", "numcards", "combo", "strike", "image", "app", "phone", "chart", "product3d"}
+
+
+def density_events(sb, work, base, dur):
+    """Extra SFX so the edit sounds 'busy' like the reference (user: use sound effects more often).
+    storyboard "sfx_density": "high" (default) | "normal" (only element/transition sounds) | "calm" (same as normal).
+    Sources: caption phrase changes (WORK/caption_events.json from the renderer), jump cuts (segments.json),
+    graphic exits, push/track camera moves. Every extra sound keeps >= 0.3 s from all other sounds."""
+    dens = sb.get("sfx_density", "high")
+    cap = sb.get("captions", {})
+    if dens != "high" or cap.get("motion") == "fade":
+        return []
+    off = sb.get("sfx_gain_db", 0)
+    cand = []   # (t, name, gain, priority)
+    p = os.path.join(work, "caption_events.json")
+    if os.path.exists(p) and cap.get("enabled", True):
+        for k, (t, behind, text) in enumerate(json.load(open(p))):
+            if behind:
+                cand.append((t, "air", -15, 2))                       # phrase slides in behind the head
+            elif any(ch.isdigit() for ch in text) or "lei" in text.lower():
+                cand.append((t, "tap", -15, 2))                       # numbers / prices
+            elif k % 2 == 0:
+                cand.append((t, "swish", -19, 4))                     # whip-in of every other phrase
+            else:
+                cand.append((t, "tick", -18, 5))
+    for sg in json.load(open(os.path.join(work, "segments.json")))["segments"][1:]:
+        cand.append((sg["out_start"], "click", -17, 3))               # jump cut
+    for el in sb.get("elements", []):
+        if el["type"] in FRONT_TOP and el.get("sfx", "auto") is not None and el["end"] < dur - 0.6:
+            cand.append((el["end"] - 0.12, "air", -18, 4))             # graphic leaves
+    for e in sb.get("effects", []):
+        if e["kind"] == "push":
+            cand.append((e["start"], "air", -16, 3))
+        elif e["kind"] == "track":
+            cand.append((e["start"], "swish", -17, 3))
+    taken = [t for t, _, _ in base]
+    out = []
+    for t, n, g, pr in sorted(cand, key=lambda c: (c[3], c[0])):
+        if 0.05 <= t < dur - 0.1 and all(abs(t - u) >= 0.3 for u in taken):
+            taken.append(t)
+            out.append((t, n, g + off))
+    return out
+
+
 def main():
     work, out = sys.argv[1], sys.argv[2]
     sb = json.load(open(os.path.join(work, "storyboard.json")))
@@ -144,6 +188,7 @@ def main():
     f.append("[0:a]highpass=f=70,acompressor=threshold=-20dB:ratio=3:attack=5:release=90:makeup=2[voice]")
     mix = ["[voice]"]
     events = [e for e in sfx_events(sb) if 0 <= e[0] < dur]
+    events = sorted(events + density_events(sb, work, events, dur))
     for k, (t, name, g) in enumerate(events):
         p = os.path.join(SFX_DIR, name + ".wav")
         if not os.path.exists(p):

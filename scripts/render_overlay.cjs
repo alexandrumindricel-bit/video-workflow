@@ -73,8 +73,10 @@ async function renderRange(browser, data, f0, f1, outFile, layer) {
   await probe.goto('file://' + path.join(__dirname, '..', 'renderer', 'overlay.html'));
   await probe.evaluate(d => window.init(d), { ...data, layer: 'back' });
   const capBack = await probe.evaluate(() => window.backWindows || []);
+  const capEv = await probe.evaluate(() => window.captionEvents || []);
   await probe.close();
   fs.writeFileSync(path.join(work, 'back_windows.json'), JSON.stringify(capBack));
+  fs.writeFileSync(path.join(work, 'caption_events.json'), JSON.stringify(capEv));
   if (sb.elements.some(el => layerOf(el) !== 'front') || capBack.length) layers.push('back');
   const backFile = path.join(work, 'overlay_back.mov');
   if (!layers.includes('back') && fs.existsSync(backFile)) fs.unlinkSync(backFile);
