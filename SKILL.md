@@ -19,7 +19,8 @@ Read `STYLE_GUIDE.md` (the style), `EFFECTS.md` (the 17-effect library - use sev
 $VW/vw.sh prep RAW.mp4 WORK [--language ro|en] [--model small|medium]
 ```
 - "Washed" SDR footage (iPhone HDR re-encoded by a compressor app without tone mapping: milky blacks, dim
-  whites - e.g. *_compressed.mp4) is detected (black point above Y45) and its levels are restored in prepare.py
+  whites - e.g. *_compressed.mp4) is detected (black point above Y45, or white point below Y203 - dim whites next to
+  tone-mapped .mov clips of the same set) and its levels are restored in prepare.py
   (luma stretch to Y34..~215, chroma x1.08), matching the approved natural look of tone-mapped HDR (Mindri-Box-v3).
 - HDR phone footage (iPhone: HLG/PQ, BT.2020, 10-bit, Dolby Vision) is tone-mapped to SDR BT.709 automatically
   (zscale + hable, 100 nits) - without it everything looks pale and milky. The output is tagged BT.709.

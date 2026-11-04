@@ -63,9 +63,10 @@ def washed_levels(video, samples=10):
         return None
     g = np.concatenate(vals)
     lo, hi = (16 + float(np.percentile(g, p)) * 219 / 255 for p in (1, 99.5))   # in limited-range Y
-    if lo <= 45:
+    # milky blacks OR dim whites (white T-shirt at ~Y193 instead of ~Y219 like tone-mapped HDR clips of the same set)
+    if lo <= 45 and hi >= 203:
         return None
-    lo_t, hi_t = 34.0, min(222.0, max(hi, hi + 20))
+    lo_t, hi_t = min(34.0, lo), min(222.0, max(hi + 20, 216.0))
     k = (hi_t - lo_t) / max(1.0, hi - lo)
     print(f"washed SDR source (black Y{lo:.0f}, white Y{hi:.0f}) -> levels restored to Y{lo_t:.0f}..{hi_t:.0f}")
     c = "clip(128+(val-128)*1.08,16,240)"
