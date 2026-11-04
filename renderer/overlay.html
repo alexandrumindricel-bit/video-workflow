@@ -824,6 +824,42 @@ window.init = async (data) => {
     const SMALL = new Set(['și','si','de','la','în','in','pe','cu','un','o','ce','să','sa','mai','că','ca','a','al','ai','am','e','ești','esti','îl','il','le','lui','din','pentru','sau','dar','iar','te','îți','iti','să-ți','s-ar','mi','îmi','ne','vă','va','the','a','an','of','to','in','on','if','my','you','i','is','was','and','so','or','at','it','be','we','me','your','for','are','that','this']);
     const NEG = /^(nu|nici|fără|fara|stop\w*|never|not|no|don'?t|pierd\w*|greș\w*|gres\w*|prost\w*|problem\w*|riscu?\w*|scump\w*)$/i;
     const MONEY = /(\d|lei|ron|euro|€|\$|bani|profit|preț|pret|money|dollar|bugetul?)/i;
+    // DENSITY (user rule): captions on EVERY phrase are tiring to watch - show only the most meaningful share
+    // (captions.density, default 0.6 = 40% fewer). Score = content words, numbers/prices, negatives, names,
+    // questions/exclamations; fillers (bă, mă, băi, deci...) score down. The first and last phrase always stay,
+    // never more than 2 phrases in a row without a caption. During a skipped phrase the screen has no caption.
+    const density = cs.density ?? 0.6;
+    if (density < 1 && chunks.length > 3) {
+      const FILL = /^(bă|băi|bai|mă|ma|măi|mai|păi|pai|deci|gen|adică|adica|uite|hai|așa|asa|ok|okay|bine|zic|știi|stii|eh|ăă|ă|um|uh)$/i;
+      const clean = w => w.w.toLowerCase().replace(/[^\p{L}\p{N}.]/gu, '');
+      const score = c => c.reduce((s2, w, k) => {
+        const t = clean(w), raw = w.w;
+        if (!t) return s2;
+        let v = 0;
+        if (FILL.test(t)) v -= 1;
+        else if (!SMALL.has(t) && t.length >= 4) v += 1;
+        if (MONEY.test(t)) v += 2;
+        if (NEG.test(t)) v += 1;
+        if (k > 0 && /^\p{Lu}/u.test(raw) && !/[.!?]$/.test(c[k - 1].w)) v += 1.5;      // a name mid-sentence
+        if (/[?!]$/.test(raw)) v += 0.5;
+        return s2 + v;
+      }, 0);
+      const sc = chunks.map((c, i) => ({ i, v: score(c) + (i === 0 || i === chunks.length - 1 ? 99 : 0) }));
+      const nKeep = Math.max(2, Math.round(chunks.length * density));
+      const keep = new Set([...sc].sort((a, b) => b.v - a.v).slice(0, nKeep).map(o => o.i));
+      for (let i = 0; i < chunks.length - 3; i++)                          // no 4 skipped phrases in a row
+        if (![i, i + 1, i + 2, i + 3].some(j => keep.has(j))) keep.add([i, i + 1, i + 2, i + 3].sort((a, b) => sc[b].v - sc[a].v)[0]);
+      // forced additions push the share up: drop the weakest kept phrases again where that breaks no rule
+      const free = j => j > 0 && j < chunks.length - 1;
+      const runOk = j => { let a = j, b = j; while (a - 1 >= 0 && !keep.has(a - 1)) a--; while (b + 1 < chunks.length && !keep.has(b + 1)) b++; return b - a + 1 <= 3; };
+      for (const o of [...sc].sort((a, b) => a.v - b.v)) {
+        if (keep.size <= nKeep) break;
+        if (!keep.has(o.i) || !free(o.i)) continue;
+        keep.delete(o.i); if (!runOk(o.i)) keep.add(o.i);
+      }
+      const kept = chunks.filter((c, i) => keep.has(i));
+      chunks.length = 0; chunks.push(...kept);
+    }
     const hexRgb2 = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
     const mix = (h, w, a) => { const x = hexRgb2(h), y = hexRgb2(w); return '#' + x.map((v, i) => Math.round(v * (1 - a) + y[i] * a).toString(16).padStart(2, '0')).join(''); };
     const meas = document.createElement('div'); meas.className = 'lk'; meas.style.left = '-6000px'; meas.style.right = 'auto'; stage.appendChild(meas);
@@ -860,7 +896,7 @@ window.init = async (data) => {
         if (cs.semantic !== false && (MONEY.test(t) || c.some(w => /\d/.test(w.w)) && /\d/.test(t)))
           ln.fill = bright ? 'linear-gradient(100deg,#5FD06A 0%,#2FA84F 50%,#1C7A38 100%)' : 'linear-gradient(100deg,#E9FFE6 0%,#7FE07A 40%,#2FA84F 100%)';
         else if (cs.semantic !== false && NEG.test(t)) ln.fill = 'linear-gradient(100deg,#FF7A70 0%,#EE3E3E 55%,#B92A27 100%)';
-        else if ((k % 4 === 3 && (cs.neutral_share ?? 0.25) > 0) || !acc.length)
+        else if ((k % 4 === 3 && (cs.neutral_share ?? 0) > 0) || !acc.length)
           ln.fill = bright ? 'linear-gradient(180deg,#2E3440 0%,#1A1D24 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#EDEDED 100%)';
         else {
           // the video's OWN colours (user: caption colour follows the palette of each video): the accent keeps its hue,
@@ -889,8 +925,18 @@ window.init = async (data) => {
       let an = anchors[anchorK++ % anchors.length];
       const yOf = a => Math.max(c.lk.h / 2 + 60, Math.min(1560 - c.lk.h / 2,
         a === 'head' ? f.y + f.h * 0.35 : a === 'above' ? Math.max(zn.top.y0 + c.lk.h / 2, f.y - f.h * 0.5 - c.lk.h / 2 - 24) : Math.max(zn.captions_y, f.y + f.h * 1.25 + c.lk.h / 2)));
-      // face zone (hair to chin, a bit wider than the face) - a phrase in FRONT may never cover it
-      const FX0 = f.x - f.w * 0.3, FX1 = f.x + f.w * 1.3, FY0 = f.y - f.h * 0.5, FY1 = f.y + f.h * 1.2;
+      // face zone (hair to chin, wider than the face for head movement) - a phrase in FRONT may never cover it.
+      // Zoom-aware: punch/push/track zooms (centred on the face) make the face bigger on screen during the phrase.
+      let zF = 1;
+      for (const e of (sb.effects || [])) {
+        if (!(e.start < c.t1 && e.end > c.t0)) continue;
+        if (e.kind === 'push') zF = Math.max(zF, e.to ?? 1.15, e.from ?? 1);
+        if (e.kind === 'punch') zF = Math.max(zF, e.scale ?? 1.1);
+        if (e.kind === 'track') zF = Math.max(zF, e.scale ?? 1.3);
+      }
+      for (const zz of (sb.zooms || [])) if (zz.start < c.t1 && zz.end > c.t0) zF = Math.max(zF, zz.scale ?? 1.1);
+      const fcx0 = f.x + f.w / 2, fcy0 = f.y + f.h / 2, fw = f.w * zF, fh = f.h * zF;
+      const FX0 = fcx0 - fw * 0.95, FX1 = fcx0 + fw * 0.95, FY0 = fcy0 - fh * 1.05, FY1 = fcy0 + fh * 0.8;
       const coversFace = y => !(540 + c.lk.w / 2 < FX0 || 540 - c.lk.w / 2 > FX1 || y + c.lk.h / 2 < FY0 || y - c.lk.h / 2 > FY1);
       let cy = yOf(an);
       c.lkY = cy; c.lkAnchor = an;
@@ -953,7 +999,7 @@ window.init = async (data) => {
           if (bx0 < hx1 && bx1 > hx0 && by0 < hy1 && by1 > hy0) headTouch = true;
           // never behind the FACE itself (eyes to mouth): text may only tuck behind hair, forehead top or the sides
           // of the head - crossing the face looks like the words cut into it (user feedback)
-          const fx0 = f.x + f.w * 0.08, fx1 = f.x + f.w * 0.92, fy0 = f.y + f.h * 0.12, fy1 = f.y + f.h * 0.95;
+          const fx0 = fcx0 - fw * 0.5, fx1 = fcx0 + fw * 0.5, fy0 = fcy0 - fh * 0.5, fy1 = fcy0 + fh * 0.55;
           if (bx0 < fx1 && bx1 > fx0 && by0 + (by1 - by0) * 0.2 < fy1 && by1 - (by1 - by0) * 0.2 > fy0) { rej.face++; return 9; }
           yy += rw.h - 0.1 * sz;
         }
@@ -988,7 +1034,7 @@ window.init = async (data) => {
         const order = anchorK % 2 ? ['above', 'chest'] : ['chest', 'above'];
         const alt = order.map(a => ({ a, y: yOf(a) })).find(o => !coversFace(o.y));
         if (alt) { c.lkY = alt.y; c.lkAnchor = alt.a; }
-        else { c.lkY = Math.max(zn.captions_y, f.y + f.h * 1.25 + c.lk.h / 2); c.lkAnchor = 'chest'; }
+        else { c.lkY = Math.min(1560 - c.lk.h / 2, Math.max(zn.captions_y, FY1 + c.lk.h / 2 + 10)); c.lkAnchor = 'chest'; }
       }
       // colours from the brightness EXACTLY under the phrase (not the whole clip): light fills on dark areas,
       // deep fills on bright areas

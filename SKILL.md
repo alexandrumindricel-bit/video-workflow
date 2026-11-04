@@ -124,10 +124,10 @@ doodles. Never mix in the green/cream editorial colours.
   shorter than `min_phrase` 1.0 s merge with the next/previous one (max 7 words / 34 chars), the last phrase holds
   `hold` 1.2 s. The video keeps `tail` 0.8 s of picture after the last word (`edit.json` params; if the footage ends
   sooner, the last frame is held). Multi-clip: `"tail": 0` on every clip except the LAST one.
-- Mixed backgrounds (e.g. white T-shirt over a dark backdrop, brightness spread > 0.17 under the phrase): white words
-  with dark contour.
-- Contrast guard: if a word's colour is too close in brightness to what is behind it (`min_contrast` 0.42), it turns
-  white (dark/mid backgrounds) or deep charcoal (bright backgrounds).
+- Mixed backgrounds (e.g. white T-shirt over a dark backdrop, brightness spread > 0.17 under the phrase): a vivid mid
+  tone of the video's own colour with the dark contour (see "Caption colours" below).
+- Contrast guard: if a word's colour is too close in brightness to what is behind it (`min_contrast` 0.42), the same
+  colour gets more contrast first; white / deep charcoal only as a last resort.
 - Sensitive / serious topics (funerals, illness, loss, apologies...): keep the lockup look but `"motion": "fade"`
   (gentle fade-in, no whips), `"semantic": false` (no green/red word colours), no glitch/pixel/vertigo/frame-break,
   no punchy SFX (none at all is fine), slow push-ins and gentle tracking only, grade strength ~0.6, and no
@@ -156,11 +156,23 @@ behind the head, tap on numbers/prices, alternating swish / tick otherwise; from
 jump cut (click), when a top graphic leaves (air) and on push/track camera moves. Every extra sound keeps >= 0.3 s from
 the others (~1 sound per second). Calm topics: `"sfx_density": "normal"` (automatic when captions `motion: "fade"`).
 
+**FEWER CAPTIONS (user rule, every video)**: captions on every phrase are tiring - only ~60% of phrases get a caption
+(`captions.density` 0.6 = 40% fewer). The renderer keeps the most meaningful phrases (content words, numbers/prices,
+negatives, names, questions/exclamations; fillers like bă/mă/băi/deci score down), always the first and last phrase,
+and never 4 phrases in a row without one. Nothing is on screen during a skipped phrase. Do not override upward unless
+the user asks.
+
+**NO TEXT ON THE FACE (user rule, every video, all text)**: front phrases avoid a face zone that is wider than the face
+(head movement) and scaled by any zoom active during the phrase (punch/push/track); if no spot is free they go below
+the zone on the chest. Behind phrases never cross the face (forehead to chin), only hair / top of the head / the sides.
+Titles, cards and products stay in the top zone or beside the head. QA: open frames at every phrase near the head.
+
 **Caption colours follow each video's palette** (user rule): lockup words take the RAW clip's own accent colours
 (`body_profile.py` palette, e.g. the orange backdrop + gold) keeping their hue; only the lightness moves - light tints
 on dark areas, deep shades on bright areas, a vivid mid tone with the dark contour on mixed backgrounds (white shirt
 over a dark backdrop). The contrast guard first tries the same colour with more contrast, white/charcoal only as a last
-resort. White/neutral only for ~1 phrase in 4 (`captions.neutral_share`, 0 = never) or when the clip has no accents.
+resort. No plain white phrases by default (`captions.neutral_share` 0); white only when the clip has no accent colours or
+as the contrast guard's last resort.
 Money/number green and negative red stay (`semantic`).
 
 **Text behind the person must never cut into the head/face** (user feedback): fx.py's person matte grows at once and
@@ -168,8 +180,10 @@ shrinks slowly (no lag when the head moves), has a lower threshold for hair, and
 the per-frame face detector (limited to the segmentation, so no halo). overlay.html never puts a behind phrase across the
 face itself (eyes to mouth) - only behind hair, the top of the forehead or the sides of the head.
 
-**No blur on footage**: never smear or soften the image. `vertigo` now keeps the background sharp and grows the
-cut-out person (max 0.14); all zooms are sharpened. Check QA frames for softness.
+**No blur on footage, no ghosting**: never smear, soften or double the image. `vertigo` is RETIRED (the cut-out
+person grown over the original frame showed a doubled head/arms and smeared the background) - never use it; if it
+appears it renders as a plain push-in. Other cut-out effects: QA every frame for doubled body parts. All zooms are
+sharpened. Check QA frames for softness and ghosting.
 
 **Style preset** (titles/graphics): `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles),
 `"bold"` (white heavy words + big yellow keyword, like the effects reference) or `"depth"` (blue gradient 3D hero words).

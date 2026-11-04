@@ -90,7 +90,7 @@ person cut-out on while they are visible.
 |---|---|---|
 | `punch` | `scale` 1.06-1.12 | constant punch-in (same as `zooms`) |
 | `push` | `from`, `to` | smooth digital zoom over the effect duration |
-| `vertigo` | `amount` 0.08-0.14 | dolly-zoom feel: the cut-out person grows, background stays sharp (no smear) |
+| `vertigo` | - | RETIRED (ghosting) - do not use; renders as a plain push-in |
 | `frame_break` | `rect: [x,y,w,h]`, `color`, `radius`, `border` | video shown inside a frame on a dark blurred canvas; the person extends out of it |
 | `pull_back` | `scale` 0.5-0.65, `y` (center of the window), `bg` (hex or "blur") | video shrinks into a floating rounded window; put an `app`/`card` above it |
 | `sticker` | `width` 16 | white sticker border around the person (use with a `backdrop`) |

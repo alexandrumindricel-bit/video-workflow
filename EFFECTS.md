@@ -20,7 +20,7 @@ Use these **in every video, chosen to fit what is being said**. Each row says ho
 | 12 | **green screen** | element `backdrop` (`kind: app/image/gradient`) - back layer, person cut out | "imagine…", talking about a page/product/app, a scene change | whoosh |
 | 13 | **paper cut** | `backdrop` `kind: paper` + effect `sticker` + elements `tiles` ("100%") / `doodle` | playful/creative moments, stats, scrapbook energy | paper + clicks |
 | 14 | **doodle boil** | effect `outline` (boiling outline around the person) + element `doodle` (`shapes`) | fun, casual, "creative" lines; pointing at something | paper |
-| 15 | **vertigo** | effect `vertigo` (`amount` 0.08-0.14; person grows, background stays sharp) | dramatic realization, "this changes everything", tension | riser |
+| 15 | ~~vertigo~~ | **RETIRED** (user: doubled head/arms and smeared background when the person moves). Use `push` instead. | - | - |
 | 16 | **cover story** | element `cover` (magazine masthead **behind the head**, `issue` line, optional `lines`) | introducing a topic/title, "the story of…", hook | impact |
 | 17 | **glass type** | element `glass` (giant translucent glass word with shine) - back layer | a single huge keyword or number ("26", "DESIGN") | whoosh |
 
@@ -29,7 +29,7 @@ Use these **in every video, chosen to fit what is being said**. Each row says ho
   (a 30 s video → 5-7 effects, a 60 s video → 9-12), on top of the normal captions/cards/punch-ins.
 - **Match the meaning** (column "use it when"). Never use an effect just to fill time.
 - **Hook (first 3 s)**: prefer `cover`, `glass`, `frame_break` or `zoom_through` combined with a big title.
-- **Don't repeat the same effect within ~15 s**; vary families (camera: push/vertigo/zoom-through/pull-back/frame-break ·
+- **Don't repeat the same effect within ~15 s**; vary families (camera: push/zoom-through/pull-back/frame-break ·
   cut-out: backdrop/cover/glass/wall/sticker/outline · UI: app/phone/checklist/chart/orbit).
 - **Cut-out effects need a clearly visible person** (whole head + shoulders in frame, decent light). If the person is
   very small, moving fast, or partly out of frame, prefer UI effects. Check the cut-out edge in QA frames.

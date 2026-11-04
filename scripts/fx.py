@@ -15,7 +15,7 @@ storyboard.effects[]:  {"kind": ..., "start": s, "end": e, ...}
   punch        scale (1.06-1.12)                  constant punch-in (also: storyboard.zooms)
   push         from, to (e.g. 1.0 -> 1.15)        smooth digital zoom
   zoom_through at (transition time), dur 0.36     zoom + radial blur into the cut and out of it
-  vertigo      amount 0.12 (max 0.14)             dolly-zoom feel: person grows, background stays sharp
+  vertigo      amount 0.12 (max 0.14)             RETIRED - now a plain smooth push-in (cut-out version ghosted)
   frame_break  rect [x,y,w,h], color, radius      video shown inside a frame, person breaks out of it
   pull_back    scale 0.58, y, bg "#ECE8DF"         video shrinks into a floating window on a canvas
   cutout       -                                  force person cut-out (for back-layer elements)
@@ -232,7 +232,7 @@ def main():
     bw = os.path.join(work, "back_windows.json")  # captions placed behind the person (from render_overlay.cjs)
     if os.path.exists(bw):
         back_windows += [tuple(x) for x in json.load(open(bw))]
-    CUT_KINDS = {"vertigo", "frame_break", "cutout", "sticker", "outline"}
+    CUT_KINDS = {"frame_break", "cutout", "sticker", "outline"}
 
     def active(t, kinds):
         return [e for e in fx if e["kind"] in kinds and e["start"] <= t < e["end"]]
@@ -383,16 +383,14 @@ def main():
             bg = person = (acc / taps).astype(np.uint8)
             cut_on = False
         elif vg:
-            # dolly-zoom feel without blur: the background stays untouched and sharp, the cut-out person grows
-            # around the face (relative zoom). The grown silhouette covers the original one, so no ghost/smear.
+            # RETIRED (user feedback): growing only the cut-out person left a doubled head/arms and smeared the
+            # background when the person moved (wide shots). "vertigo" is now a plain smooth push-in of the whole frame.
             e = vg[0]
             p = ease_io((t - e["start"]) / max(0.01, e["end"] - e["start"]))
             s = 1 + min(0.14, e.get("amount", 0.12)) * p
-            bg = F
-            person = sharpen(zoom(F, s, cx, cy, cv2.INTER_CUBIC), s)
+            bg = person = sharpen(zoom(F, s, cx, cy, cv2.INTER_CUBIC), s)
             if M is not None:
                 M = zoom(M, s, cx, cy)
-            cut_on = True
         else:
             s = 1.0
             if pu:
