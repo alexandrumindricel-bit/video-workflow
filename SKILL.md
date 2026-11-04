@@ -118,6 +118,8 @@ doodles. Never mix in the green/cream editorial colours.
   shorter than `min_phrase` 1.0 s merge with the next/previous one (max 7 words / 34 chars), the last phrase holds
   `hold` 1.2 s. The video keeps `tail` 0.8 s of picture after the last word (`edit.json` params; if the footage ends
   sooner, the last frame is held). Multi-clip: `"tail": 0` on every clip except the LAST one.
+- Mixed backgrounds (e.g. white T-shirt over a dark backdrop, brightness spread > 0.17 under the phrase): white words
+  with dark contour.
 - Contrast guard: if a word's colour is too close in brightness to what is behind it (`min_contrast` 0.42), it turns
   white (dark/mid backgrounds) or deep charcoal (bright backgrounds).
 - Sensitive / serious topics (funerals, illness, loss, apologies...): keep the lockup look but `"motion": "fade"`
@@ -164,6 +166,11 @@ cables, phone/GPS mounts, extinguisher mounts…), show it as a **3D product** t
 4. Storyboard element `product3d` from the word that names the product, 2.5-5 s:
    `{"type": "product3d", "product": "<slug>", "start": …, "end": …, "pos": "side"|"hero"|"top"}`
    - `side` (default): next to the head, turntable through the angles; info card (name, price, sizes, mindricel.ro) above it.
+     The product NEVER overlaps the face: it uses only the free strip beside the face; if that strip is < 300 px
+     (centred close-ups) it goes under the chin / on the chest instead.
+   - Several products named in a quick list: one `product3d` per item at the moment it is said (`info: false` so the
+     box/bundle price is not confused with item prices); items without a clear variant → small `card` instead.
+   - Prices and product names that are unclear in the audio: ASK the user (never guess a price).
    - `hero`: the big reveal - below the chin, captions hidden; use once per product, on the main mention.
    - Price/sizes/name come only from the site (never invent or round them); `price: false` hides the price.
 5. Add a `zoom_through` or `flash` into the hero reveal, and a closing CTA naming **mindricel.ro** if the video sells.

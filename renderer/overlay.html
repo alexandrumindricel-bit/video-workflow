@@ -572,11 +572,18 @@ window.init = async (data) => {
       } else if (el.pos === 'top') {
         box = { w: 560, h: 560, x: 260, y: Math.max(60, Z.top.y0 - 40) };
       } else {
-        const free = side === 'left' ? fl : 1080 - fr;
-        const w = Math.round(Math.max(380, Math.min(540, free + 70)));
-        const h = Math.round(w * 1.15);
-        const y = Math.round(Math.max(Z.top.y0 + 150, Math.min(fcy - h * 0.45, Z.captions_y - h - 60)));
-        box = { w, h, x: side === 'left' ? 4 : 1080 - w - 4, y: el.y ?? y };
+        // never over the face: the box must fit in the free strip beside the face (hair-to-chin zone, +margin);
+        // if the strip is narrower than 300 px, the product goes under the chin / on the chest instead
+        const FX0 = face.x - face.w * 0.3, FX1 = face.x + face.w * 1.3;
+        const free = side === 'left' ? FX0 - 8 : 1080 - FX1 - 8;
+        if (free >= 300) {
+          const w = Math.round(Math.min(520, free)), h = Math.round(w * 1.15);
+          const y = Math.round(Math.max(Z.top.y0 + 120, Math.min(fcy - h * 0.45, Z.captions_y - h - 60)));
+          box = { w, h, x: side === 'left' ? Math.max(4, FX0 - 8 - w) : Math.round(FX1 + 8), y: el.y ?? y };
+        } else {
+          const y = Math.round(face.y + face.h * 1.25), h = Math.max(320, Math.min(560, Z.captions_y - 80 - y));
+          box = { w: h, h, x: side === 'left' ? 30 : 1080 - h - 30, y: el.y ?? y };
+        }
       }
       Object.assign(box, el.box || {});
       el._box = box;
@@ -819,6 +826,10 @@ window.init = async (data) => {
     const hexRgb2 = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
     const mix = (h, w, a) => { const x = hexRgb2(h), y = hexRgb2(w); return '#' + x.map((v, i) => Math.round(v * (1 - a) + y[i] * a).toString(16).padStart(2, '0')).join(''); };
     const meas = document.createElement('div'); meas.className = 'lk'; meas.style.left = '-6000px'; meas.style.right = 'auto'; stage.appendChild(meas);
+    // timing first (lead / hold), so placement decisions use the real on-screen window
+    const lead = cs.lead ?? 0.25, hold = cs.hold ?? 1.2;
+    chunks.forEach((c, i) => { const n2 = chunks[i + 1]; c.t0 = c[0].start - lead; c.t1 = n2 ? Math.min(n2[0].start - lead, c[c.length - 1].end + hold) : c[c.length - 1].end + hold; });
+    chunks.forEach((c, i) => { if (i && c.t0 < chunks[i - 1].t1) chunks[i - 1].t1 = c.t0; if (c.t0 < 0) c.t0 = 0; });
     let anchorK = 0, behindCount = 0;
     chunks.forEach((c, ci) => {
       const ws = c.map(w => ({ ...w, t: w.w.replace(/[.,;:]+$/, '') }));
@@ -977,6 +988,11 @@ window.init = async (data) => {
         for (let r = Math.max(0, Math.floor(y0 / 40)); r <= Math.min(47, Math.floor(y1 / 40)); r++)
           for (let q = Math.max(0, Math.floor(x0 / 20)); q <= Math.min(53, Math.floor(x1 / 20)); q++) { sum += lm[r][q]; cnt++; }
         c.bright = cnt ? sum / cnt > 0.55 : c.bright;
+        let sq = 0;
+        for (let r = Math.max(0, Math.floor(y0 / 40)); r <= Math.min(47, Math.floor(y1 / 40)); r++)
+          for (let q = Math.max(0, Math.floor(x0 / 20)); q <= Math.min(53, Math.floor(x1 / 20)); q++) sq += (lm[r][q] - sum / Math.max(1, cnt)) ** 2;
+        c.mixedBg = cnt ? Math.sqrt(sq / cnt) > 0.17 : false;       // e.g. white T-shirt over a dark backdrop
+        if (c.mixedBg) c.bright = false;                             // mixed -> white words with a dark contour
         assignFills(c.bright);
         // contrast guard: if a word's colour is too close in brightness to what is behind it (e.g. gold on wood),
         // use white (dark/mid backgrounds) or deep charcoal (bright backgrounds) instead
@@ -984,6 +1000,7 @@ window.init = async (data) => {
         lines.forEach(ln => {
           const cols = (ln.fill.match(/#[0-9A-Fa-f]{6}/g) || []).map(h => lum(hexRgb(h)));
           const fl = cols.length ? cols.reduce((a, b) => a + b, 0) / cols.length : 1;
+          if (c.mixedBg && !/#(FF7A70|5FD06A|E9FFE6)/i.test(ln.fill)) { ln.fill = 'linear-gradient(180deg,#FFFFFF 0%,#EFEFEF 100%)'; return; }
           if (Math.abs(fl - bgL) < (cs.min_contrast ?? 0.42)) ln.fill = bgL > 0.58 ? 'linear-gradient(180deg,#2B2F36 0%,#16181D 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#EFEFEF 100%)';
         });
         if (lines.some(ln => /#FFFFFF/.test(ln.fill))) c.bright = false;   // white words get the dark contour
@@ -992,9 +1009,7 @@ window.init = async (data) => {
       c.dir = ci % 2 ? -1 : 1;
     });
     // chunk timing for lockups: hold until the next phrase starts (no gaps), small tail at the end
-    const lead = cs.lead ?? 0.25, hold = cs.hold ?? 1.2;
-    chunks.forEach((c, i) => { const n2 = chunks[i + 1]; c.t0 = c[0].start - lead; c.t1 = n2 ? Math.min(n2[0].start - lead, c[c.length - 1].end + hold) : c[c.length - 1].end + hold; });
-    chunks.forEach((c, i) => { if (i && c.t0 < chunks[i - 1].t1) chunks[i - 1].t1 = c.t0; if (c.t0 < 0) c.t0 = 0; });
+
     meas.remove();
     window.lockupQA = chunks.map(c => ({ rej: c.rej, t: +c.t0.toFixed(2), text: c.map(w => w.w).join(' '), anchor: c.lkAnchor, behind: c.lkBehind, y: Math.round(c.lkY), h: Math.round(c.lk.h), w: Math.round(c.lk.w) }));
   }
