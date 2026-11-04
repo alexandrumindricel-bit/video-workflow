@@ -831,9 +831,9 @@ window.init = async (data) => {
       const sat = (h, amt) => { const x = hexRgb2(h), m = (x[0] + x[1] + x[2]) / 3; return '#' + x.map(v => Math.max(0, Math.min(255, Math.round(m + (v - m) * amt))).toString(16).padStart(2, '0')).join(''); };
       const assignFills = bright => lines.forEach((ln, j) => {
         const k = ci + j, t = ln.big.t;
-        if (MONEY.test(t) || c.some(w => /\d/.test(w.w)) && /\d/.test(t))
+        if (cs.semantic !== false && (MONEY.test(t) || c.some(w => /\d/.test(w.w)) && /\d/.test(t)))
           ln.fill = bright ? 'linear-gradient(100deg,#5FD06A 0%,#2FA84F 50%,#1C7A38 100%)' : 'linear-gradient(100deg,#E9FFE6 0%,#7FE07A 40%,#2FA84F 100%)';
-        else if (NEG.test(t)) ln.fill = 'linear-gradient(100deg,#FF7A70 0%,#EE3E3E 55%,#B92A27 100%)';
+        else if (cs.semantic !== false && NEG.test(t)) ln.fill = 'linear-gradient(100deg,#FF7A70 0%,#EE3E3E 55%,#B92A27 100%)';
         else if (k % 3 === 2 || !acc.length)
           ln.fill = bright ? 'linear-gradient(180deg,#2E3440 0%,#1A1D24 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#EDEDED 100%)';
         else {
@@ -917,6 +917,15 @@ window.init = async (data) => {
           for (let q = Math.max(0, Math.floor(x0 / 20)); q <= Math.min(53, Math.floor(x1 / 20)); q++) { sum += lm[r][q]; cnt++; }
         c.bright = cnt ? sum / cnt > 0.55 : c.bright;
         assignFills(c.bright);
+        // contrast guard: if a word's colour is too close in brightness to what is behind it (e.g. gold on wood),
+        // use white (dark/mid backgrounds) or deep charcoal (bright backgrounds) instead
+        const bgL = cnt ? sum / cnt : 0.5;
+        lines.forEach(ln => {
+          const cols = (ln.fill.match(/#[0-9A-Fa-f]{6}/g) || []).map(h => lum(hexRgb(h)));
+          const fl = cols.length ? cols.reduce((a, b) => a + b, 0) / cols.length : 1;
+          if (Math.abs(fl - bgL) < (cs.min_contrast ?? 0.42)) ln.fill = bgL > 0.58 ? 'linear-gradient(180deg,#2B2F36 0%,#16181D 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#EFEFEF 100%)';
+        });
+        if (lines.some(ln => /#FFFFFF/.test(ln.fill))) c.bright = false;   // white words get the dark contour
       }
       c.behind = c.lkBehind;
       c.dir = ci % 2 ? -1 : 1;
@@ -1310,8 +1319,9 @@ window.renderAt = (t) => {
       // whip in (sideways motion blur), words appear as spoken, whip out before the next phrase
       if ((c.lkBehind ? 'back' : 'front') !== S.layer) html = '';
       else {
-        const pin = clamp((t - c.t0) / 0.14), pout = clamp((c.t1 - t) / 0.12);
-        const mv = (1 - ease.out(pin)) * 280 * c.dir - (1 - ease.out(pout)) * 280 * c.dir;
+        const calm = S.sb.captions?.motion === 'fade';
+        const pin = clamp((t - c.t0) / (calm ? 0.35 : 0.14)), pout = clamp((c.t1 - t) / (calm ? 0.3 : 0.12));
+        const mv = calm ? 0 : (1 - ease.out(pin)) * 280 * c.dir - (1 - ease.out(pout)) * 280 * c.dir;
         const vis = w => clamp((t - w.start + 0.06) / 0.12);
         const word = (w, cls, style) => { const p = vis(w); return `<span class="${cls}" style="${style};opacity:${p.toFixed(2)};${p < 1 && cls !== 'big' ? `filter:blur(${((1 - p) * 6).toFixed(1)}px);` : ''}${p < 1 && cls === 'big' ? `transform:scale(${(0.92 + 0.08 * p).toFixed(3)});` : ''}">${esc(w.t)}</span>`; };
         const body = c.lk.lines.map((ln, j) => `<div class="row" style="transform:translateX(${(j % 2 ? 1 : -1) * (c.lk.lines.length > 1 ? 40 : 0)}px);margin-top:${j ? -0.1 * c.lk.sz : 0}px"><span class="ln">` +
@@ -1320,7 +1330,8 @@ window.renderAt = (t) => {
           (ln.post.length ? `<span class="sm post" style="font-size:${Math.round(c.lk.sz * 0.34)}px">${ln.post.map(w => word(w, '', '')).join(' ')}</span>` : '') + `</span></div>`).join('');
         const moving = Math.abs(mv) > 2;
         const ghosts = moving ? [0.35, 0.2, 0.1].map((o, g) => `<div class="ghost" style="opacity:${o};transform:translateX(${(-Math.sign(mv) * (g + 1) * 0.22 * Math.abs(mv)).toFixed(0)}px);filter:blur(3px)">${body}</div>`).join('') : '';
-        html = `<div class="lk${c.bright ? ' bright' : ''}" style="position:relative;transform:translateX(${(mv + (c.dx || 0)).toFixed(0)}px)">${ghosts}<div style="position:relative">${body}</div></div>`;
+        const calmStyle = calm ? `opacity:${(ease.out(pin) * ease.out(pout)).toFixed(3)};transform:translate(${(c.dx || 0).toFixed(0)}px, ${((1 - ease.out(pin)) * 18).toFixed(1)}px);${pin < 1 || pout < 1 ? `filter:blur(${((1 - pin) * 5 + (1 - pout) * 5).toFixed(1)}px);` : ''}` : '';
+        html = `<div class="lk${c.bright ? ' bright' : ''}" style="position:relative;${calm ? calmStyle : `transform:translateX(${(mv + (c.dx || 0)).toFixed(0)}px)`}">${ghosts}<div style="position:relative">${body}</div></div>`;
       }
     } else if (S.capStyle === 'cl') {
       // 1-2 white words, each appearing with a short blur-in (front layer only)

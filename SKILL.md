@@ -110,6 +110,13 @@ doodles. Never mix in the green/cream editorial colours.
 - QA: check that no front phrase touches the face and that behind phrases read clearly (open frames at each one).
 - Motion: the phrase whips in sideways with motion-blur ghosts, words appear as they are spoken (quick blur-in), and
   it whips out in the opposite direction when the next phrase starts (no gaps between phrases).
+- Contrast guard: if a word's colour is too close in brightness to what is behind it (`min_contrast` 0.42), it turns
+  white (dark/mid backgrounds) or deep charcoal (bright backgrounds).
+- Sensitive / serious topics (funerals, illness, loss, apologies...): keep the lockup look but `"motion": "fade"`
+  (gentle fade-in, no whips), `"semantic": false` (no green/red word colours), no glitch/pixel/vertigo/frame-break,
+  no punchy SFX (none at all is fine), slow push-ins and gentle tracking only, grade strength ~0.6, and no
+  mindricel orange theme unless it is the user's own brand. Tell the user the tone was adapted and offer the
+  energetic version.
 - Older caption styles (`clean` headlines, `depth`, `bold`, `editorial`) only on request.
 
 **Numbers**: `tiles` now render as ONE dark rounded pill with big clean digits counting up and an optional `unit`
