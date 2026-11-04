@@ -127,7 +127,7 @@ doodles. Never mix in the green/cream editorial colours.
 - Mixed backgrounds (e.g. white T-shirt over a dark backdrop, brightness spread > 0.17 under the phrase): a vivid mid
   tone of the video's own colour with the dark contour (see "Caption colours" below).
 - Contrast guard: if a word's colour is too close in brightness to what is behind it (`min_contrast` 0.42), the same
-  colour gets more contrast first; white / deep charcoal only as a last resort.
+  colour gets its maximum-contrast tint + the fine contour - it never turns white (user rule).
 - Sensitive / serious topics (funerals, illness, loss, apologies...): keep the lockup look but `"motion": "fade"`
   (gentle fade-in, no whips), `"semantic": false` (no green/red word colours), no glitch/pixel/vertigo/frame-break,
   no punchy SFX (none at all is fine), slow push-ins and gentle tracking only, grade strength ~0.6, and no
@@ -170,8 +170,8 @@ Titles, cards and products stay in the top zone or beside the head. QA: open fra
 **Caption colours follow each video's palette** (user rule): lockup words take the RAW clip's own accent colours
 (`body_profile.py` palette, e.g. the orange backdrop + gold) keeping their hue; only the lightness moves - light tints
 on dark areas, deep shades on bright areas, a vivid mid tone with the dark contour on mixed backgrounds (white shirt
-over a dark backdrop). The contrast guard first tries the same colour with more contrast, white/charcoal only as a last
-resort. No plain white phrases by default (`captions.neutral_share` 0); white only when the clip has no accent colours or
+over a dark backdrop). The contrast guard keeps the same colour at maximum contrast with the contour - it never
+turns white. QA: `window.lockupQA[].fills` lists each phrase's colours. No plain white phrases by default (`captions.neutral_share` 0); white only when the clip has no accent colours or
 as the contrast guard's last resort.
 Money/number green and negative red stay (`semantic`).
 

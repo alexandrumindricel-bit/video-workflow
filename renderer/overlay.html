@@ -1062,11 +1062,10 @@ window.init = async (data) => {
             ln.fill = ln.acc ? accFill(ln.acc, false, 2) : 'linear-gradient(180deg,#FFFFFF 0%,#EFEFEF 100%)'; return;
           }
           if (Math.abs(fl - bgL) < (cs.min_contrast ?? 0.42)) {
-            // first try the same scene colour with more contrast, only then white / charcoal
-            if (ln.acc) {
-              const f2 = accFill(ln.acc, bgL > 0.58, 1), c2 = (f2.match(/#[0-9A-Fa-f]{6}/g) || []).map(h => lum(hexRgb(h)));
-              if (Math.abs(c2.reduce((a, b) => a + b, 0) / c2.length - bgL) >= (cs.min_contrast ?? 0.42) - 0.04) { ln.fill = f2; return; }
-            }
+            // user rule: caption colours ALWAYS come from the video - never fall back to white. Use the same scene
+            // colour with maximum contrast; the fine contour (dark on light fills) keeps it readable.
+            if (ln.acc) { ln.fill = accFill(ln.acc, bgL > 0.58, 1); return; }
+            if (/#(FF7A70|5FD06A|E9FFE6)/i.test(ln.fill)) return;          // semantic green/red keep their colour
             ln.fill = bgL > 0.58 ? 'linear-gradient(180deg,#2B2F36 0%,#16181D 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#EFEFEF 100%)';
           }
         });
@@ -1080,7 +1079,7 @@ window.init = async (data) => {
     // chunk timing for lockups: hold until the next phrase starts (no gaps), small tail at the end
 
     meas.remove();
-    window.lockupQA = chunks.map(c => ({ rej: c.rej, t: +c.t0.toFixed(2), text: c.map(w => w.w).join(' '), anchor: c.lkAnchor, behind: c.lkBehind, y: Math.round(c.lkY), h: Math.round(c.lk.h), w: Math.round(c.lk.w) }));
+    window.lockupQA = chunks.map(c => ({ rej: c.rej, t: +c.t0.toFixed(2), text: c.map(w => w.w).join(' '), anchor: c.lkAnchor, behind: c.lkBehind, mixed: !!c.mixedBg, fills: (c.lk.lines || []).map(l => ((l.fill || '').match(/#[0-9A-Fa-f]{6}/g) || []).join(' ')), y: Math.round(c.lkY), h: Math.round(c.lk.h), w: Math.round(c.lk.w) }));
   }
   window.captionEvents = chunks.map(c => [+c.t0.toFixed(2), !!c.behind, c.map(w => w.w).join(' ')]);
   window.backWindows = chunks.filter(c => c.behind).map(c => [c.t0, c.t1]).concat(headlines.filter(h => h.behind).map(h => [h.t0, h.t1]));
