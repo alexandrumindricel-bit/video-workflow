@@ -97,6 +97,9 @@ GRADES = {
     # "warm" look from the user's reference photo: richer colour (not neon), golden highlights, deeper mid-tones,
     # true blacks, sky/walls keep detail; skin warm and a bit richer
     "warm_rich": dict(lift=(0.0, 0.0, 0.0), gain=(-0.045, 0.01, 0.035), contrast=0.44, sat=1.6, vig=0.12, pop=0, bright=-0.085, hl=0.2, skin_sat=1.18),
+    # "natural" (user's default): the footage's own colours and white balance - no tint, no warmth, no extra
+    # saturation, no vignette; only a very slight contrast lift and highlight protection
+    "natural":   dict(lift=(0.0, 0.0, 0.0), gain=(0.0, 0.0, 0.0), contrast=0.08, sat=1.0, vig=0.0, pop=0, bright=0.0, hl=0.04),
     "none":      None,
 }
 
