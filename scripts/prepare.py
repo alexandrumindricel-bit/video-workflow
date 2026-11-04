@@ -46,6 +46,65 @@ def detect_faces(video, samples=24):
     return boxes
 
 
+# User-approved colour look ("Mindri-Box-v3" / "Comanda-Ionut-v2/v4", same studio): the footage's own colours, deep
+# blacks, clean whites, lively colour. Measured on the approved clips, upper 60% of the frame (backdrop + person, no
+# table / caption area), grey 0..255: p5 ~38, p25 ~52, p50 ~76, p75 ~150, p95 ~226; mean HSV saturation ~59.
+LOOK = {"p5": 38.0, "p25": 52.0, "p50": 76.0, "p95": 226.0, "sat": 59.0}
+
+
+def look_match(video, samples=12):
+    """ffmpeg filter (tone curve + saturation) that brings a normalised clip to the approved look, or None if it is
+    already there. Only deepens shadows/midtones, lifts dim whites and adds colour - never flattens; every curve point
+    moves at most 35 levels and the saturation gain is capped at 1.3, so other scenes are not distorted."""
+    import cv2
+    import numpy as np
+    cap = cv2.VideoCapture(video)
+    n = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) or 1
+    g, sat = [], []
+    for i in range(samples):
+        cap.set(cv2.CAP_PROP_POS_FRAMES, int((i + 0.5) * n / samples))
+        ok, fr = cap.read()
+        if ok:
+            fr = cv2.resize(fr, (270, 480))[:290]
+            g.append(cv2.cvtColor(fr, cv2.COLOR_BGR2GRAY).ravel())
+            sat.append(cv2.cvtColor(fr, cv2.COLOR_BGR2HSV)[..., 1].ravel())
+    cap.release()
+    if not g:
+        return None
+    g, sat = np.concatenate(g), np.concatenate(sat)
+    p5, p25, p50, p75, p95 = (float(x) for x in np.percentile(g, [5, 25, 50, 75, 95]))
+    s0 = float(sat.mean())
+    lim = lambda v, t: v - min(35.0, max(0.0, v - t))          # move a point down towards its target, max 35
+    pts = [(0, 0), (p5, lim(p5, LOOK["p5"])), (p25, lim(p25, LOOK["p25"])), (p50, lim(p50, LOOK["p50"])),
+           (p75, p75), (p95, min(255.0, p95 + min(25.0, max(0.0, LOOK["p95"] - p95)))), (255, 255)]
+    moved = max(abs(a - b) for a, b in pts)
+    sg = float(np.clip(LOOK["sat"] / max(1.0, s0), 1.0, 1.3))
+    if moved < 10 and sg < 1.05:
+        return None
+    xs, ys, last = [], [], -1.0
+    for x, y in sorted(pts):
+        if xs and x <= xs[-1] + 2:
+            continue
+        y = max(y, last + 1.0)
+        xs.append(x); ys.append(y); last = y
+    curve = " ".join(f"{x / 255:.4f}/{min(1.0, y / 255):.4f}" for x, y in zip(xs, ys))
+    print(f"look match: shadows p5 {p5:.0f}->{ys[1]:.0f}, p25 {p25:.0f}, mids p50 {p50:.0f}, whites p95 {p95:.0f}; "
+          f"saturation {s0:.0f} x{sg:.2f}")
+    return f"curves=all='{curve}',eq=saturation={sg:.3f}"
+
+
+def apply_look(src):
+    """Re-encode WORK/source.mov in place with look_match (all clips: HDR-tonemapped, washed and normal SDR)."""
+    f = look_match(src)
+    if not f:
+        return
+    tmp = src.replace(".mov", "_look.mov")
+    run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", src, "-vf", f, "-c:v", "libx264", "-preset", "fast",
+         "-crf", "14", "-g", "15", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709",
+         "-color_range", "tv", "-c:a", "copy", tmp])
+    os.replace(tmp, src)
+
+
 def washed_levels(video, samples=10):
     """lutyuv filter that restores milky SDR footage (black point lifted above ~Y45), else None."""
     import cv2
@@ -107,6 +166,7 @@ def main():
          "-c:v", "libx264", "-preset", "fast", "-crf", "14", "-g", "15",
          "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv",
          "-af", "aresample=48000:async=1:first_pts=0", "-ac", "2", "-c:a", "pcm_s16le", src])
+    apply_look(src)   # approved colour look on every clip (user rule)
     run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", src, "-vn", "-ac", "1", "-ar", "16000",
          os.path.join(work, "audio16k.wav")])
 

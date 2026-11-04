@@ -22,6 +22,12 @@ $VW/vw.sh prep RAW.mp4 WORK [--language ro|en] [--model small|medium]
   whites - e.g. *_compressed.mp4) is detected (black point above Y45, or white point below Y203 - dim whites next to
   tone-mapped .mov clips of the same set) and its levels are restored in prepare.py
   (luma stretch to Y34..~215, chroma x1.08), matching the approved natural look of tone-mapped HDR (Mindri-Box-v3).
+- **APPROVED COLOUR LOOK on every clip (user rule - "the filter we talked about")**: after normalising, prepare.py
+  runs `look_match` on `source.mov`: it measures the upper 60% of the frame (backdrop + person) and applies a tone
+  curve + saturation so every clip matches the approved look (Mindri-Box-v3 / Comanda-Ionut-v2/v4: deep blacks,
+  vivid orange, clean white T-shirt; targets p5 38, p25 52, p50 76, p95 226, saturation 59). It only deepens
+  shadows/mids, lifts dim whites and adds colour (max 35 levels per point, saturation x1.3 max); clips already in
+  the look are left untouched. Multi-clip videos thus match each other. The `grade` stays `natural` on top.
 - HDR phone footage (iPhone: HLG/PQ, BT.2020, 10-bit, Dolby Vision) is tone-mapped to SDR BT.709 automatically
   (zscale + hable, 100 nits) - without it everything looks pale and milky. The output is tagged BT.709.
 - Normalizes to 30 fps CFR, 1080x1920 (cover-crop), detects the face (MediaPipe full-range) and measures the
