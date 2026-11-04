@@ -94,6 +94,9 @@ GRADES = {
     # "simple" (Instagram-style simple filter, approximated): natural colours, gentle contrast, slightly darker,
     # a touch of warmth, true blacks, no vignette, no background blur
     "simple":    dict(lift=(0.0, 0.0, 0.0), gain=(-0.012, 0.0, 0.014), contrast=0.2, sat=1.06, vig=0.0, pop=0, bright=-0.04, hl=0.08),
+    # "warm" look from the user's reference photo: richer colour (not neon), golden highlights, deeper mid-tones,
+    # true blacks, sky/walls keep detail; skin warm and a bit richer
+    "warm_rich": dict(lift=(0.0, 0.0, 0.0), gain=(-0.045, 0.01, 0.035), contrast=0.44, sat=1.6, vig=0.12, pop=0, bright=-0.085, hl=0.2, skin_sat=1.18),
     "none":      None,
 }
 
@@ -133,7 +136,7 @@ def apply_grade(F, g, luts, strength, M=None):
         hch, sch, vch = cv2.split(hsv)
         skin = ((hch < 25) | (hch > 170)).astype(np.float32)   # warm hues: keep skin natural
         k = 1 + (g["sat"] - 1) * strength
-        sf = sch.astype(np.float32) * (k * (1 - skin) + min(k, 1.04) * skin)
+        sf = sch.astype(np.float32) * (k * (1 - skin) + min(k, g.get("skin_sat", 1.04)) * skin)
         out = cv2.cvtColor(cv2.merge([hch, np.clip(sf, 0, 255).astype(np.uint8), vch]), cv2.COLOR_HSV2BGR)
     if M is not None and g.get("pop"):
         small = cv2.resize(out, (W // 6, H // 6), interpolation=cv2.INTER_AREA)
