@@ -16,21 +16,27 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SFX_DIR = os.path.join(HERE, "..", "sfx")
 
 # default sound for each element type / transition kind  (name, gain dB)
-# Sound palette modelled on the "Essential SFX" reference: pop, whoosh, swoosh, snap, flash, deep_bass, charge,
-# rewind, metallic_hit, synth_hit, gear, gunshot (+ older tick/click/paper/glitch/ding for small UI details)
+# Sound library = the 10 sounds from the user's SFX reference video (sfx/*.wav, peak -3 dBFS):
+# loading (digital ticking, 0.9 s), click, air (short airy swish), tap (soft pop), marker (highlighter stroke),
+# tick (tiny UI tick), blur_hit (punchy impact + tail), swish, sub_boom (sub-bass drop), logo_hit (big reveal hit)
 AUTO_SFX = {
-    "title": ("synth_hit", -13), "card": ("pop", -11), "prompt": ("pop", -12), "strike": ("metallic_hit", -14),
-    "counter": ("charge", -15), "step": ("snap", -9), "list": ("snap", -11), "stat": ("synth_hit", -13),
-    "comment": ("pop", -11), "follow": ("ding", -14), "image": ("pop", -11), "label": None, "frame": None,
-    "flash": ("flash", -9), "leak": ("swoosh", -11),
-    "orbit": ("charge", -15), "wall": ("paper", -11), "app": ("pop", -11), "phone": ("swoosh", -12),
-    "chart": ("charge", -15), "backdrop": ("whoosh", -11), "doodle": ("paper", -14), "tiles": ("charge", -15),
-    "glass": ("deep_bass", -12), "cover": ("deep_bass", -11), "checklist": ("gear", -13), "product3d": ("charge", -14),
-    "combo": ("synth_hit", -11), "photos": None, "numcards": None,
+    "title": ("blur_hit", -14), "card": ("tap", -11), "prompt": ("tap", -12), "strike": ("marker", -11),
+    "counter": ("loading", -10), "step": ("click", -11), "list": ("click", -12), "stat": ("blur_hit", -14),
+    "comment": ("tap", -11), "follow": ("logo_hit", -13), "image": ("tap", -11), "label": None, "frame": None,
+    "flash": ("air", -9), "leak": ("swish", -9),
+    "orbit": ("swish", -10), "wall": ("marker", -13), "app": ("tap", -11), "phone": ("swish", -10),
+    "chart": ("loading", -10), "backdrop": ("swish", -9), "doodle": ("marker", -14), "tiles": ("loading", -10),
+    "glass": ("sub_boom", -11), "cover": ("sub_boom", -10), "checklist": ("click", -12), "product3d": ("air", -9),
+    "combo": ("blur_hit", -12), "photos": None, "numcards": None,
 }
-TRANSITION_SFX = {"zoom_through": ("whoosh", -7), "flash": ("flash", -8), "flash_blur": ("flash", -8), "pixelate": ("rewind", -12),
-                  "leak": ("swoosh", -9), "glitch": ("glitch", -10), "punch": ("snap", -12), "whoosh": ("whoosh", -9),
-                  "swoosh": ("swoosh", -9), "impact": ("deep_bass", -8), "rewind": ("rewind", -9), "paper": ("paper", -8)}
+TRANSITION_SFX = {"zoom_through": ("swish", -7), "flash": ("air", -7), "flash_blur": ("blur_hit", -10), "pixelate": ("loading", -9),
+                  "leak": ("swish", -8), "glitch": ("loading", -9), "punch": ("click", -12), "whoosh": ("swish", -7),
+                  "swoosh": ("swish", -7), "impact": ("sub_boom", -8), "rewind": ("loading", -8), "paper": ("marker", -9)}
+# old (synthesized) names still used in storyboards / manual "sfx" -> closest sound of the new library
+SFX_ALIAS = {"pop": "tap", "whoosh": "swish", "swoosh": "swish", "swoosh_down": "air", "snap": "click", "flash": "air",
+             "deep_bass": "sub_boom", "charge": "loading", "rewind": "loading", "metallic_hit": "blur_hit",
+             "synth_hit": "blur_hit", "gear": "tick", "gunshot": "blur_hit", "ding": "logo_hit", "paper": "marker",
+             "glitch": "loading", "impact": "blur_hit", "riser": "loading", "shutter": "click"}
 
 
 def sfx_events(sb):
@@ -49,19 +55,19 @@ def sfx_events(sb):
             name, g = spec, -10
         ev.append((el["start"], name, g + off))
         if el["type"] == "product3d" and el.get("info", True) is not False:
-            ev.append((el["start"] + el.get("info_at", 0.45), "pop", -13 + off))
-            ev.append((el["start"] + 0.05, "whoosh", -12 + off))
+            ev.append((el["start"] + el.get("info_at", 0.45), "tap", -13 + off))
+            ev.append((el["start"] + 0.05, "swish", -11 + off))
         if el["type"] == "combo":
-            ev.append((el["start"] + 0.08, "glitch", -18 + off))          # pixel squares
+            ev.append((el["start"] + 0.08, "tick", -16 + off))            # pixel squares
             if el is next((e for e in sb.get("elements", []) if e["type"] == "combo"), None):
-                ev.append((el["start"], "deep_bass", -10 + off))           # hook impact
+                ev.append((el["start"], "sub_boom", -10 + off))            # hook impact
             if el.get("accent"):
-                ev.append((el["start"] + 0.35, "swoosh_down", -15 + off))  # handwritten accent
+                ev.append((el["start"] + 0.35, "marker", -13 + off))       # handwritten accent
         if el["type"] in ("photos", "numcards"):
             for j, it in enumerate(el.get("items", [])):
                 at = it.get("at") if isinstance(it, dict) else None
                 t0 = at if at is not None else el["start"] + j * el.get("stagger", 0.22 if el["type"] == "photos" else 0.3)
-                ev.append((t0, "flash" if el["type"] == "photos" else "snap", (-14 if el["type"] == "photos" else -9) + off))
+                ev.append((t0, "air" if el["type"] == "photos" else "click", (-12 if el["type"] == "photos" else -11) + off))
         if el["type"] == "strike":
             ev.append((el["start"] + el.get("strike_at", 0.45), "click", -12 + off))
         if el["type"] == "list":
@@ -84,8 +90,8 @@ def sfx_events(sb):
         d = TRANSITION_SFX.get(tr["kind"]) if spec == "auto" else ((spec, -9) if spec else None)
         if d:
             ev.append((tr["at"], d[0], d[1] + off))
-    EFFECT_SFX = {"pull_back": ("swoosh", -10), "frame_break": ("whoosh", -10), "vertigo": ("charge", -13),
-                  "sticker": ("paper", -9), "outline": ("tick", -12), "push": None, "punch": ("snap", -13), "cutout": None, "track": None}
+    EFFECT_SFX = {"pull_back": ("swish", -9), "frame_break": ("swish", -9), "vertigo": ("sub_boom", -13),
+                  "sticker": ("marker", -10), "outline": ("marker", -12), "push": None, "punch": ("click", -13), "cutout": None, "track": None}
     for e in sb.get("effects", []):
         spec = e.get("sfx", "auto")
         d = EFFECT_SFX.get(e["kind"]) if spec == "auto" else ((spec, -10) if spec else None)
@@ -93,7 +99,7 @@ def sfx_events(sb):
             ev.append((e["start"], d[0], d[1] + off))
     for s in sb.get("sfx", []):
         ev.append((s["at"], s["name"], s.get("gain_db", -10) + off))
-    return sorted(ev)
+    return sorted((t, n if os.path.exists(os.path.join(SFX_DIR, n + ".wav")) else SFX_ALIAS.get(n, n), g) for t, n, g in ev)
 
 
 def main():

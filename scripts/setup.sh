@@ -12,7 +12,6 @@ if ! /opt/vw-seg/bin/python -c "import mediapipe" 2>/dev/null; then
 fi
 node -e "require('playwright')" 2>/dev/null || { echo "Playwright (node) not found"; exit 1; }
 ls "$HERE"/renderer/fonts/*.woff2 >/dev/null 2>&1 || { echo "fonts missing in renderer/fonts"; exit 1; }
-python3 "$HERE/scripts/make_sfx.py" --keep-existing
 # Whisper model reachability (huggingface.co must be allowed by the network policy, or models/ pre-filled)
 if ls "$HERE"/models/models--Systran--faster-whisper-* >/dev/null 2>&1; then
   echo "Whisper model cache present in models/"

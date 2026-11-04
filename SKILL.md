@@ -141,21 +141,19 @@ in orange (e.g. `{"type": "tiles", "text": "400-600", "unit": "cm³"}`); the old
 `pixelate` (pixel dissolve, also good when an element/image leaves), `zoom_through`, and zoom-jump cuts (`punch`
 alternating 1.0 / 1.1-1.15 on jump cuts). Keep `glitch` rare.
 
-**Sounds (Essential SFX reference, synthesized)**: pop, whoosh, swoosh, snap, flash, deep_bass, charge, rewind,
-metallic_hit, synth_hit, gear, gunshot - mapped automatically (compose.py): flash_blur → flash, pixelate → rewind,
-zoom_through → whoosh, punch cut → snap, combo/title/stat → synth_hit (first combo + deep_bass), strike → metallic_hit,
-checklist → gear, cards/headline info → pop, charts/counters/tiles/products → charge, glass/cover → deep_bass.
-`gunshot` only if the user asks. Never extract sounds from reference videos - always use the synthesized library.
+**Sounds (user's SFX reference video, extracted - the ONLY library; the old synthesized one was deleted on request)**:
+10 WAVs in `sfx/` (peak -3 dBFS): `loading` (digital ticking 0.9 s), `click`, `air` (short airy swish), `tap` (soft pop),
+`marker` (highlighter stroke), `tick` (tiny UI tick), `blur_hit` (punchy impact + tail), `swish`, `sub_boom` (sub-bass
+drop), `logo_hit` (big reveal hit). Mapped automatically (compose.py): flash_blur → blur_hit, zoom_through/leak/
+whoosh/swoosh transitions → swish, flash → air, pixelate/glitch/rewind → loading, impact → sub_boom, punch → click;
+title/stat/combo → blur_hit (first combo + sub_boom), strike/doodle/wall/accent → marker, cards/app/image/product info → tap,
+products → air + swish, steps/lists/checklists/numcards → click, counters/tiles/charts → loading, glass/cover → sub_boom,
+follow card → logo_hit, typing → tick. Old names (pop, whoosh, deep_bass, ding, ...) still work via `SFX_ALIAS`.
 
-**No blur on footage**: never smear or soften the image. `vertigo` now keeps the background sharp and grows the
-cut-out person (max 0.14); all zooms are sharpened. Check QA frames for softness.
-
-**Style preset** (titles/graphics): `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles),
-`"bold"` (white heavy words + big yellow keyword, like the effects reference) or `"depth"` (blue gradient 3D hero words).
 Pick per user request; otherwise editorial.
 
-**SFX** are automatic: whoosh on titles, pop on cards, typing ticks on prompts, click on steps/list items,
-shutter on flash, glitch sound on glitch, etc. Override per element with `"sfx": "name"` or `"sfx": null`.
+**SFX** are automatic (see "Sounds" above): blur_hit on titles, tap on cards, typing ticks on prompts, click on
+steps/list items, logo_hit on the follow card, etc. Override per element with `"sfx": "name"` or `"sfx": null`.
 Optional `music: {file, gain_db}` only if the user supplies a track (it is ducked under the voice).
 
 ## 4b. Products from mindricel.ro → 3D product (mandatory whenever one is presented)
@@ -210,6 +208,6 @@ the storyboard table, and anything to double-check (low-confidence words, landsc
 ## Notes / limits
 - Person cut-out uses MediaPipe 0.10.14 in `/opt/vw-seg` (Python 3.12 venv, model bundled in the wheel): soft edges,
   best for head-and-shoulders/medium shots. Text behind the speaker = any element on the back layer.
-- The SFX library is synthesized (`scripts/make_sfx.py`). The user's own WAVs dropped into `sfx/` with the same names
-  (whoosh, pop, click, tick, shutter, impact, riser, glitch, ding, paper, swoosh_down) replace them.
+- The SFX library is the 10 sounds extracted from the user's SFX reference video (`sfx/*.wav`, committed). New WAVs the
+  user sends can be added to `sfx/` and referenced by name (`"sfx": "name"`).
 - Speed: about 10-12 s of rendering per second of final video when back-layer and cut-out effects are used.

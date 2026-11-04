@@ -28,7 +28,7 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
   "transitions": [ {"at": 4.2, "kind": "flash_blur|pixelate|zoom_through|flash|glitch|leak|whoosh|swoosh|impact|rewind|paper", "dur": 0.5, "sfx": "auto|name|null"} ],
   "effects": [ {"kind": "push|punch|vertigo|frame_break|pull_back|sticker|outline|cutout", "start": 1.0, "end": 2.0, ...} ],
   "zooms": [ {"start": 1.1, "end": 2.2, "scale": 1.1} ],   // punch-ins, piecewise constant, 1.06-1.12
-  "sfx": [ {"at": 3.0, "name": "ding", "gain_db": -12} ],  // extra manual SFX
+  "sfx": [ {"at": 3.0, "name": "logo_hit", "gain_db": -12} ],  // extra manual SFX: loading click air tap marker tick blur_hit swish sub_boom logo_hit
   "sfx_gain_db": 0,                                         // global SFX offset
   "music": {"file": "/path/track.mp3", "gain_db": -18}      // optional, auto-ducked
 }
@@ -40,6 +40,8 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
 `sfx`: `"auto"` (default) · a sound name · `null` · `hide_captions`: true hides subtitles while shown
 
 ## Element types
+Auto-SFX names in the tables below are the old names; they map to the new library via `SFX_ALIAS` (compose.py; see SKILL.md "Sounds").
+
 | type | fields | look / animation | auto SFX |
 |---|---|---|---|
 | `title` | `lines: [{text, font, size?, gold?, boxed?}]`, `anim: rise\|drop\|pop` | giant type; fonts: `serif` (condensed caps), `heavy` (Inter Black caps), `italic` (serif italic), `mono` (small label), `depth`, `depth-white` | whoosh |
