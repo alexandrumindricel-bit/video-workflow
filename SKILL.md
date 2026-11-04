@@ -149,6 +149,22 @@ whoosh/swoosh transitions → swish, flash → air, pixelate/glitch/rewind → l
 title/stat/combo → blur_hit (first combo + sub_boom), strike/doodle/wall/accent → marker, cards/app/image/product info → tap,
 products → air + swish, steps/lists/checklists/numcards → click, counters/tiles/charts → loading, glass/cover → sub_boom,
 follow card → logo_hit, typing → tick. Old names (pop, whoosh, deep_bass, ding, ...) still work via `SFX_ALIAS`.
+**SFX density (user: "use sound effects more often")** - default `"sfx_density": "high"`: on top of the element and
+transition sounds, compose.py adds quiet extra sounds (-15..-19 dB) on caption phrase changes (air when the phrase goes
+behind the head, tap on numbers/prices, alternating swish / tick otherwise; from `WORK/caption_events.json`), on every
+jump cut (click), when a top graphic leaves (air) and on push/track camera moves. Every extra sound keeps >= 0.3 s from
+the others (~1 sound per second). Calm topics: `"sfx_density": "normal"` (automatic when captions `motion: "fade"`).
+
+**Text behind the person must never cut into the head/face** (user feedback): fx.py's person matte grows at once and
+shrinks slowly (no lag when the head moves), has a lower threshold for hair, and is merged with a solid head shape from
+the per-frame face detector (limited to the segmentation, so no halo). overlay.html never puts a behind phrase across the
+face itself (eyes to mouth) - only behind hair, the top of the forehead or the sides of the head.
+
+**No blur on footage**: never smear or soften the image. `vertigo` now keeps the background sharp and grows the
+cut-out person (max 0.14); all zooms are sharpened. Check QA frames for softness.
+
+**Style preset** (titles/graphics): `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles),
+`"bold"` (white heavy words + big yellow keyword, like the effects reference) or `"depth"` (blue gradient 3D hero words).
 
 Pick per user request; otherwise editorial.
 
