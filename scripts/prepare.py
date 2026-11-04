@@ -46,6 +46,32 @@ def detect_faces(video, samples=24):
     return boxes
 
 
+def washed_levels(video, samples=10):
+    """lutyuv filter that restores milky SDR footage (black point lifted above ~Y45), else None."""
+    import cv2
+    import numpy as np
+    cap = cv2.VideoCapture(video)
+    n = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) or 1
+    vals = []
+    for i in range(samples):
+        cap.set(cv2.CAP_PROP_POS_FRAMES, int((i + 0.5) * n / samples))
+        ok, fr = cap.read()
+        if ok:
+            vals.append(cv2.cvtColor(cv2.resize(fr, (270, 480)), cv2.COLOR_BGR2GRAY).ravel())
+    cap.release()
+    if not vals:
+        return None
+    g = np.concatenate(vals)
+    lo, hi = (16 + float(np.percentile(g, p)) * 219 / 255 for p in (1, 99.5))   # in limited-range Y
+    if lo <= 45:
+        return None
+    lo_t, hi_t = 34.0, min(222.0, max(hi, hi + 20))
+    k = (hi_t - lo_t) / max(1.0, hi - lo)
+    print(f"washed SDR source (black Y{lo:.0f}, white Y{hi:.0f}) -> levels restored to Y{lo_t:.0f}..{hi_t:.0f}")
+    c = "clip(128+(val-128)*1.08,16,240)"
+    return f"lutyuv=y='clip({lo_t:.1f}+(val-{lo:.1f})*{k:.3f},16,235)':u='{c}':v='{c}'"
+
+
 def main():
     raw, work = sys.argv[1], sys.argv[2]
     os.makedirs(work, exist_ok=True)
@@ -69,6 +95,13 @@ def main():
               f"format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p,")
         vf = tm + vf
         print(f"HDR source ({trc}, {v.get('color_primaries')}) -> tone-mapped to SDR BT.709")
+    else:
+        # "washed" SDR: iPhone HDR clips re-encoded by a compressor app without tone mapping arrive as SDR with
+        # lifted, milky blacks and dim whites. Restore the levels (luma only, gentle chroma) so they match the look
+        # of properly tone-mapped HDR footage (user-approved "natural" look, Mindri-Box-v3).
+        fix = washed_levels(raw)
+        if fix:
+            vf += "," + fix
     run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", raw, "-vf", vf,
          "-c:v", "libx264", "-preset", "fast", "-crf", "14", "-g", "15",
          "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv",
