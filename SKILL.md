@@ -102,8 +102,12 @@ doodles. Never mix in the green/cream editorial colours.
   deeper/saturated on bright scenes and light on dark scenes so it always reads.
 - Position rotates head / chest / head / above-head; while titles or graphics occupy the top, phrases stay on the
   chest. A phrase in FRONT never covers the face (hair to chin): it moves to the chest or above the head instead.
-- Depth: head-anchored phrases search a spot BEHIND the person (top of head / eyes / neck height, shifted up to
-  ±200 px) where every big word is at most 20% hidden and its first/last letters stay visible; if none, in front.
+- DEPTH (user rule, EVERY video): about 40% of phrases (`behind_share` 0.4) sit slightly BEHIND the head (back
+  layer + cut-out). The search covers heights from "lower edge grazing the hair" down to mid-face and shifts up to
+  ±240 px sideways. A spot is valid only if the head really overlaps a word (`behind_min_overlap` 5%), each big word
+  is at most 25% hidden (short words ~4% per letter, e.g. max 16% for 4 letters), and the top part of the first/last
+  letters stays visible. Uses the worst-case silhouette over the clip (`occ_max`), scaled by any zoom active at that
+  moment. Never 3 behind in a row, never while graphics occupy the top. Check those frames in QA.
 - Readability: every big word has a fine contour (dark on dark areas, light on bright areas) + soft shadow; small
   words have a dark contour. Fill colours are chosen from the brightness EXACTLY under the phrase (`lum` map from
   body_profile.py): light tints over dark areas, deep tints over bright areas - the palette stays the footage's.
