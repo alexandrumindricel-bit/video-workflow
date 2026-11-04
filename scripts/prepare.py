@@ -61,8 +61,17 @@ def main():
     src = os.path.join(work, "source.mov")  # mov so the audio can stay lossless PCM
     vf = (f"fps={FPS},scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos,"
           f"crop={W}:{H},setsar=1,format=yuv420p")
+    # iPhone / modern phones film HDR (HLG or PQ, BT.2020, 10-bit). Converting that to normal 8-bit video without
+    # tone mapping makes everything pale and milky - so tone-map HDR to SDR BT.709 first (hable curve, 100 nits).
+    trc = v.get("color_transfer", "")
+    if trc in ("arib-std-b67", "smpte2084"):
+        tm = (f"zscale=tin={trc}:min=bt2020nc:pin=bt2020:rin={'tv' if v.get('color_range', 'tv') == 'tv' else 'pc'}:t=linear:npl=100,"
+              f"format=gbrpf32le,zscale=p=bt709,tonemap=tonemap=hable:desat=0,zscale=t=bt709:m=bt709:r=tv,format=yuv420p,")
+        vf = tm + vf
+        print(f"HDR source ({trc}, {v.get('color_primaries')}) -> tone-mapped to SDR BT.709")
     run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", raw, "-vf", vf,
          "-c:v", "libx264", "-preset", "fast", "-crf", "14", "-g", "15",
+         "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv",
          "-af", "aresample=48000:async=1:first_pts=0", "-ac", "2", "-c:a", "pcm_s16le", src])
     run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", src, "-vn", "-ac", "1", "-ar", "16000",
          os.path.join(work, "audio16k.wav")])

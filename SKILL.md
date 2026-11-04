@@ -18,6 +18,8 @@ Read `STYLE_GUIDE.md` (the style), `EFFECTS.md` (the 17-effect library - use sev
 ```
 $VW/vw.sh prep RAW.mp4 WORK [--language ro|en] [--model small|medium]
 ```
+- HDR phone footage (iPhone: HLG/PQ, BT.2020, 10-bit, Dolby Vision) is tone-mapped to SDR BT.709 automatically
+  (zscale + hable, 100 nits) - without it everything looks pale and milky. The output is tagged BT.709.
 - Normalizes to 30 fps CFR, 1080x1920 (cover-crop), detects the face (MediaPipe full-range) and measures the
   title-zone brightness → `layout.json` (safe zones; bright zones make titles boxed and glass text tinted).
 - Transcribes with word timestamps (keeps "um"/restarts visible) → `transcript.json`.

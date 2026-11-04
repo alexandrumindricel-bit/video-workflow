@@ -166,7 +166,7 @@ def main():
     cmd = ["ffmpeg", "-nostdin", "-v", "error", "-y", *inputs, "-filter_complex_script", graph,
            "-map", "[vout]", "-map", "[aout]", "-t", f"{dur:.3f}",
            "-c:v", "libx264", "-profile:v", "high", "-preset", "medium", "-crf", "18", "-r", str(FPS),
-           "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", out]
+           "-pix_fmt", "yuv420p", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", out]
     subprocess.run(cmd, check=True)
 
     # QA
