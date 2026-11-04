@@ -850,17 +850,23 @@ window.init = async (data) => {
       const bright = (zb.top_luma ?? 0.5) > 0.55;           // light scenes need deeper colours, dark scenes light ones
       c.bright = bright;
       const sat = (h, amt) => { const x = hexRgb2(h), m = (x[0] + x[1] + x[2]) / 3; return '#' + x.map(v => Math.max(0, Math.min(255, Math.round(m + (v - m) * amt))).toString(16).padStart(2, '0')).join(''); };
+      // lift = 0 normal, 1 stronger contrast (contrast guard), 2 vivid mid tone for mixed backgrounds (reads on white shirt AND dark backdrop with the dark contour)
+      const accFill = (a, bright, lift) => bright
+        ? `linear-gradient(100deg, ${tone(a, [0.5, 0.3][Math.min(lift, 1)], true)} 0%, ${tone(a, [0.36, 0.2][Math.min(lift, 1)], true)} 55%, ${tone(a, [0.26, 0.14][Math.min(lift, 1)], true)} 100%)`
+        : `linear-gradient(100deg, ${tone(a, [0.8, 0.86, 0.7][lift], false)} 0%, ${tone(a, [0.64, 0.74, 0.58][lift], false)} 50%, ${tone(a, [0.52, 0.64, 0.5][lift], false)} 100%)`;
       const assignFills = bright => lines.forEach((ln, j) => {
         const k = ci + j, t = ln.big.t;
         if (cs.semantic !== false && (MONEY.test(t) || c.some(w => /\d/.test(w.w)) && /\d/.test(t)))
           ln.fill = bright ? 'linear-gradient(100deg,#5FD06A 0%,#2FA84F 50%,#1C7A38 100%)' : 'linear-gradient(100deg,#E9FFE6 0%,#7FE07A 40%,#2FA84F 100%)';
         else if (cs.semantic !== false && NEG.test(t)) ln.fill = 'linear-gradient(100deg,#FF7A70 0%,#EE3E3E 55%,#B92A27 100%)';
-        else if (k % 3 === 2 || !acc.length)
+        else if ((k % 4 === 3 && (cs.neutral_share ?? 0.25) > 0) || !acc.length)
           ln.fill = bright ? 'linear-gradient(180deg,#2E3440 0%,#1A1D24 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#EDEDED 100%)';
         else {
-          const a = sat(acc[k % acc.length], 1.6);
-          ln.fill = bright ? `linear-gradient(100deg, ${tone(a, 0.5, true)} 0%, ${tone(a, 0.36, true)} 55%, ${tone(a, 0.26, true)} 100%)`
-                           : `linear-gradient(100deg, ${mix(a, '#FFFFFF', 0.7)} 0%, ${mix(a, '#FFFFFF', 0.35)} 45%, ${mix(a, '#FFFFFF', 0.1)} 100%)`;
+          // the video's OWN colours (user: caption colour follows the palette of each video): the accent keeps its hue,
+          // only its lightness is moved so it reads on the background (light tint on dark areas, deep shade on bright)
+          const a = sat(acc[k % acc.length], 1.7);
+          ln.acc = a;
+          ln.fill = accFill(a, bright, 0);
         }
       });
       assignFills(bright);
@@ -1004,10 +1010,22 @@ window.init = async (data) => {
         lines.forEach(ln => {
           const cols = (ln.fill.match(/#[0-9A-Fa-f]{6}/g) || []).map(h => lum(hexRgb(h)));
           const fl = cols.length ? cols.reduce((a, b) => a + b, 0) / cols.length : 1;
-          if (c.mixedBg && !/#(FF7A70|5FD06A|E9FFE6)/i.test(ln.fill)) { ln.fill = 'linear-gradient(180deg,#FFFFFF 0%,#EFEFEF 100%)'; return; }
-          if (Math.abs(fl - bgL) < (cs.min_contrast ?? 0.42)) ln.fill = bgL > 0.58 ? 'linear-gradient(180deg,#2B2F36 0%,#16181D 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#EFEFEF 100%)';
+          if (c.mixedBg && !/#(FF7A70|5FD06A|E9FFE6)/i.test(ln.fill)) {
+            // mixed background: a vivid mid tone of the scene colour (not plain white) + the dark contour
+            ln.fill = ln.acc ? accFill(ln.acc, false, 2) : 'linear-gradient(180deg,#FFFFFF 0%,#EFEFEF 100%)'; return;
+          }
+          if (Math.abs(fl - bgL) < (cs.min_contrast ?? 0.42)) {
+            // first try the same scene colour with more contrast, only then white / charcoal
+            if (ln.acc) {
+              const f2 = accFill(ln.acc, bgL > 0.58, 1), c2 = (f2.match(/#[0-9A-Fa-f]{6}/g) || []).map(h => lum(hexRgb(h)));
+              if (Math.abs(c2.reduce((a, b) => a + b, 0) / c2.length - bgL) >= (cs.min_contrast ?? 0.42) - 0.04) { ln.fill = f2; return; }
+            }
+            ln.fill = bgL > 0.58 ? 'linear-gradient(180deg,#2B2F36 0%,#16181D 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#EFEFEF 100%)';
+          }
         });
-        if (lines.some(ln => /#FFFFFF/.test(ln.fill))) c.bright = false;   // white words get the dark contour
+        if (c.mixedBg) c.bright = false;
+        // light words (white or light scene tints) get the dark contour
+        if (lines.some(ln => { const q = (ln.fill.match(/#[0-9A-Fa-f]{6}/g) || []).map(h => lum(hexRgb(h))); return q.length && q.reduce((a, b) => a + b, 0) / q.length > 0.55; })) c.bright = false;
       }
       c.behind = c.lkBehind;
       c.dir = ci % 2 ? -1 : 1;

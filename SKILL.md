@@ -155,6 +155,13 @@ behind the head, tap on numbers/prices, alternating swish / tick otherwise; from
 jump cut (click), when a top graphic leaves (air) and on push/track camera moves. Every extra sound keeps >= 0.3 s from
 the others (~1 sound per second). Calm topics: `"sfx_density": "normal"` (automatic when captions `motion: "fade"`).
 
+**Caption colours follow each video's palette** (user rule): lockup words take the RAW clip's own accent colours
+(`body_profile.py` palette, e.g. the orange backdrop + gold) keeping their hue; only the lightness moves - light tints
+on dark areas, deep shades on bright areas, a vivid mid tone with the dark contour on mixed backgrounds (white shirt
+over a dark backdrop). The contrast guard first tries the same colour with more contrast, white/charcoal only as a last
+resort. White/neutral only for ~1 phrase in 4 (`captions.neutral_share`, 0 = never) or when the clip has no accents.
+Money/number green and negative red stay (`semantic`).
+
 **Text behind the person must never cut into the head/face** (user feedback): fx.py's person matte grows at once and
 shrinks slowly (no lag when the head moves), has a lower threshold for hair, and is merged with a solid head shape from
 the per-frame face detector (limited to the segmentation, so no halo). overlay.html never puts a behind phrase across the
