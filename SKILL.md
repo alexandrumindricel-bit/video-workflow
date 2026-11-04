@@ -91,20 +91,21 @@ depth-reference look in the mindricel.ro palette (orange #FF6600 gradient, ink #
 outlines). Editorial font names in title lines are mapped automatically; use orange (#FF6600/#FF8533) or white for
 doodles. Never mix in the green/cream editorial colours.
 
-**Captions (user's standing choice, real-estate reference)**: `"captions": {"style": "clean", "palette": "scene",
-"keywords": [...]}`.
-- Chest: 1-2 words at a time, Inter Bold, white, tight tracking, blur-in, thin dark contour, no box.
-- Headline per keyword (~1 per sentence): up to 2 spoken lead words (Inter Medium, small, white) OVERLAPPING the top
-  of ONE huge word (Inter ExtraBold ~220 px, letter-spacing -0.06em, lowercase unless <= 6 letters / numbers ->
-  UPPERCASE). Mixed sizes are the point: small lead, huge word, mid chest words.
-- Depth: the huge word sits at head height BEHIND the person (back layer + cut-out); the head may cover some middle
-  letters (<= 40%) but the first/last letters stay visible; otherwise it goes above the head on the front layer.
-- Colours = the RAW footage of THAT clip (`body_profile.py` → `layout.clips[].palette`: dominant non-skin accents +
-  neutral): headlines cycle neutral-grey gradient / accent gradient / white / second accent gradient, auto-toned
-  darker on bright backgrounds and lighter on dark ones, slightly transparent. Never invent colours; `"palette":
-  "mindricel"` only if the user asks for brand colours on captions.
-- Storyboard planning: keep the head zone free of titles/cards for ~1.5 s around chosen keywords (headlines never
-  overlap titles - a blocked keyword just stays a chest word). Aim for 4-8 headlines per 30 s, most of them behind.
+**Captions (user's standing choice - "lockup" reference, copied 1:1)**: `"captions": {"style": "lockup", "palette":
+"scene"}` (no keyword list needed; roles are automatic).
+- Each spoken phrase (2-5 words) is ONE typographic composition: content words are BIG (Montserrat ExtraBold, ~170 px,
+  tight -0.045em, as spoken - mostly lowercase), function words are SMALL (Montserrat SemiBold, 1/3 size, white with a
+  fine dark contour) tucked into the big words' corners - before a big word: above-left, after it: below-right
+  ("over $10,000 a month"). One big word per line, lines stacked tightly and staggered left/right.
+- Fills per big word: numbers/money → green gradient, negative words (nu, fără, stop, greșeli, scump...) → red
+  gradient, others → gradients from THAT clip's footage colours (`body_profile.py` palette) or white; automatically
+  deeper/saturated on bright scenes and light on dark scenes so it always reads.
+- Position rotates head / chest / head / above-head; while titles or graphics occupy the top, phrases stay on the
+  chest. Depth: a phrase goes BEHIND the person only if each big word is at most 25% hidden and its first/last letters
+  stay visible (otherwise in front).
+- Motion: the phrase whips in sideways with motion-blur ghosts, words appear as they are spoken (quick blur-in), and
+  it whips out in the opposite direction when the next phrase starts (no gaps between phrases).
+- Older caption styles (`clean` headlines, `depth`, `bold`, `editorial`) only on request.
 
 **Numbers**: `tiles` now render as ONE dark rounded pill with big clean digits counting up and an optional `unit`
 in orange (e.g. `{"type": "tiles", "text": "400-600", "unit": "cm³"}`); the old squares only with `"look": "classic"`.
