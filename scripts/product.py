@@ -91,12 +91,25 @@ def cutout(img_bgr):
     k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, k)
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, k)
-    # fill only small enclosed holes (keep real holes like a key-ring)
-    cs, hier = cv2.findContours(mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
+    # reconnect thin parts (goggle frames, straps) that the colour test broke apart
+    kc = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (max(5, int(0.025 * max(h, w))) | 1,) * 2)
+    closed = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kc)
+    # fill enclosed holes unless they are real background (plain + background colour, e.g. a key-ring hole);
+    # reflective / silver parts (mirror lenses) differ from the background or have texture -> part of the product
+    cs, hier = cv2.findContours(closed, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
     if hier is not None:
+        gray = cv2.cvtColor(small, cv2.COLOR_BGR2GRAY).astype(np.float32)
         for i, c in enumerate(cs):
-            if hier[0][i][3] >= 0 and cv2.contourArea(c) < 0.002 * h * w:
-                cv2.drawContours(mask, cs, i, 255, -1)
+            if hier[0][i][3] < 0:
+                continue
+            hole = np.zeros((h, w), np.uint8); cv2.drawContours(hole, cs, i, 255, -1)
+            sel = hole > 0
+            if not sel.any():
+                continue
+            real_bg = float(d[sel].mean()) < 12          # close to the background colour -> a real hole (key-ring)
+            if cv2.contourArea(c) < 0.002 * h * w or not real_bg:
+                fill = (hole > 0) & (closed == 0) | (hole > 0) & (mask == 0)
+                mask[fill] = 255                         # add only the hole, never the closing's bridge pixels
     frac = mask.mean() / 255
     quality = "good" if flat and 0.03 < frac < 0.85 else "low"
     if not flat:
