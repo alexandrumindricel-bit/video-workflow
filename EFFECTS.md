@@ -40,10 +40,11 @@ Use these **in every video, chosen to fit what is being said**. Each row says ho
 
 # "Edited" reference (raw vs edited) - apply in EVERY video
 
-1. **Never deliver raw-looking footage - always grade. Default (user's choice): `"grade": {"preset": "simple",
-   "strength": 1.0, "subject_pop": false}`** - Instagram-"simple"-like: natural colours, gentle contrast, slightly
-   darker, touch of warmth, true blacks, NO vignette, NO background blur around the person. Use the stronger presets
-   below only if the user asks for them. `"grade"` in the storyboard (fx.py, footage only, graphics untouched):
+1. **Never deliver raw-looking footage - always grade. Default (user's choice): `"grade": {"preset": "warm_rich",
+   "strength": 1.0, "subject_pop": false}`** - matched to the user's reference photo: warm golden highlights, richer
+   but not neon colour (~0.27-0.32 mean saturation), deeper mid-tones, true blacks, sky/walls keep detail, warm skin,
+   light vignette, NO background blur. `simple` (natural, lighter) is the fallback if a clip looks too dark/heavy;
+   other presets only on request. `"grade"` in the storyboard (fx.py, footage only, graphics untouched):
    `cinematic` (teal shadows / warm skin - outdoor, daylight, gym), `warm` (golden, deep blacks - night, indoor lamps),
    `olive` (grey studio), `clean` (white studio / high-key), `mindricel` (brand: warm highlights, teal-neutral shadows).
    Per clip: `{"preset": ..., "clips": [...], "strength": 0.85}`. Highlights roll off, skin tones are protected;

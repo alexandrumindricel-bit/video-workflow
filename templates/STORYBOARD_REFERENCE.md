@@ -71,7 +71,7 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
 | `photos` | `items: [{src, caption, at}]` (src = WORK-relative path from images.py), `side`, `x`, `y`, `stagger` | white-bordered rounded photo cards fanned beside the person, glow flash entry, slow drift | front |
 | `numcards` | `items: [{n, label, at}]`, `stagger` | white folded-corner paper cards with big italic numbers + labels | front |
 
-`grade` (top level): default `{"preset": "simple", "strength": 1.0, "subject_pop": false}`; presets simple | cinematic | warm | olive | clean | mindricel; or `{"preset": ..., "clips": [...], "strength": 0.85, "subject_pop": true}` - see EFFECTS.md.
+`grade` (top level): default `{"preset": "warm_rich", "strength": 1.0, "subject_pop": false}`; presets warm_rich | simple | cinematic | warm | olive | clean | mindricel; or `{"preset": ..., "clips": [...], "strength": 0.85, "subject_pop": true}` - see EFFECTS.md.
 Effect `track`: `{"kind": "track", "start", "end", "scale": 1.3, "smooth": 0.88}` - face-following zoomed crop.
 
 `layer: "front" | "back"` overrides the default on any element. Back-layer elements automatically turn the
