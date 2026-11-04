@@ -661,7 +661,7 @@ window.init = async (data) => {
   const headlines = [];
   const inHl = new Set();
   // titles/graphics that occupy the head zone: a headline never overlaps them
-  const TOPISH = new Set(['title', 'combo', 'glass', 'cover', 'strike', 'tiles', 'step', 'checklist', 'chart', 'numcards', 'app', 'card', 'counter', 'stat', 'list', 'prompt', 'comment', 'product3d']);
+  const TOPISH = new Set(['title', 'combo', 'glass', 'cover', 'strike', 'tiles', 'step', 'checklist', 'chart', 'numcards', 'app', 'card', 'counter', 'stat', 'list', 'prompt', 'comment', 'product3d', 'follow', 'image', 'label']);
   const topEls = (sb.elements || []).filter(e => TOPISH.has(e.type) && (e.pos || 'top') === 'top');
   if (capStyle === 'cl') {
     words.forEach((w, i) => {

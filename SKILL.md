@@ -173,6 +173,10 @@ cables, phone/GPS mounts, extinguisher mounts…), show it as a **3D product** t
    - Several products named in a quick list: one `product3d` per item at the moment it is said (`info: false` so the
      box/bundle price is not confused with item prices); items without a clear variant → small `card` instead.
    - Prices and product names that are unclear in the audio: ASK the user (never guess a price).
+   - "N culori / modele" said about a product with colour variants on the site → `orbit` with the variants' site photos.
+- Restart detector false alarms: lists and repeated phrases ("o pereche de ochelari, o pereche de mănuși", "pe
+  mindricel.ro ... pe mindricel.ro") are flagged as retakes - ALWAYS read review.txt and keep real lists. Words after a
+  long final pause that last < 0.1 s are transcription artefacts - remove them.
    - `hero`: the big reveal - below the chin, captions hidden; use once per product, on the main mention.
    - Price/sizes/name come only from the site (never invent or round them); `price: false` hides the price.
 5. Add a `zoom_through` or `flash` into the hero reveal, and a closing CTA naming **mindricel.ro** if the video sells.
