@@ -95,6 +95,15 @@ def main():
         s, e = max(0.0, s), min(dur, e)
         segs.append([s, e, r])
 
+    # tail: keep some picture after the last spoken word so the last caption can be read (only for the final clip
+    # of a multi-clip video - set "tail": 0 on the others)
+    tail = P.get("tail", 0.0)
+    freeze = 0.0
+    if tail and segs:
+        want = segs[-1][1] + tail
+        segs[-1][1] = min(dur, want)
+        freeze = max(0.0, want - dur - 0.02)   # footage ends too soon -> hold the last frame (silence) for the rest
+
     # resolve overlaps (adjacent runs whose padding overlaps -> merge)
     merged = []
     for s, e, r in segs:
@@ -129,7 +138,14 @@ def main():
         parts.append(f"[0:a]atrim=start={S:.6f}:end={E:.6f},asetpts=PTS-STARTPTS,"
                      f"afade=t=in:d={fade:.4f},afade=t=out:st={d - fade:.6f}:d={fade:.4f}[a{k}]")
         labels.append(f"[v{k}][a{k}]")
-    parts.append("".join(labels) + f"concat=n={len(out_segments)}:v=1:a=1[v][a]")
+    if freeze >= 1.0 / FPS:
+        fz = round(freeze * FPS) / FPS
+        parts.append("".join(labels) + f"concat=n={len(out_segments)}:v=1:a=1[vc][ac]")
+        parts.append(f"[vc]tpad=stop_mode=clone:stop_duration={fz:.4f}[v]")
+        parts.append(f"[ac]apad=pad_dur={fz:.4f}[a]")
+        t_out += fz
+    else:
+        parts.append("".join(labels) + f"concat=n={len(out_segments)}:v=1:a=1[v][a]")
     graph_path = os.path.join(work, "cut_graph.txt")
     open(graph_path, "w").write(";\n".join(parts))
     out = os.path.join(work, "cut.mov")

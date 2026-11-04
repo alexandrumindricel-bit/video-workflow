@@ -68,7 +68,7 @@ def main():
     edit = {
         "remove": [],
         "keep": [],
-        "params": {"pad_before": 0.06, "pad_after": 0.10, "max_gap": 0.20,
+        "params": {"pad_before": 0.06, "pad_after": 0.10, "max_gap": 0.20, "tail": 0.8,
                    "snap_to_silence": True},
         "_help": "remove: list of {from,to,reason} word-index ranges (inclusive) to delete. "
                  "keep: word indices to force-keep even if inside a remove range. "

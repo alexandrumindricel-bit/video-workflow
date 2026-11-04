@@ -11,6 +11,8 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
     "motion": "whip",              // lockup: "whip" (default) | "fade" (calm topics)
     "semantic": true,              // lockup: green numbers/money, red negative words (false for calm topics)
     "min_contrast": 0.42,          // lockup: word vs background brightness; below -> white / charcoal
+    "lead": 0.25, "hold": 1.2,     // lockup: show phrase this early / keep the last one this long
+    "min_phrase": 1.0,             // lockup: shorter phrases merge with a neighbour
     "headline_hold": 1.1,          // clean: seconds a headline stays after its keyword; headline_accent "alt"|"all"|"none"
     "palette": "scene",            // caption colours: "scene" (from the RAW footage, default) | "mindricel" (brand)
     "behind": "auto",              // some keywords behind the person (auto | [word indices] | false); behind_max_hidden 0.25

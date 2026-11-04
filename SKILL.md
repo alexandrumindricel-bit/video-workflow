@@ -110,6 +110,10 @@ doodles. Never mix in the green/cream editorial colours.
 - QA: check that no front phrase touches the face and that behind phrases read clearly (open frames at each one).
 - Motion: the phrase whips in sideways with motion-blur ghosts, words appear as they are spoken (quick blur-in), and
   it whips out in the opposite direction when the next phrase starts (no gaps between phrases).
+- Reading time: a phrase appears `lead` 0.25 s before it is spoken (its words slightly ahead of the voice), phrases
+  shorter than `min_phrase` 1.0 s merge with the next/previous one (max 7 words / 34 chars), the last phrase holds
+  `hold` 1.2 s. The video keeps `tail` 0.8 s of picture after the last word (`edit.json` params; if the footage ends
+  sooner, the last frame is held). Multi-clip: `"tail": 0` on every clip except the LAST one.
 - Contrast guard: if a word's colour is too close in brightness to what is behind it (`min_contrast` 0.42), it turns
   white (dark/mid backgrounds) or deep charcoal (bright backgrounds).
 - Sensitive / serious topics (funerals, illness, loss, apologies...): keep the lockup look but `"motion": "fade"`

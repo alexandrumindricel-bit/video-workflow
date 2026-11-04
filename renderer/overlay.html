@@ -803,6 +803,16 @@ window.init = async (data) => {
   hlMeas.remove();
   // ---- lockup layout: roles, lines, colours, position, depth (front / behind the person)
   if (capStyle === 'lk') {
+    // readability: a phrase must stay on screen long enough - merge phrases shorter than min_phrase (s) with the
+    // next one (same clip, up to 6 words / 30 chars)
+    const minPhrase = cs.min_phrase ?? 1.0;
+    const durOf = i => (chunks[i + 1] ? chunks[i + 1][0].start : chunks[i][chunks[i].length - 1].end + 0.8) - chunks[i][0].start;
+    const fits = (a, b) => a.length + b.length <= 7 && [...a, ...b].reduce((n, w) => n + w.w.length + 1, 0) <= 34 && (a[0].clip ?? 0) === (b[0].clip ?? 0);
+    for (let i = 0; i < chunks.length; i++) {
+      if (durOf(i) >= minPhrase) continue;
+      if (chunks[i + 1] && fits(chunks[i], chunks[i + 1])) { chunks.splice(i, 2, [...chunks[i], ...chunks[i + 1]]); i--; }
+      else if (i > 0 && fits(chunks[i - 1], chunks[i])) { chunks.splice(i - 1, 2, [...chunks[i - 1], ...chunks[i]]); i -= 2; }
+    }
     const SMALL = new Set(['și','si','de','la','în','in','pe','cu','un','o','ce','să','sa','mai','că','ca','a','al','ai','am','e','ești','esti','îl','il','le','lui','din','pentru','sau','dar','iar','te','îți','iti','să-ți','s-ar','mi','îmi','ne','vă','va','the','a','an','of','to','in','on','if','my','you','i','is','was','and','so','or','at','it','be','we','me','your','for','are','that','this']);
     const NEG = /^(nu|nici|fără|fara|stop\w*|never|not|no|don'?t|pierd\w*|greș\w*|gres\w*|prost\w*|problem\w*|riscu?\w*|scump\w*)$/i;
     const MONEY = /(\d|lei|ron|euro|€|\$|bani|profit|preț|pret|money|dollar|bugetul?)/i;
@@ -931,7 +941,9 @@ window.init = async (data) => {
       c.dir = ci % 2 ? -1 : 1;
     });
     // chunk timing for lockups: hold until the next phrase starts (no gaps), small tail at the end
-    chunks.forEach((c, i) => { const n2 = chunks[i + 1]; c.t0 = c[0].start - 0.08; c.t1 = n2 ? Math.min(n2[0].start - 0.08, c[c.length - 1].end + 1.2) : c[c.length - 1].end + 0.5; });
+    const lead = cs.lead ?? 0.25, hold = cs.hold ?? 1.2;
+    chunks.forEach((c, i) => { const n2 = chunks[i + 1]; c.t0 = c[0].start - lead; c.t1 = n2 ? Math.min(n2[0].start - lead, c[c.length - 1].end + hold) : c[c.length - 1].end + hold; });
+    chunks.forEach((c, i) => { if (i && c.t0 < chunks[i - 1].t1) chunks[i - 1].t1 = c.t0; if (c.t0 < 0) c.t0 = 0; });
     meas.remove();
     window.lockupQA = chunks.map(c => ({ t: +c.t0.toFixed(2), text: c.map(w => w.w).join(' '), anchor: c.lkAnchor, behind: c.lkBehind, y: Math.round(c.lkY), h: Math.round(c.lk.h), w: Math.round(c.lk.w) }));
   }
@@ -1322,7 +1334,8 @@ window.renderAt = (t) => {
         const calm = S.sb.captions?.motion === 'fade';
         const pin = clamp((t - c.t0) / (calm ? 0.35 : 0.14)), pout = clamp((c.t1 - t) / (calm ? 0.3 : 0.12));
         const mv = calm ? 0 : (1 - ease.out(pin)) * 280 * c.dir - (1 - ease.out(pout)) * 280 * c.dir;
-        const vis = w => clamp((t - w.start + 0.06) / 0.12);
+        const ahead = (S.sb.captions?.lead ?? 0.25) * 0.6;
+        const vis = w => clamp((t - w.start + ahead) / 0.12);
         const word = (w, cls, style) => { const p = vis(w); return `<span class="${cls}" style="${style};opacity:${p.toFixed(2)};${p < 1 && cls !== 'big' ? `filter:blur(${((1 - p) * 6).toFixed(1)}px);` : ''}${p < 1 && cls === 'big' ? `transform:scale(${(0.92 + 0.08 * p).toFixed(3)});` : ''}">${esc(w.t)}</span>`; };
         const body = c.lk.lines.map((ln, j) => `<div class="row" style="transform:translateX(${(j % 2 ? 1 : -1) * (c.lk.lines.length > 1 ? 40 : 0)}px);margin-top:${j ? -0.1 * c.lk.sz : 0}px"><span class="ln">` +
           (ln.pre.length ? `<span class="sm pre" style="font-size:${Math.round(c.lk.sz * 0.34)}px">${ln.pre.map(w => word(w, '', '')).join(' ')}</span>` : '') +
