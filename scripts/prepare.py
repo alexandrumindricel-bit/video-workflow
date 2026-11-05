@@ -210,14 +210,16 @@ def main():
         # "washed" SDR: iPhone HDR clips re-encoded by a compressor app without tone mapping arrive as SDR with
         # lifted, milky blacks and dim whites. Restore the levels (luma only, gentle chroma) so they match the look
         # of properly tone-mapped HDR footage (user-approved "natural" look, Mindri-Box-v3).
-        fix = washed_levels(raw)
+        # USER RULE: no colour effects - the footage stays exactly as filmed. Level restore only on request.
+        fix = washed_levels(raw) if os.environ.get("VW_COLOR_FIX") == "1" else None
         if fix:
             vf += "," + fix
     run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", raw, "-vf", vf,
          "-c:v", "libx264", "-preset", "fast", "-crf", "14", "-g", "15",
          "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", "-color_range", "tv",
          "-af", "aresample=48000:async=1:first_pts=0", "-ac", "2", "-c:a", "pcm_s16le", src])
-    apply_look(src)   # approved colour look on every clip (user rule)
+    if os.environ.get("VW_COLOR_FIX") == "1":   # USER RULE: no colour filter - only when explicitly asked
+        apply_look(src)
     run(["ffmpeg", "-nostdin", "-v", "error", "-y", "-i", src, "-vn", "-ac", "1", "-ar", "16000",
          os.path.join(work, "audio16k.wav")])
 

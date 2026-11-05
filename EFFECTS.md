@@ -40,7 +40,7 @@ Use these **in every video, chosen to fit what is being said**. Each row says ho
 
 # "Edited" reference (raw vs edited) - apply in EVERY video
 
-1. **Colour: default `"grade": {"preset": "natural", "strength": 1.0, "subject_pop": false}` (user's choice)** - the
+1. **Colour: `"grade": {"preset": "none"}` - NO colour effect (user's latest rule; see SKILL.md). Old notes below apply only if the user asks for a look again.** Previously: `"preset": "natural"` - the
    footage's own colours and white balance: no tint, no warmth, no extra saturation, no vignette, no background blur;
    only a very slight contrast lift and highlight protection. The user did NOT like the stylised looks (`warm_rich`,
    `simple`, `cinematic`, ...) - use them only if explicitly asked. `"grade"` in the storyboard (fx.py, footage only, graphics untouched):

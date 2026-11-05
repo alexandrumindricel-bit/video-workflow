@@ -22,13 +22,12 @@ $VW/vw.sh prep RAW.mp4 WORK [--language ro|en] [--model small|medium]
   whites - e.g. *_compressed.mp4) is detected (black point above Y45, or white point below Y203 - dim whites next to
   tone-mapped .mov clips of the same set) and its levels are restored in prepare.py
   (luma stretch to Y34..~215, chroma x1.08), matching the approved natural look of tone-mapped HDR (Mindri-Box-v3).
-- **APPROVED COLOUR LOOK on every clip (user rule - SIMPLE, natural, never orange)**: after normalising, prepare.py
-  runs `look_match` on `source.mov` so every clip matches the approved look (Mindri-Box-v3 / Comanda-Ionut-v2/v4):
-  deep blacks + clean whites (tone curve on the upper 60% of the frame: p5 38, p25 52, p50 76, p95 226; only deepens
-  shadows/mids, lifts dim whites), colour intensity pulled to the approved level in BOTH directions (Lab chroma of lit
-  areas ~13.5, gain 0.6-1.2 - warm/orange-lit or boosted footage is calmed down), and an orange/yellow cast on white
-  clothes removed (towards the approved warm-neutral, never warmer). Clips already in the look stay untouched.
-  User feedback: "too orange, make it simpler" - never boost saturation beyond the approved level. `grade` stays `natural`.
+- **NO COLOUR EFFECTS (user rule, latest - overrides everything older about filters/looks)**: the video keeps the
+  footage's colours EXACTLY as filmed. No colour filter, no look matching, no level restore, no saturation change:
+  storyboard `"grade": {"preset": "none"}` always; prepare.py's `look_match` / `washed_levels` are OFF (only with
+  `VW_COLOR_FIX=1`, i.e. only if the user explicitly asks again). The only colour step left is the technical HDR→SDR
+  conversion of iPhone .mov clips below (without it they look milky on every phone). User: "Se vede oribil! Adu
+  videourile la normal, fără niciun efect."
 - HDR phone footage (iPhone: HLG/PQ, BT.2020, 10-bit, Dolby Vision) is tone-mapped to SDR BT.709 automatically
   (zscale + hable, 100 nits) - without it everything looks pale and milky. The output is tagged BT.709.
 - Normalizes to 30 fps CFR, 1080x1920 (cover-crop), detects the face (MediaPipe full-range) and measures the
@@ -88,7 +87,7 @@ reply at the end. Rules from the style guide:
 of the head slightly (that is the look), never the eyes/mouth.
 
 **"Edited" reference rules (`EFFECTS.md`, bottom) - mandatory in every video**: always a colour `grade`
-(default `natural` preset - the footage's own colours, no stylised filter; other looks only on request), face `track`ing 1-3 times per 30 s, internet `photos` for concrete
+(`"preset": "none"` - NO colour effect, footage exactly as filmed; any look only if the user asks), face `track`ing 1-3 times per 30 s, internet `photos` for concrete
 things that are named (`scripts/images.py`, look at them first, credits in the reply), `combo` titles for the hook
 and section headers, `numcards` for enumerations.
 
