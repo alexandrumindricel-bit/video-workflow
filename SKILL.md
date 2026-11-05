@@ -213,6 +213,8 @@ cables, phone/GPS mounts, extinguisher mounts…), show it as a **3D product** t
 4. Storyboard element `product3d` from the word that names the product, 2.5-5 s:
    `{"type": "product3d", "product": "<slug>", "start": …, "end": …, "pos": "side"|"hero"|"top"}`
    - `side` (default): next to the head, turntable through the angles; info card (name, price, sizes, mindricel.ro) above it.
+     Close-ups (no 300 px strip beside the face on either side): the renderer turns a `side` product into a `hero`
+     reveal under the chin with captions hidden (user feedback: small products at caption height collided with captions).
      The product NEVER overlaps the face: it uses only the free strip beside the face; if that strip is < 300 px
      (centred close-ups) it goes under the chin / on the chest instead.
    - Several products named in a quick list: one `product3d` per item at the moment it is said (`info: false` so the
