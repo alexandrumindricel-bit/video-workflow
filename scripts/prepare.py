@@ -46,51 +46,102 @@ def detect_faces(video, samples=24):
     return boxes
 
 
-# User-approved colour look ("Mindri-Box-v3" / "Comanda-Ionut-v2/v4", same studio): the footage's own colours, deep
-# blacks, clean whites, lively colour. Measured on the approved clips, upper 60% of the frame (backdrop + person, no
-# table / caption area), grey 0..255: p5 ~38, p25 ~52, p50 ~76, p75 ~150, p95 ~226; mean HSV saturation ~59.
-LOOK = {"p5": 38.0, "p25": 52.0, "p50": 76.0, "p95": 226.0, "sat": 59.0}
+# User-approved colour look ("Mindri-Box-v3" / "Comanda-Ionut-v2/v4", same studio): the footage's own colours, SIMPLE -
+# deep blacks, clean whites, natural (not boosted) colour, white clothes neutral-warm (not orange).
+# Tone targets: upper 60% of the frame (backdrop + person), grey 0..255. Colour targets: whole frame, mean HSV
+# Lab chroma of lit areas ~13.5 and the cast of bright near-neutral pixels (white T-shirt/hoodie) at Lab a ~1, b ~5.
+LOOK = {"p5": 38.0, "p25": 52.0, "p50": 76.0, "p95": 226.0, "sat": 13.5, "white_ab": (1.0, 5.0)}
+
+
+def _look_eval(frames, lut, g, du, dv):
+    """Apply the candidate look to sample frames (tone LUT on RGB, chroma gain/offset in YCrCb) and measure
+    whole-frame saturation and the white cast."""
+    import cv2
+    import numpy as np
+    sats, wab = [], []
+    for fr in frames:
+        x = cv2.LUT(fr, lut)
+        ycc = cv2.cvtColor(x, cv2.COLOR_BGR2YCrCb).astype(np.float32)
+        ycc[..., 1] = (ycc[..., 1] - 128) * g + 128 + dv
+        ycc[..., 2] = (ycc[..., 2] - 128) * g + 128 + du
+        x = cv2.cvtColor(np.clip(ycc, 0, 255).astype(np.uint8), cv2.COLOR_YCrCb2BGR)
+        lab = cv2.cvtColor(x, cv2.COLOR_BGR2LAB).reshape(-1, 3).astype(np.float32)
+        L, A, B = lab[:, 0] * 100 / 255, lab[:, 1] - 128, lab[:, 2] - 128
+        lit = L > 25                                   # colourfulness of the lit areas (dark noise ignored)
+        sats.append(float(np.hypot(A[lit], B[lit]).mean()) if lit.any() else 0.0)
+        m = (L > 70) & (np.hypot(A, B) < 30)
+        if m.sum() > 50:
+            wab.append((float(A[m].mean()), float(B[m].mean())))
+    return float(np.mean(sats)), (tuple(np.mean(wab, 0)) if wab else None)
 
 
 def look_match(video, samples=12):
-    """ffmpeg filter (tone curve + saturation) that brings a normalised clip to the approved look, or None if it is
-    already there. Only deepens shadows/midtones, lifts dim whites and adds colour - never flattens; every curve point
-    moves at most 35 levels and the saturation gain is capped at 1.3, so other scenes are not distorted."""
+    """ffmpeg filter (tone curve + chroma gain + white-cast correction) that brings a normalised clip to the approved
+    SIMPLE look, or None if it is already there. Tone: only deepens shadows/mids and lifts dim whites (max 35 levels per
+    point). Colour: saturation is pulled towards the target in BOTH directions (gain 0.6-1.2, untouched within +-15%),
+    an orange/blue/green cast on white clothes is neutralised towards the approved warm-neutral (offsets max 8)."""
     import cv2
     import numpy as np
     cap = cv2.VideoCapture(video)
     n = int(cap.get(cv2.CAP_PROP_FRAME_COUNT)) or 1
-    g, sat = [], []
+    frames, g0 = [], []
     for i in range(samples):
         cap.set(cv2.CAP_PROP_POS_FRAMES, int((i + 0.5) * n / samples))
         ok, fr = cap.read()
         if ok:
-            fr = cv2.resize(fr, (270, 480))[:290]
-            g.append(cv2.cvtColor(fr, cv2.COLOR_BGR2GRAY).ravel())
-            sat.append(cv2.cvtColor(fr, cv2.COLOR_BGR2HSV)[..., 1].ravel())
+            fr = cv2.resize(fr, (270, 480))
+            frames.append(fr)
+            g0.append(cv2.cvtColor(fr[:290], cv2.COLOR_BGR2GRAY).ravel())
     cap.release()
-    if not g:
+    if not frames:
         return None
-    g, sat = np.concatenate(g), np.concatenate(sat)
+    g = np.concatenate(g0)
     p5, p25, p50, p75, p95 = (float(x) for x in np.percentile(g, [5, 25, 50, 75, 95]))
-    s0 = float(sat.mean())
-    lim = lambda v, t: v - min(35.0, max(0.0, v - t))          # move a point down towards its target, max 35
+    lim = lambda v, t: v - min(35.0, max(0.0, v - t))
     pts = [(0, 0), (p5, lim(p5, LOOK["p5"])), (p25, lim(p25, LOOK["p25"])), (p50, lim(p50, LOOK["p50"])),
            (p75, p75), (p95, min(255.0, p95 + min(25.0, max(0.0, LOOK["p95"] - p95)))), (255, 255)]
-    moved = max(abs(a - b) for a, b in pts)
-    sg = float(np.clip(LOOK["sat"] / max(1.0, s0), 1.0, 1.3))
-    if moved < 10 and sg < 1.05:
-        return None
+    tone_moved = max(abs(a - b) for a, b in pts) >= 10
     xs, ys, last = [], [], -1.0
     for x, y in sorted(pts):
         if xs and x <= xs[-1] + 2:
             continue
         y = max(y, last + 1.0)
         xs.append(x); ys.append(y); last = y
-    curve = " ".join(f"{x / 255:.4f}/{min(1.0, y / 255):.4f}" for x, y in zip(xs, ys))
-    print(f"look match: shadows p5 {p5:.0f}->{ys[1]:.0f}, p25 {p25:.0f}, mids p50 {p50:.0f}, whites p95 {p95:.0f}; "
-          f"saturation {s0:.0f} x{sg:.2f}")
-    return f"curves=all='{curve}',eq=saturation={sg:.3f}"
+    lut = np.clip(np.interp(np.arange(256), xs, ys), 0, 255).astype(np.uint8) if tone_moved else np.arange(256, dtype=np.uint8)
+    # white cast: offsets that move the white clothes towards the approved warm-neutral
+    du = dv = 0.0
+    s0, w0 = _look_eval(frames, lut, 1.0, 0, 0)
+    if w0 is not None:
+        ta, tb = LOOK["white_ab"]
+        if w0[1] > tb + 3 or abs(w0[0] - ta) > 4:      # only REMOVE an orange/yellow (or magenta/green) cast
+            for _ in range(6):                    # Lab a ~ +Cr, Lab b ~ -Cb
+                _, w = _look_eval(frames, lut, 1.0, du, dv)
+                if w is None:
+                    break
+                dv = float(np.clip(dv - 0.8 * (w[0] - ta), -8, 8))
+                du = float(np.clip(du + 0.8 * max(0.0, w[1] - tb), 0, 8))   # towards blue only: never warms
+    # saturation: pull towards the target in both directions
+    gain = 1.0
+    s1, _ = _look_eval(frames, lut, 1.0, du, dv)
+    if not (0.85 * LOOK["sat"] <= s1 <= 1.15 * LOOK["sat"]):
+        lo, hi = 0.6, 1.2
+        for _ in range(10):
+            mid = (lo + hi) / 2
+            sm, _ = _look_eval(frames, lut, mid, du, dv)
+            lo, hi = (mid, hi) if sm < LOOK["sat"] else (lo, mid)
+        gain = (lo + hi) / 2
+    if not tone_moved and abs(gain - 1) < 0.04 and abs(du) < 1.5 and abs(dv) < 1.5:
+        return None
+    s2, w2 = _look_eval(frames, lut, gain, du, dv)
+    print(f"look match: tone {'curve' if tone_moved else 'kept'}, saturation {s0:.0f}->{s2:.0f} (x{gain:.2f}), "
+          f"white cast {tuple(round(v, 1) for v in w0) if w0 else '-'}->{tuple(round(v, 1) for v in w2) if w2 else '-'}")
+    parts = []
+    if tone_moved:
+        parts.append("curves=all='" + " ".join(f"{x / 255:.4f}/{min(1.0, y / 255):.4f}" for x, y in zip(xs, ys)) + "'")
+    # limited-range chroma is ~224/255 of the full-range values used above
+    k = 224 / 255
+    parts.append(f"lutyuv=u='clip((val-128)*{gain:.3f}+128+{du * k:.2f},16,240)':v='clip((val-128)*{gain:.3f}+128+{dv * k:.2f},16,240)'")
+    return ",".join(parts)
 
 
 def apply_look(src):
