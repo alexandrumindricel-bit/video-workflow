@@ -172,7 +172,8 @@ the user asks.
 **NO TEXT ON THE FACE (user rule, every video, all text)**: front phrases avoid a face zone that is wider than the face
 (head movement) and scaled by any zoom active during the phrase (punch/push/track); if no spot is free they go below
 the zone on the chest. Behind phrases never cross the face (forehead to chin), only hair / top of the head / the sides.
-Titles, cards and products stay in the top zone or beside the head. QA: open frames at every phrase near the head.
+Titles, cards and products stay in the top zone or beside the head. `combo` handwritten accents (+ swoosh) are
+moved off the face automatically (below the hero → above it → dropped if there is no free spot). QA: open frames at every phrase near the head.
 
 **Caption colours follow each video's palette** (user rule): lockup words take the RAW clip's own accent colours
 (`body_profile.py` palette, e.g. the orange backdrop + gold) keeping their hue; only the lightness moves - light tints

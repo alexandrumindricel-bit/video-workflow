@@ -409,6 +409,7 @@ window.init = async (data) => {
   document.body.className = (style === 'bd' ? 'dp bd' : style) + (sb.palette ? ' th-' + sb.palette : '');
   // multi-clip videos: layout.clips[] holds the framing of each clip; elements use the clip they start in
   const clipAt = t => (layout.clips || []).find(c => t >= c.start - 1e-3 && t < c.end) || (layout.clips || []).slice(-1)[0] || layout;
+  for (const el of (sb.elements || [])) if (el.type === 'combo') el._face = (clipAt(el.start) || {}).face || layout.face || null;
   // close-ups: when there is no 300 px strip beside the face on either side, a "side" product would drop under the
   // chin at caption height (small + colliding with captions) -> make it a hero reveal with captions hidden instead
   for (const el of (sb.elements || [])) {
@@ -1388,11 +1389,26 @@ window.renderAt = (t) => {
         const ac = n.querySelector('.cacc');
         if (ac) {
           const hw = hero.offsetWidth, hh = hero.offsetHeight;
-          ac.style.left = (hw * (el.accent_x ?? 0.42)) + 'px'; ac.style.top = (hh * (el.accent_y ?? 0.8)) + 'px';
+          if (!el._acc) {
+            // user rule: no text on the face - the handwritten accent + swoosh sit below the hero word by default,
+            // which lands on the forehead when the head is high in the frame (close-ups). Try other spots; else drop it.
+            const f = el._face, wr = hero.parentElement.getBoundingClientRect();
+            const hit = (ax, ay) => {
+              if (!f) return false;
+              const x0 = wr.left + hw * ax - 20, y0 = wr.top + hh * ay, x1 = x0 + Math.max(ac.offsetWidth, 420), y1 = y0 + ac.offsetHeight * 0.85 + 70;
+              const fx0 = f.x - f.w * 0.15, fx1 = f.x + f.w * 1.15, fy0 = f.y - f.h * 0.45, fy1 = f.y + f.h * 1.1;
+              return x0 < fx1 && x1 > fx0 && y0 < fy1 && y1 > fy0;
+            };
+            const cands = el.accent_y !== undefined ? [[el.accent_x ?? 0.42, el.accent_y]] : [[el.accent_x ?? 0.42, 0.8], [0.6, -0.62], [0.0, -0.62], [0.62, 0.55]];
+            el._acc = cands.find(([ax, ay]) => !hit(ax, ay)) || 'none';
+          }
+          if (el._acc === 'none') { ac.style.display = 'none'; n.querySelector('.swoosh').style.display = 'none'; }
+          const [AX, AY] = el._acc === 'none' ? [0, 0] : el._acc;
+          ac.style.left = (hw * AX) + 'px'; ac.style.top = (hh * AY) + 'px';
           const pa = clamp((L - 0.35) / 0.45);
           ac.style.clipPath = `inset(-20% ${((1 - pa) * 100).toFixed(1)}% -20% -5%)`;   // "written" left to right
           const sw = n.querySelector('.swoosh');
-          sw.style.left = (hw * (el.accent_x ?? 0.42) - 20) + 'px'; sw.style.top = (hh * (el.accent_y ?? 0.8) + ac.offsetHeight * 0.85) + 'px';
+          sw.style.left = (hw * AX - 20) + 'px'; sw.style.top = (hh * AY + ac.offsetHeight * 0.85) + 'px';
           sw.querySelector('path').setAttribute('stroke-dashoffset', (1 - ease.out(clamp((L - 0.6) / 0.35))).toFixed(3));
           sig.push(pa.toFixed(3));
         }
