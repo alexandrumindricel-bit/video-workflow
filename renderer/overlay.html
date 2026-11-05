@@ -409,6 +409,15 @@ window.init = async (data) => {
   document.body.className = (style === 'bd' ? 'dp bd' : style) + (sb.palette ? ' th-' + sb.palette : '');
   // multi-clip videos: layout.clips[] holds the framing of each clip; elements use the clip they start in
   const clipAt = t => (layout.clips || []).find(c => t >= c.start - 1e-3 && t < c.end) || (layout.clips || []).slice(-1)[0] || layout;
+  // close-ups: when there is no 300 px strip beside the face on either side, a "side" product would drop under the
+  // chin at caption height (small + colliding with captions) -> make it a hero reveal with captions hidden instead
+  for (const el of (sb.elements || [])) {
+    if (el.type !== 'product3d' || (el.pos && el.pos !== 'side')) continue;
+    const fc = (clipAt(el.start) || {}).face || layout.face;
+    if (!fc) continue;
+    const freeL = fc.x - fc.w * 0.3 - 8, freeR = 1080 - (fc.x + fc.w * 1.3) - 8;
+    if (Math.max(freeL, freeR) < 300) { el.pos = 'hero'; if (el.hide_captions === undefined) el.hide_captions = true; }
+  }
   let face, fcx, fcy, Z, zones;
   const useLayout = t => {
     const c = clipAt(t);
@@ -662,15 +671,6 @@ window.init = async (data) => {
   const inHl = new Set();
   // titles/graphics that occupy the head zone: a headline never overlaps them
   const TOPISH = new Set(['title', 'combo', 'glass', 'cover', 'strike', 'tiles', 'step', 'checklist', 'chart', 'numcards', 'app', 'card', 'counter', 'stat', 'list', 'prompt', 'comment', 'product3d', 'follow', 'image', 'label']);
-  // close-ups: when there is no 300 px strip beside the face on either side, a "side" product would drop under the
-  // chin at caption height (small + colliding with captions) -> make it a hero reveal with captions hidden instead
-  for (const el of (sb.elements || [])) {
-    if (el.type !== 'product3d' || (el.pos && el.pos !== 'side')) continue;
-    const fc = (clipAt(el.start) || {}).face || layout.face;
-    if (!fc) continue;
-    const freeL = fc.x - fc.w * 0.3 - 8, freeR = 1080 - (fc.x + fc.w * 1.3) - 8;
-    if (Math.max(freeL, freeR) < 300) { el.pos = 'hero'; if (el.hide_captions === undefined) el.hide_captions = true; }
-  }
   // products occupy the top in every position (side: product beside the head + info card above it; hero: info card on top)
   const topEls = (sb.elements || []).filter(e => TOPISH.has(e.type) && ((e.pos || 'top') === 'top' || e.type === 'product3d'));
   if (capStyle === 'cl') {
