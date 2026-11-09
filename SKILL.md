@@ -174,7 +174,12 @@ the zone on the chest. Behind phrases never cross the face (forehead to chin), o
 Titles, cards and products stay in the top zone or beside the head. `combo` handwritten accents (+ swoosh) are
 moved off the face automatically (below the hero → above it → dropped if there is no free spot). QA: open frames at every phrase near the head.
 
-**Caption colours follow each video's palette** (user rule): lockup words take the RAW clip's own accent colours
+**CAPTIONS ARE WHITE OR BLACK - NO COLOURED TEXT (user rule, latest - overrides the palette rule below)**: white words
+with a fine dark contour on dark / mid / mixed backgrounds, black words with a fine light contour on bright
+backgrounds; the soft shadow has an orange tint (#FF6600). No scene-palette colours and no green/red semantic words
+(`captions.mono` true by default; the old colour rules below apply only if the user asks for coloured captions again).
+
+**(Old, inactive unless asked) Caption colours follow each video's palette** (user rule): lockup words take the RAW clip's own accent colours
 (`body_profile.py` palette, e.g. the orange backdrop + gold) keeping their hue; only the lightness moves - light tints
 on dark areas, deep shades on bright areas, a vivid mid tone with the dark contour on mixed backgrounds (white shirt
 over a dark backdrop). The contrast guard keeps the same colour at maximum contrast with the contour - it never

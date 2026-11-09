@@ -381,9 +381,9 @@
              /* fine contour + soft shadow so the colour never melts into the background or the subject */
              filter: drop-shadow(1.6px 0 0 var(--ol, rgba(10,10,10,.78))) drop-shadow(-1.6px 0 0 var(--ol, rgba(10,10,10,.78)))
                      drop-shadow(0 1.6px 0 var(--ol, rgba(10,10,10,.78))) drop-shadow(0 -1.6px 0 var(--ol, rgba(10,10,10,.78)))
-                     drop-shadow(0 5px 14px rgba(0,0,0,.4)); }
+                     drop-shadow(0 3px 8px rgba(0,0,0,.35)) drop-shadow(0 6px 14px var(--sh, rgba(255,102,0,.8))); }
   .lk .sm { position: absolute; font-weight: 600; letter-spacing: -0.03em; color: #F7F7F7; white-space: nowrap; line-height: 1;
-            text-shadow: 1px 0 0 rgba(10,10,10,.7), -1px 0 0 rgba(10,10,10,.7), 0 1px 0 rgba(10,10,10,.7), 0 -1px 0 rgba(10,10,10,.7), 0 2px 10px rgba(0,0,0,.45); }
+            text-shadow: 1px 0 0 rgba(10,10,10,.7), -1px 0 0 rgba(10,10,10,.7), 0 1px 0 rgba(10,10,10,.7), 0 -1px 0 rgba(10,10,10,.7), 0 2px 8px rgba(0,0,0,.35), 0 3px 12px rgba(255,102,0,.75); }
   .lk.bright .big { --ol: rgba(255,255,255,.9); }
   .lk .sm.pre { left: .12em; bottom: 100%; margin-bottom: -.22em; }
   .lk .sm.post { right: .12em; top: 100%; margin-top: -.34em; }
@@ -1103,6 +1103,15 @@ window.init = async (data) => {
         if (c.mixedBg) c.bright = false;
         // light words (white or light scene tints) get the dark contour
         if (lines.some(ln => { const q = (ln.fill.match(/#[0-9A-Fa-f]{6}/g) || []).map(h => lum(hexRgb(h))); return q.length && q.reduce((a, b) => a + b, 0) / q.length > 0.55; })) c.bright = false;
+        // USER RULE (latest, overrides the colour rules above): NO coloured caption text - white words (dark contour)
+        // on dark / mid / mixed backgrounds, black words (light contour) on bright ones; an orange tint in the shadow
+        if (cs.mono !== false) {
+          const dark = !c.mixedBg && bgL > 0.62;
+          lines.forEach(ln => { ln.fill = dark ? 'linear-gradient(180deg,#1A1A1A 0%,#0A0A0A 100%)' : 'linear-gradient(180deg,#FFFFFF 0%,#F4F4F4 100%)'; });
+          c.bright = dark;
+        }
+      } else if (cs.mono !== false) {
+        lines.forEach(ln => { ln.fill = 'linear-gradient(180deg,#FFFFFF 0%,#F4F4F4 100%)'; }); c.bright = false;
       }
       c.behind = c.lkBehind;
       c.dir = ci % 2 ? -1 : 1;
