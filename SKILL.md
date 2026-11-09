@@ -230,6 +230,29 @@ cables, phone/GPS mounts, extinguisher mounts…), show it as a **3D product** t
 5. Add a `zoom_through` or `flash` into the hero reveal, and a closing CTA naming **mindricel.ro** if the video sells.
 Never recolour or alter the product image. If mindricel.ro is unreachable, tell the user and skip (no stand-ins).
 
+## 4c. Approved element patterns (user: "add these elements to the workflow and use them when it fits")
+Reusable patterns from the approved order / Black Friday videos. Pick the ones the speech calls for, timed to the word:
+- **Product-photo orbit** - several product categories named in a row ("avem ochelari, trusă de scule, mănuși,
+  cagule"): `orbit` whose items are the site photos (`image: file://.../products/<slug>/view_0.png` for clean cut-outs,
+  `photo_0.jpg` when the cut-out is low quality) + a short label each. Fetch each slug with product.py first.
+- **"Box contents" checklist** - when the speaker lists what is in a package/Mîndri Box: `checklist` titled
+  "În Mîndri Box" (or "În colet"), each item ticking at the word that names it; 1-2 matching `product3d` beside the head
+  (`info: false`), the rest only as checklist items. Quick lists (< 1 s per item) = checklist only.
+- **Delivery timeline checklist** - "gata azi / pleacă azi / ajunge mâine": `checklist` "Comanda ta" with those steps.
+- **Day-log checklist** - behind-the-scenes ("am început, am luat o pauză, continuăm, așteptăm curierul"): `checklist`
+  "Azi la mindricel.ro" with the steps as said.
+- **Packing steps checklist** - "în ambalaj, folie cu bule, sigiliu" / "carton, folie de protecție": `checklist`.
+- **Big hook combo** - the opening line's key word as `combo` hero (BLACK FRIDAY, COLET RETUR, 2:20, GATA!, MÎNDRI BOX,
+  NU TOȚI, TETRIS) with the lead-in words on top; `hide_captions: true`. Also for a strong punchline mid-video.
+- **Name-pair title** - wordplay on names ("Costinel / Mindricel"): `title` with two `heavy` lines, the second `gold`.
+- **Thank-you card** - customer named: `card` 🧡 "Mulțumim, <Prenume>!" + a face `track`; never the family name.
+- **Context cards** - 1-line `card` with an emoji for each situational fact: 📦 coletele din weekend, 🚚 livrare
+  decalată / pleacă dimineața, 😴 2:20 noaptea, 🧾 factura, 🔒 sigilat, 🗑️ la gunoi, 🤐 fără nume de familie.
+- **Price tiles** - every price spoken (or the known Mîndri Box price on "prețul bun"): `tiles` "199" + unit "lei".
+- **Comment CTA** - "lasă-ne un comentariu / spune-ne ce părere ai": `comment` with the question typed + short reply.
+- **Follow card** - always in the last 2.5-4 s: mindricel.ro, tagline from the speaker's sign-off, button "Comandă".
+- **Transitions** - `zoom_through` / `flash_blur` / `pixelate` only on clip boundaries and section changes.
+
 ## 5. Render
 ```
 $VW/vw.sh render WORK OUT.mp4
