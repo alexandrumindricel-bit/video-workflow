@@ -413,6 +413,12 @@ window.init = async (data) => {
   document.body.className = (style === 'bd' ? 'dp bd' : style) + (sb.palette ? ' th-' + sb.palette : '');
   // multi-clip videos: layout.clips[] holds the framing of each clip; elements use the clip they start in
   const clipAt = t => (layout.clips || []).find(c => t >= c.start - 1e-3 && t < c.end) || (layout.clips || []).slice(-1)[0] || layout;
+  // a product's info card sits in the top zone: if a checklist / card / list / tiles already occupies the top at the
+  // same time, the product is shown without its own info card (no overlapping boxes)
+  for (const el of (sb.elements || [])) {
+    if (el.type !== 'product3d' || el.info === false) continue;
+    if ((sb.elements || []).some(o => o !== el && ['checklist', 'card', 'list', 'numcards', 'tiles', 'counter', 'stat', 'title', 'combo'].includes(o.type) && o.start < el.end && o.end > el.start)) el.info = false;
+  }
   for (const el of (sb.elements || [])) if (el.type === 'combo') el._face = (clipAt(el.start) || {}).face || layout.face || null;
   // close-ups: when there is no 300 px strip beside the face on either side, a "side" product would drop under the
   // chin at caption height (small + colliding with captions) -> make it a hero reveal with captions hidden instead
