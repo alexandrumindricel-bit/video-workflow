@@ -383,7 +383,7 @@
                      drop-shadow(0 1.6px 0 var(--ol, rgba(10,10,10,.78))) drop-shadow(0 -1.6px 0 var(--ol, rgba(10,10,10,.78)))
                      drop-shadow(0 3px 8px rgba(0,0,0,.35)) drop-shadow(0 6px 14px var(--sh, rgba(255,102,0,.8))); }
   .lk .sm { position: absolute; font-weight: 600; letter-spacing: -0.03em; color: #F7F7F7; white-space: nowrap; line-height: 1;
-            text-shadow: 1px 0 0 rgba(10,10,10,.7), -1px 0 0 rgba(10,10,10,.7), 0 1px 0 rgba(10,10,10,.7), 0 -1px 0 rgba(10,10,10,.7), 0 2px 8px rgba(0,0,0,.35), 0 3px 12px rgba(255,102,0,.75); }
+            text-shadow: 1px 0 0 rgba(10,10,10,.7), -1px 0 0 rgba(10,10,10,.7), 0 1px 0 rgba(10,10,10,.7), 0 -1px 0 rgba(10,10,10,.7), 0 2px 8px rgba(0,0,0,.35), 0 3px 12px var(--sh2, rgba(255,102,0,.75)); }
   .lk.bright .big { --ol: rgba(255,255,255,.9); }
   .lk .sm.pre { left: .12em; bottom: 100%; margin-bottom: -.22em; }
   .lk .sm.post { right: .12em; top: 100%; margin-top: -.34em; }
@@ -1125,6 +1125,8 @@ window.init = async (data) => {
   window.backWindows = chunks.filter(c => c.behind).map(c => [c.t0, c.t1]).concat(headlines.filter(h => h.behind).map(h => [h.t0, h.t1]));
   const cap = document.createElement('div');
   cap.id = 'cap';
+  // caption shadow tint: mindricel orange by default; captions.shadow overrides it (e.g. neutral for other brands / calm topics)
+  if (cs.shadow) { cap.style.setProperty('--sh', cs.shadow); cap.style.setProperty('--sh2', cs.shadow); }
   if (pal) Object.entries(pal).forEach(([k, v]) => cap.style.setProperty(k, v));
   stage.appendChild(cap);
   const hl = document.createElement('div'); hl.id = 'hl';

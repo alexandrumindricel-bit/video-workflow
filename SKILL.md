@@ -178,6 +178,8 @@ moved off the face automatically (below the hero → above it → dropped if the
 with a fine dark contour on dark / mid / mixed backgrounds, black words with a fine light contour on bright
 backgrounds; the soft shadow has an orange tint (#FF6600). No scene-palette colours and no green/red semantic words
 (`captions.mono` true by default; the old colour rules below apply only if the user asks for coloured captions again).
+Other brands / calm topics (e.g. NOA Funerare): neutral shadow `"captions": {"shadow": "rgba(0,0,0,.55)"}` - the orange
+tint is mindricel's.
 
 **(Old, inactive unless asked) Caption colours follow each video's palette** (user rule): lockup words take the RAW clip's own accent colours
 (`body_profile.py` palette, e.g. the orange backdrop + gold) keeping their hue; only the lightness moves - light tints
