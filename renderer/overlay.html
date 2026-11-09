@@ -1118,7 +1118,9 @@ window.init = async (data) => {
   stage.appendChild(hl);
 
   // windows where captions are hidden - taken from ALL elements, so the back layer also obeys front-layer titles
-  const hideWins = (sb.elements || []).filter(e => e.hide_captions || (e.type === 'product3d' && e.pos === 'hero' && e.hide_captions !== false)).map(e => [e.start, e.end]);
+  const hideWins = (sb.elements || []).filter(e => e.hide_captions || (e.type === 'product3d' && e.pos === 'hero' && e.hide_captions !== false)).map(e => [e.start, e.end])
+    // the clip shrinks into a frame/window (gallery wall, pull-back): captions would float over the wall -> hidden
+    .concat((sb.effects || []).filter(e => e.kind === 'gallery' || e.kind === 'pull_back').map(e => [e.start, e.end]));
   S = { sb, style, els, chunks, cap, capY, layer: LAYER, hideWins, headlines, hl, fcx, fcy, face,
         capStyle, capOn: cs.enabled !== false && (LAYER === 'front' || chunks.some(c => c.behind) || headlines.some(h => h.behind)), mode: cs.mode || (capStyle === 'ed' ? 'karaoke' : 'pop'), lastChunk: -1 };
   return { chunks: chunks.length, elements: els.length };

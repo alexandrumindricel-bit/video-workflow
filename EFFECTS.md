@@ -7,7 +7,7 @@ Use these **in every video, chosen to fit what is being said**. Each row says ho
 | # | Efect (numele utilizatorului) | How (storyboard) | Use it when the speaker… | SFX (auto) |
 |---|---|---|---|---|
 | 01 | ~~Orbită~~ | **REMOVED by the user - never use `orbit` (neither the 3D letter ring nor the card/photo ring).** For lists use `checklist` / `card`s; for a slogan use `combo`/`title`. | - | - |
-| 02 | **Galerie pe perete** – clipul tău în rame, pe un perete | effect `gallery` (`scale` 0.5, `wall` "#E8E1D5", `frame` "#1E1A17", `y`): camera pulls back, the live clip hangs in a picture frame between two small frames | "look at this", memories, a showcase moment, "behind the scenes", a pause in the story | swish |
+| 02 | **Galerie pe perete** – clipul tău în rame, pe un perete | effect `gallery` (`scale` 0.5, `wall` "#E8E1D5", `frame` "#1E1A17", `y`): camera pulls back, the live clip hangs in a picture frame between two small frames | "look at this", memories, a showcase moment, "behind the scenes", a pause in the story (captions are hidden automatically while the clip is framed) | swish |
 | 03 | **Lumea din aplicație** – tu în mijlocul unei interfețe | element `backdrop` `kind: "app"` (`label`, `title`, `timer`, `items`) - person cut out in the middle of an app UI; or `app` window | ordering on the site, an app/website, "intrați pe mindricel.ro" | swish |
 | 04 | **Ieși din ecran** – ieși din chenarul clipului | effect `frame_break` (`rect`) - video framed, person breaks out | a reveal, bold claim, "step out of the box" | swish |
 | 05 | **Zoom digital** – apropiere bruscă pe față | effect `punch` (1.08-1.12) or `track` (face-following 1.3) | emphasis, punchline, reaction | click |
