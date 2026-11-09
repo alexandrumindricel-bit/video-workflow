@@ -504,9 +504,9 @@ window.init = async (data) => {
       // 3D LETTER RING (user: "literele se rotesc în 3D în jurul tău"): the text repeats around an ellipse at chest
       // height; letters on the near half are drawn in front of the person, the far half behind (back layer + cut-out).
       n.className = 'el full'; n.style.perspective = '1400px';
-      const fs = el.size || 84, rx = el.rx || 400;
+      const fs = el.size || 100, rx = el.rx || 380;
       const unit = (String(el.ring).trim() + ' • ').toUpperCase();
-      const nChars = Math.max(unit.length, Math.round(2 * Math.PI * rx / (fs * 0.66)));
+      const nChars = Math.max(unit.length, Math.round(2 * Math.PI * rx / (fs * 0.86)));   // airy spacing: readable on the near arc
       const txt = unit.repeat(Math.ceil(nChars / unit.length)).slice(0, nChars);
       n.innerHTML = [...txt].map((ch, j) => `<div class="orbit-letter${(j % unit.length) < unit.length - 3 && el.accent_word && unit.indexOf(el.accent_word.toUpperCase()) >= 0 && (j % unit.length) >= unit.indexOf(el.accent_word.toUpperCase()) && (j % unit.length) < unit.indexOf(el.accent_word.toUpperCase()) + el.accent_word.length ? ' acc' : ''}" style="font-size:${fs}px">${esc(ch)}</div>`).join('');
     } else if (T === 'orbit') {
@@ -1226,7 +1226,7 @@ window.renderAt = (t) => {
       case 'orbit': {
         const letters = [...n.querySelectorAll('.orbit-letter')];
         if (letters.length) {
-          const N = letters.length, fs = el.size || 84, rx = el.rx || 400, ry = el.ry || 70;
+          const N = letters.length, fs = el.size || 100, rx = el.rx || 380, ry = el.ry || 60;
           const fh = (S.face && S.face.h) || 190;
           const ocx = el.cx ?? el._fcx, ocy = el.cy ?? (el._fcy + (el.dy ?? fh * 1.55));   // chest height: never the face
           const w0 = (el.speed ?? 0.16) * 2 * Math.PI;

@@ -461,8 +461,13 @@ def main():
                 wgt = np.clip(d / (0.45 * W), 0, 1)
                 wgt = wgt * wgt * (3 - 2 * wgt)                       # smoothstep
                 wgt = cv2.GaussianBlur(wgt, (0, 0), 6)
-                sc = 1 + amt * cv2.resize(wgt, (W, H), interpolation=cv2.INTER_LINEAR)
                 ys, xs = np.nonzero(M > 0.5)
+                # foreground objects (table, boxes) sit below the person's lowest visible row: they stay still,
+                # only the background behind/above the person comes closer
+                ybot = float(np.percentile(ys, 99.5)) if len(ys) else H
+                wy = np.clip((ybot - 40 - np.arange(H // q, dtype=np.float32) * q) / 160.0, 0, 1)[:, None]
+                wgt = wgt * wy
+                sc = 1 + amt * cv2.resize(wgt, (W, H), interpolation=cv2.INTER_LINEAR)
                 pcx, pcy = (float(xs.mean()), float(ys.mean())) if len(xs) else (cx, cy)
                 gx, gy = np.meshgrid(np.arange(W, dtype=np.float32), np.arange(H, dtype=np.float32))
                 mx = (pcx + (gx - pcx) / sc).astype(np.float32)
