@@ -4,32 +4,32 @@ Use these **in every video, chosen to fit what is being said**. Each row says ho
 (see `templates/STORYBOARD_REFERENCE.md` for every field) and when it fits.
 "Cut-out" = the person is segmented and drawn over the back layer: anything on the back layer appears **behind** them.
 
-| # | Effect | How (storyboard) | Use it when the speaker… | SFX (auto) |
+| # | Efect (numele utilizatorului) | How (storyboard) | Use it when the speaker… | SFX (auto) |
 |---|---|---|---|---|
-| 01 | **orbit** | element `orbit` with 4-6 `items` (icon/text/image) | lists tools, features, options ("all of these…") | riser |
-| 02 | **couch wall** | element `wall`, `kind: "screen"` (screenshot cards, `image`/`head`) - back layer | references many posts, results, examples, social proof | paper |
-| 03 | **ui world** | element `app` (window + clip tiles + chip + typed input) in `pos: top` | describes a workflow inside an app / prompting | pop |
-| 04 | **frame break** | effect `frame_break` (`rect`) - video framed, person breaks out | a reveal, "step out of the box", a bold claim | whoosh |
-| 05 | **digital zoom** | effect `push` (1.0→1.12-1.18) + caption keyword (big yellow/gold word) | emphasis line, punchline | - |
-| 06 | **phone mockup** | element `phone` with `messages` (chat bubbles appear) | DMs, texts, "send me…", app on phone | pop |
-| 07 | **checklist** | element `checklist` (items tick off, "1 of 3" counter) | steps, requirements, "all you need to do" | pop |
-| 08 | **headline wall** | element `wall`, `kind: "paper"` (taped notes with headlines) - back layer | ideas, quotes, headlines, reactions, "people said…" | paper |
-| 09 | **zoom-through cut** | transition `{kind: "zoom_through", at}` (zoom + radial blur through the cut); also `flash_blur` and `pixelate` | section change, time skip, "and then…" | whoosh |
-| 10 | **chart grow** | element `chart` (`values`, `labels`, `tag: "SCALE ↗"`) | growth, numbers over time, results | riser |
-| 11 | **pull-back reveal** | effect `pull_back` (video shrinks into a window) + element `app`/`card` above it | "this video was made in…", showing the tool behind the scenes | swoosh down |
-| 12 | **green screen** | element `backdrop` (`kind: app/image/gradient`) - back layer, person cut out | "imagine…", talking about a page/product/app, a scene change | whoosh |
-| 13 | **paper cut** | `backdrop` `kind: paper` + effect `sticker` + elements `tiles` ("100%") / `doodle` | playful/creative moments, stats, scrapbook energy | paper + clicks |
-| 14 | **doodle boil** | effect `outline` (boiling outline around the person) + element `doodle` (`shapes`) | fun, casual, "creative" lines; pointing at something | paper |
-| 15 | ~~vertigo~~ | **RETIRED** (user: doubled head/arms and smeared background when the person moves). Use `push` instead. | - | - |
-| 16 | **cover story** | element `cover` (magazine masthead **behind the head**, `issue` line, optional `lines`) | introducing a topic/title, "the story of…", hook | impact |
-| 17 | **glass type** | element `glass` (giant translucent glass word with shine) - back layer | a single huge keyword or number ("26", "DESIGN") | whoosh |
+| 01 | **Orbită** – literele se rotesc în 3D în jurul tău | element `orbit` with `ring: "TEXT"` (3D letter ring at chest height, near half in front, far half behind; `accent_word` orange, `size` 84, `rx` 400, `ry` 70, `speed` 0.16, `dy`). Card version: `items` (icons/photos) for lists of things | a slogan / brand / event name (BLACK FRIDAY, MÎNDRI BOX); card version for several products/categories | swish |
+| 02 | **Galerie pe perete** – clipul tău în rame, pe un perete | effect `gallery` (`scale` 0.5, `wall` "#E8E1D5", `frame` "#1E1A17", `y`): camera pulls back, the live clip hangs in a picture frame between two small frames | "look at this", memories, a showcase moment, "behind the scenes", a pause in the story | swish |
+| 03 | **Lumea din aplicație** – tu în mijlocul unei interfețe | element `backdrop` `kind: "app"` (`label`, `title`, `timer`, `items`) - person cut out in the middle of an app UI; or `app` window | ordering on the site, an app/website, "intrați pe mindricel.ro" | swish |
+| 04 | **Ieși din ecran** – ieși din chenarul clipului | effect `frame_break` (`rect`) - video framed, person breaks out | a reveal, bold claim, "step out of the box" | swish |
+| 05 | **Zoom digital** – apropiere bruscă pe față | effect `punch` (1.08-1.12) or `track` (face-following 1.3) | emphasis, punchline, reaction | click |
+| 06 | **Desen pe telefon** – cercuri și săgeți desenate peste clip | element `doodle` with `shapes` circle / arrow / underline / x placed on the thing being shown (never on the face) | pointing at a product/detail ("uite", "aici"), highlighting | marker |
+| 07 | **Listă bifată** – o listă care se bifează pe ecran | element `checklist` (items tick at the word) | steps, box contents, plans, delivery timeline | click |
+| 08 | **Titluri de ziar** – cuvinte mari care cad pe ecran | element `title` `anim: "drop"` (heavy/serif lines) or `combo` (huge word blurring in) | hook, news-like statement, punchline | blur_hit |
+| 09 | **Trecere prin zoom** – intri cu zoom în imagine și tai la alt cadru | transition `zoom_through` (also `flash_blur`, `pixelate`) | clip boundaries, section change, time skip | swish |
+| 10 | **Grafic care crește** – bare și linie care urcă | element `chart` (`values`, `labels`, `tag`) | growth, more orders, numbers over time | loading |
+| 11 | **Zoom înapoi** – camera se retrage și clipul devine mic | effect `pull_back` (video shrinks into a floating window) + `card`/`app` above | showing the bigger picture, "this video was made…", context | swish |
+| 12 | **Fundal schimbat** – tu decupat pe alt fundal | element `backdrop` (`kind: image/gradient/color/paper`) - person cut out | "imagine…", a place/scene change, talking about a page | swish |
+| 13 | **Decupaj din hârtie** – tu ca un sticker pe hârtie | `backdrop` `kind: paper` + effect `sticker` (+ `tiles`/`doodle`) | playful moments, stats, scrapbook energy | marker |
+| 14 | **Desene pe video** – desene făcute de mână care se mișcă în jurul tău | effect `outline` (boiling outline) + element `doodle` (stars, sparkles, spirals around the person) | fun, casual lines, excitement | marker |
+| 15 | **Efectul Vertigo** – fundalul se apropie, tu rămâi pe loc | effect `vertigo` (`amount` 0.2-0.3, 1.5-3 s): elastic zoom - zero movement on/near the person, the background zooms in smoothly towards the frame edges (no cut-out, no inpainting → no ghosts, works hand-held and with objects in front; only far straight edges bend slightly) | a realisation, "stai puțin…", a dramatic beat | sub_boom |
+| 16 | **Copertă de revistă** – tu pe coperta unei reviste | element `cover` (masthead behind the head, `issue`, `lines`) | introducing a topic, "povestea…", hook | sub_boom |
+| 17 | **Text de sticlă** – text transparent, ca din sticlă | element `glass` (giant translucent word with light sweep, back layer) | one huge keyword or number | sub_boom |
 
 ## Rules for choosing
 - **Every video uses several of these effects**: ~1 effect moment every 4-6 s of final video
   (a 30 s video → 5-7 effects, a 60 s video → 9-12), on top of the normal captions/cards/punch-ins.
 - **Match the meaning** (column "use it when"). Never use an effect just to fill time.
 - **Hook (first 3 s)**: prefer `cover`, `glass`, `frame_break` or `zoom_through` combined with a big title.
-- **Don't repeat the same effect within ~15 s**; vary families (camera: push/zoom-through/pull-back/frame-break ·
+- **Don't repeat the same effect within ~15 s**; vary families (camera: push/punch/track/vertigo/zoom-through/pull-back/gallery/frame-break ·
   cut-out: backdrop/cover/glass/wall/sticker/outline · UI: app/phone/checklist/chart/orbit).
 - **Cut-out effects need a clearly visible person** (whole head + shoulders in frame, decent light). If the person is
   very small, moving fast, or partly out of frame, prefer UI effects. Check the cut-out edge in QA frames.

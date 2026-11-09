@@ -90,7 +90,7 @@ def sfx_events(sb):
         d = TRANSITION_SFX.get(tr["kind"]) if spec == "auto" else ((spec, -9) if spec else None)
         if d:
             ev.append((tr["at"], d[0], d[1] + off))
-    EFFECT_SFX = {"pull_back": ("swish", -9), "frame_break": ("swish", -9), "vertigo": ("sub_boom", -13),
+    EFFECT_SFX = {"pull_back": ("swish", -9), "gallery": ("swish", -9), "frame_break": ("swish", -9), "vertigo": ("sub_boom", -13),
                   "sticker": ("marker", -10), "outline": ("marker", -12), "push": None, "punch": ("click", -13), "cutout": None, "track": None}
     for e in sb.get("effects", []):
         spec = e.get("sfx", "auto")

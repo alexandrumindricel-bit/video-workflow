@@ -259,11 +259,44 @@ def main():
     use_outline = any(e["kind"] == "outline" for e in fx)
 
     seg = None
-    if need_cut or need_pop:
+    if need_cut or need_pop or any(e["kind"] == "vertigo" for e in fx):   # vertigo needs the person mask (no cut-out)
         import mediapipe as mp
         seg = mp.solutions.selfie_segmentation.SelfieSegmentation(model_selection=0)
         head_fd = mp.solutions.face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5)
     head_box, head_age = None, 99
+
+    plates = {}
+    def clean_plate(t):
+        """Background without the person for the clip at time t (median of person-free pixels over the clip)."""
+        ci = next((i for i, c in enumerate(clips) if c.get("start", 0) <= t < c.get("end", 1e9)), 0)
+        if ci in plates:
+            return plates[ci]
+        c = clips[ci]
+        a0, a1 = c.get("start", 0.0), min(c.get("end", dur), dur)
+        cp = cv2.VideoCapture(os.path.join(work, "cut.mov"))
+        n = 48
+        stack, masks = [], []
+        for k in range(n):
+            cp.set(cv2.CAP_PROP_POS_FRAMES, int((a0 + (k + 0.5) * (a1 - a0) / n) * FPS))
+            ok, fr = cp.read()
+            if not ok:
+                continue
+            half = cv2.resize(fr, (W // 2, H // 2), interpolation=cv2.INTER_AREA)
+            m = seg.process(cv2.cvtColor(half, cv2.COLOR_BGR2RGB)).segmentation_mask
+            m = cv2.dilate((m > 0.12).astype(np.uint8), np.ones((15, 15), np.uint8))
+            stack.append(half); masks.append(m)
+        cp.release()
+        st_ = np.stack(stack).astype(np.float32)
+        free = (1 - np.stack(masks)).astype(bool)
+        st_[~free] = np.nan
+        med = np.nanmedian(st_, axis=0)
+        holes = np.isnan(med[..., 0]).astype(np.uint8) * 255
+        med = np.nan_to_num(med).astype(np.uint8)
+        if holes.any():
+            med = cv2.inpaint(med, holes, 9, cv2.INPAINT_TELEA)
+        plates[ci] = cv2.resize(med, (W, H), interpolation=cv2.INTER_CUBIC)
+        print(f"vertigo clean plate clip {ci}: {len(stack)} frames, never-free {holes.mean() / 2.55:.1f}%", flush=True)
+        return plates[ci]
 
     cap = cv2.VideoCapture(os.path.join(work, "cut.mov"))
     out_bg = writer(os.path.join(work, "fx_bg.mov"))
@@ -331,7 +364,38 @@ def main():
         vg = active(t, {"vertigo"})
         pu = active(t, {"push"})
         pc = active(t, {"punch"})
-        if pb:
+        ga = active(t, {"gallery"})
+        if ga:
+            # GALLERY WALL: the camera pulls back and the clip hangs on a wall in a picture frame, between two smaller
+            # frames (the same moment, slightly delayed copies), warm spot light on the wall.
+            e = ga[0]
+            p = ease_io((t - e["start"]) / 0.5) * ease_io((e["end"] - t) / 0.35)
+            wall = np.full((H, W, 3), hex_bgr(e.get("wall", "#E8E1D5")), np.float32)
+            yy, xx = np.mgrid[0:H, 0:W].astype(np.float32)
+            spot = np.exp(-(((xx - W / 2) / (W * 0.75)) ** 2 + ((yy - H * 0.42) / (H * 0.55)) ** 2))
+            wall = (wall * (0.72 + 0.28 * spot[..., None])).astype(np.uint8)
+            canvas = (F * (1 - p) + wall * p).astype(np.uint8) if p < 0.999 else wall
+            def hang(img, cxp, cyp, sc, border, col):
+                w2, h2 = int(W * sc) // 2 * 2, int(H * sc) // 2 * 2
+                x0, y0 = int(cxp - w2 / 2), int(cyp - h2 / 2)
+                sh = np.zeros((H, W), np.float32)
+                cv2.rectangle(sh, (x0 - border + 14, y0 - border + 26), (x0 + w2 + border + 14, y0 + h2 + border + 26), 1, -1)
+                sh = cv2.GaussianBlur(sh, (0, 0), 22) * 0.45
+                canvas[:] = (canvas * (1 - sh[..., None])).astype(np.uint8)
+                cv2.rectangle(canvas, (x0 - border, y0 - border), (x0 + w2 + border, y0 + h2 + border), col, -1)
+                cv2.rectangle(canvas, (x0 - 6, y0 - 6), (x0 + w2 + 6, y0 + h2 + 6), (245, 245, 245), -1)   # passe-partout
+                xa, ya, xb, yb = max(0, x0), max(0, y0), min(W, x0 + w2), min(H, y0 + h2)
+                canvas[ya:yb, xa:xb] = cv2.resize(img, (w2, h2), interpolation=cv2.INTER_AREA)[ya - y0:yb - y0, xa - x0:xb - x0]
+            if p > 0.02:
+                col = hex_bgr(e.get("frame", "#1E1A17"))
+                if p > 0.35:
+                    hang(F, W * 0.15, H * 0.20, 0.17 * p, 12, col)
+                    hang(F, W * 0.85, H * 0.80, 0.17 * p, 12, col)
+                main = 1 - (1 - e.get("scale", 0.5)) * p
+                hang(F, W / 2, H / 2 + (e.get("y", H * 0.5) - H / 2) * p, main, int(26 * p) + 2, col)
+            bg = person = canvas
+            cut_on = False
+        elif pb:
             e = pb[0]
             p = ease_io((t - e["start"]) / 0.45) * ease_io((e["end"] - t) / 0.3)
             s = 1 - (1 - e.get("scale", 0.58)) * p
@@ -383,14 +447,29 @@ def main():
             bg = person = (acc / taps).astype(np.uint8)
             cut_on = False
         elif vg:
-            # RETIRED (user feedback): growing only the cut-out person left a doubled head/arms and smeared the
-            # background when the person moved (wide shots). "vertigo" is now a plain smooth push-in of the whole frame.
+            # VERTIGO (user's definition: "the background comes closer, you stay in place"). Elastic zoom: no pixel of
+            # the person moves (zoom factor 1 on and near the person), the zoom grows smoothly with the distance from
+            # the person up to 1+amount at the frame edges - the background rushes in around a still person. Nothing is
+            # cut out, erased or duplicated, so no ghosts/smears even with objects in front or a hand-held camera.
             e = vg[0]
             p = ease_io((t - e["start"]) / max(0.01, e["end"] - e["start"]))
-            s = 1 + min(0.14, e.get("amount", 0.12)) * p
-            bg = person = sharpen(zoom(F, s, cx, cy, cv2.INTER_CUBIC), s)
-            if M is not None:
-                M = zoom(M, s, cx, cy)
+            amt = min(0.35, e.get("amount", 0.25)) * p
+            if M is not None and amt > 0.002:
+                q = 4
+                mq = cv2.resize((M > 0.4).astype(np.uint8), (W // q, H // q), interpolation=cv2.INTER_AREA)
+                d = cv2.distanceTransform((1 - mq).astype(np.uint8), cv2.DIST_L2, 5) * q
+                wgt = np.clip(d / (0.45 * W), 0, 1)
+                wgt = wgt * wgt * (3 - 2 * wgt)                       # smoothstep
+                wgt = cv2.GaussianBlur(wgt, (0, 0), 6)
+                sc = 1 + amt * cv2.resize(wgt, (W, H), interpolation=cv2.INTER_LINEAR)
+                ys, xs = np.nonzero(M > 0.5)
+                pcx, pcy = (float(xs.mean()), float(ys.mean())) if len(xs) else (cx, cy)
+                gx, gy = np.meshgrid(np.arange(W, dtype=np.float32), np.arange(H, dtype=np.float32))
+                mx = (pcx + (gx - pcx) / sc).astype(np.float32)
+                my = (pcy + (gy - pcy) / sc).astype(np.float32)
+                bg = person = cv2.remap(F, mx, my, cv2.INTER_CUBIC, borderMode=cv2.BORDER_REFLECT)
+            else:
+                bg = person = F
         else:
             s = 1.0
             if pu:

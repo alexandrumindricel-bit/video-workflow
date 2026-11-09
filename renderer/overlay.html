@@ -171,6 +171,10 @@
   .f-yellow { font-family: 'Inter'; font-weight: 900; color: #F7E15A; letter-spacing: -0.045em; line-height: .95; text-shadow: 0 6px 24px rgba(0,0,0,.5); }
 
   /* ---------- effect elements ---------- */
+  .orbit-letter { position: absolute; left: 0; top: 0; font-family: 'Montserrat', 'Inter', sans-serif; font-weight: 900;
+    color: #fff; text-transform: uppercase; line-height: 1; white-space: pre; backface-visibility: visible;
+    -webkit-text-stroke: 3px #0A0A0A; paint-order: stroke fill; text-shadow: 0 6px 14px rgba(0,0,0,.45); }
+  .th-mindricel .orbit-letter.acc { color: #FF6600; }
   .orbit-card { position: absolute; left: 0; top: 0; width: 230px; height: 300px; border-radius: 26px; overflow: hidden; background: #15171c;
                 border: 3px solid rgba(255,255,255,.85); box-shadow: 0 18px 40px rgba(0,0,0,.45);
                 display: flex; flex-direction: column; justify-content: flex-end; }
@@ -496,6 +500,15 @@ window.init = async (data) => {
     } else if (T === 'frame') {
       n.className = 'el full';
       n.innerHTML = '<div class="frame"></div>';
+    } else if (T === 'orbit' && el.ring) {
+      // 3D LETTER RING (user: "literele se rotesc în 3D în jurul tău"): the text repeats around an ellipse at chest
+      // height; letters on the near half are drawn in front of the person, the far half behind (back layer + cut-out).
+      n.className = 'el full'; n.style.perspective = '1400px';
+      const fs = el.size || 84, rx = el.rx || 400;
+      const unit = (String(el.ring).trim() + ' • ').toUpperCase();
+      const nChars = Math.max(unit.length, Math.round(2 * Math.PI * rx / (fs * 0.66)));
+      const txt = unit.repeat(Math.ceil(nChars / unit.length)).slice(0, nChars);
+      n.innerHTML = [...txt].map((ch, j) => `<div class="orbit-letter${(j % unit.length) < unit.length - 3 && el.accent_word && unit.indexOf(el.accent_word.toUpperCase()) >= 0 && (j % unit.length) >= unit.indexOf(el.accent_word.toUpperCase()) && (j % unit.length) < unit.indexOf(el.accent_word.toUpperCase()) + el.accent_word.length ? ' acc' : ''}" style="font-size:${fs}px">${esc(ch)}</div>`).join('');
     } else if (T === 'orbit') {
       n.className = 'el full';
       n.innerHTML = el.items.map(it => {
@@ -1211,6 +1224,25 @@ window.renderAt = (t) => {
       }
       case 'frame': op = po * pi; break;
       case 'orbit': {
+        const letters = [...n.querySelectorAll('.orbit-letter')];
+        if (letters.length) {
+          const N = letters.length, fs = el.size || 84, rx = el.rx || 400, ry = el.ry || 70;
+          const fh = (S.face && S.face.h) || 190;
+          const ocx = el.cx ?? el._fcx, ocy = el.cy ?? (el._fcy + (el.dy ?? fh * 1.55));   // chest height: never the face
+          const w0 = (el.speed ?? 0.16) * 2 * Math.PI;
+          const pin = ease.out(st.pin);
+          letters.forEach((c, j) => {
+            const th = Math.PI - 2 * Math.PI * j / N + w0 * st.local;   // near half reads left → right
+            const z = Math.sin(th);                                  // +1 = nearest to the viewer
+            const mineSide = (z >= 0) === (S.layer === 'front');
+            const sc = (0.62 + 0.38 * (z + 1) / 2) * (0.4 + 0.6 * pin);
+            const x = ocx + rx * Math.cos(th) * (0.7 + 0.3 * pin) - fs * 0.32, y = ocy + ry * z - fs * 0.5;
+            c.style.opacity = mineSide ? (z >= 0 ? 1 : 0.55 + 0.45 * (z + 1)).toFixed(2) : 0;
+            c.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) rotateY(${(-Math.cos(th) * 70).toFixed(1)}deg) scale(${sc.toFixed(3)})`;
+          });
+          op = po; tr = ''; sig.push(st.local.toFixed(3));
+          break;
+        }
         // cards circle the speaker; the half of the ring "behind" them is drawn on the back layer
         const cards = [...n.querySelectorAll('.orbit-card')];
         const N = cards.length, rx = el.rx || 430, ry = el.ry || 110;

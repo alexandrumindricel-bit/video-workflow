@@ -91,7 +91,7 @@ of the head slightly (that is the look), never the eyes/mouth.
 things that are named (`scripts/images.py`, look at them first, credits in the reply), `combo` titles for the hook
 and section headers, `numcards` for enumerations.
 
-**Effects library (`EFFECTS.md`) - mandatory in every video**: about one effect moment every 4-6 s of final video
+**Effects library (`EFFECTS.md`, the user's 17 effects with their Romanian names) - mandatory in every video**: about one effect moment every 4-6 s of final video
 (30 s → 5-7, 60 s → 9-12), each matched to what is being said, no repeat within ~15 s, mixing camera, cut-out and UI
 families. Put one in the hook. Example with all of them: `templates/storyboard.effects-example.json`.
 
@@ -187,9 +187,8 @@ shrinks slowly (no lag when the head moves), has a lower threshold for hair, and
 the per-frame face detector (limited to the segmentation, so no halo). overlay.html never puts a behind phrase across the
 face itself (eyes to mouth) - only behind hair, the top of the forehead or the sides of the head.
 
-**No blur on footage, no ghosting**: never smear, soften or double the image. `vertigo` is RETIRED (the cut-out
-person grown over the original frame showed a doubled head/arms and smeared the background) - never use it; if it
-appears it renders as a plain push-in. Other cut-out effects: QA every frame for doubled body parts. All zooms are
+**No blur on footage, no ghosting**: never smear, soften or double the image. `vertigo` is now the ELASTIC version
+(background zooms in around a still person, no cut-out → no doubled head/arms); the old cut-out vertigo stays retired. Other cut-out effects: QA every frame for doubled body parts. All zooms are
 sharpened. Check QA frames for softness and ghosting.
 
 **Style preset** (titles/graphics): `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles),
