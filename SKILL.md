@@ -220,6 +220,8 @@ cables, phone/GPS mounts, extinguisher mounts…), show it as a **3D product** t
    - Several products named in a quick list: one `product3d` per item at the moment it is said (`info: false` so the
      box/bundle price is not confused with item prices); items without a clear variant → small `card` instead.
    - Prices and product names that are unclear in the audio: ASK the user (never guess a price).
+   - Known variant names (confirmed by the user): "echipamentul verde, cu negru și crem" = `echipament-crem-negru`
+     (the green is the neon accents); the Mîndri Box goggles are `ochelari-negrii-bronz-lentila-colorata` ("bronz").
    - "N culori / modele" said about a product with colour variants on the site → `photos` (the variants' site photos
      fanned beside the person) or a `checklist` of the colours - never `orbit` (removed).
 - Restart detector false alarms: lists and repeated phrases ("o pereche de ochelari, o pereche de mănuși", "pe
