@@ -216,7 +216,7 @@ def main():
         return center_of(clips[-1].get("face"))
     cx, cy = center_at(0)
 
-    fx = list(sb.get("effects", []))
+    fx = [e for e in sb.get("effects", []) if e.get("kind") != "vertigo"]   # USER RULE: vertigo removed - ignored
     for z in sb.get("zooms", []):
         fx.append({"kind": "punch", "start": z["start"], "end": z["end"], "scale": z.get("scale", 1.1)})
     for tr in sb.get("transitions", []):

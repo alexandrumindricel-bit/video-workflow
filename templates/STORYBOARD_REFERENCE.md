@@ -26,7 +26,7 @@ All times are seconds on the **cut** timeline (`words.json`). `start`/`end` are 
   },
   "elements": [ ... ],
   "transitions": [ {"at": 4.2, "kind": "flash_blur|pixelate|zoom_through|flash|glitch|leak|whoosh|swoosh|impact|rewind|paper", "dur": 0.5, "sfx": "auto|name|null"} ],
-  "effects": [ {"kind": "push|punch|track|vertigo|gallery|frame_break|pull_back|sticker|outline|cutout", "start": 1.0, "end": 2.0, ...} ],
+  "effects": [ {"kind": "push|punch|track|gallery|frame_break|pull_back|sticker|outline|cutout", "start": 1.0, "end": 2.0, ...} ],
   "zooms": [ {"start": 1.1, "end": 2.2, "scale": 1.1} ],   // punch-ins, piecewise constant, 1.06-1.12
   "sfx": [ {"at": 3.0, "name": "logo_hit", "gain_db": -12} ],  // extra manual SFX: loading click air tap marker tick blur_hit swish sub_boom logo_hit
   "sfx_gain_db": 0,                                         // global SFX offset
@@ -61,7 +61,7 @@ Auto-SFX names in the tables below are the old names; they map to the new librar
 ### Effect elements (see EFFECTS.md for when to use them)
 | type | fields | look / animation | default layer |
 |---|---|---|---|
-| `orbit` | `ring: "TEXT"` (3D letter ring at chest height, `accent_word`, `size`, `rx`, `ry`, `speed`, `dy`) or `items: [{icon,text,image}]`, `rx` 430, `ry` 110, `dy` 200, `speed` 0.12, `card_scale` | cards circle the speaker; far side passes behind them | both |
+| ~~`orbit`~~ | - | REMOVED by the user - never use (ignored by the renderer) | - |
 | `wall` | `items: ["text" or {text,image,head}]`, `kind: paper\|screen`, `stagger` | taped notes / screenshot cards pop onto the wall, skipping the face | back |
 | `app` | `title`, `tiles: ["Raw 1" or {text,image}]`, `chip`, `chip_at`, `input`, `cps` | app window: tiles pop in, chip stamps, input types | front |
 | `phone` | `title`, `messages: [{from: me\|them, text, at}]`, `button`, `side`, `y`, `scale` | phone slides in from the side, bubbles pop | front |
@@ -90,7 +90,7 @@ person cut-out on while they are visible.
 |---|---|---|
 | `punch` | `scale` 1.06-1.12 | constant punch-in (same as `zooms`) |
 | `push` | `from`, `to` | smooth digital zoom over the effect duration |
-| `vertigo` | `amount` 0.2-0.3 | elastic zoom: the background comes closer, the person stays still (no cut-out, no ghosts) |
+| ~~`vertigo`~~ | - | REMOVED by the user - never use (ignored by fx.py) |
 | `gallery` | `scale` 0.5, `wall`, `frame`, `y` | camera pulls back, the live clip hangs in a picture frame on a wall between two small frames |
 | `frame_break` | `rect: [x,y,w,h]`, `color`, `radius`, `border` | video shown inside a frame on a dark blurred canvas; the person extends out of it |
 | `pull_back` | `scale` 0.5-0.65, `y` (center of the window), `bg` (hex or "blur") | video shrinks into a floating rounded window; put an `app`/`card` above it |

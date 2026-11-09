@@ -24,7 +24,7 @@ AUTO_SFX = {
     "counter": ("loading", -10), "step": ("click", -11), "list": ("click", -12), "stat": ("blur_hit", -14),
     "comment": ("tap", -11), "follow": ("logo_hit", -13), "image": ("tap", -11), "label": None, "frame": None,
     "flash": ("air", -9), "leak": ("swish", -9),
-    "orbit": ("swish", -10), "wall": ("marker", -13), "app": ("tap", -11), "phone": ("swish", -10),
+    "wall": ("marker", -13), "app": ("tap", -11), "phone": ("swish", -10),
     "chart": ("loading", -10), "backdrop": ("swish", -9), "doodle": ("marker", -14), "tiles": ("loading", -10),
     "glass": ("sub_boom", -11), "cover": ("sub_boom", -10), "checklist": ("click", -12), "product3d": ("air", -9),
     "combo": ("blur_hit", -12), "photos": None, "numcards": None,

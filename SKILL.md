@@ -91,14 +91,14 @@ of the head slightly (that is the look), never the eyes/mouth.
 things that are named (`scripts/images.py`, look at them first, credits in the reply), `combo` titles for the hook
 and section headers, `numcards` for enumerations.
 
-**Effects library (`EFFECTS.md`, the user's 17 effects with their Romanian names) - mandatory in every video**: about one effect moment every 4-6 s of final video
+**Effects library (`EFFECTS.md`, the user's 17 effects with their Romanian names; #01 Orbită and #15 Vertigo are REMOVED) - mandatory in every video**: about one effect moment every 4-6 s of final video
 (30 s → 5-7, 60 s → 9-12), each matched to what is being said, no repeat within ~15 s, mixing camera, cut-out and UI
 families. Put one in the hook. Example with all of them: `templates/storyboard.effects-example.json`.
 
 **CTA / ending** (if the user said what they want): `comment` (keyword CTA) and/or `follow` card in the last 4-6 s.
 
 **Brand theme (user's standing choice) - everything on screen**: storyboard `"style": "depth", "palette": "mindricel"`
-→ titles, cards, steps, tiles/numbers, charts, checklists, notes, orbit cards, glass text and products all use the
+→ titles, cards, steps, tiles/numbers, charts, checklists, notes, glass text and products all use the
 depth-reference look in the mindricel.ro palette (orange #FF6600 gradient, ink #0A0A0A panels, white text, fine dark
 outlines). Editorial font names in title lines are mapped automatically; use orange (#FF6600/#FF8533) or white for
 doodles. Never mix in the green/cream editorial colours.
@@ -135,7 +135,7 @@ doodles. Never mix in the green/cream editorial colours.
 - Contrast guard: if a word's colour is too close in brightness to what is behind it (`min_contrast` 0.42), the same
   colour gets its maximum-contrast tint + the fine contour - it never turns white (user rule).
 - Sensitive / serious topics (funerals, illness, loss, apologies...): keep the lockup look but `"motion": "fade"`
-  (gentle fade-in, no whips), `"semantic": false` (no green/red word colours), no glitch/pixel/vertigo/frame-break,
+  (gentle fade-in, no whips), `"semantic": false` (no green/red word colours), no glitch/pixel/frame-break,
   no punchy SFX (none at all is fine), slow push-ins and gentle tracking only, grade strength ~0.6, and no
   mindricel orange theme unless it is the user's own brand. Tell the user the tone was adapted and offer the
   energetic version.
@@ -187,8 +187,8 @@ shrinks slowly (no lag when the head moves), has a lower threshold for hair, and
 the per-frame face detector (limited to the segmentation, so no halo). overlay.html never puts a behind phrase across the
 face itself (eyes to mouth) - only behind hair, the top of the forehead or the sides of the head.
 
-**No blur on footage, no ghosting**: never smear, soften or double the image. `vertigo` is now the ELASTIC version
-(background zooms in around a still person, no cut-out → no doubled head/arms); the old cut-out vertigo stays retired. Other cut-out effects: QA every frame for doubled body parts. All zooms are
+**No blur on footage, no ghosting**: never smear, soften or double the image. **`orbit` and `vertigo` are REMOVED by the user ("Elimină efectul de orbită și efectul vertigo") - never
+use them in any form;** the renderer ignores them if they appear in a storyboard. Other cut-out effects: QA every frame for doubled body parts. All zooms are
 sharpened. Check QA frames for softness and ghosting.
 
 **Style preset** (titles/graphics): `"style": "editorial"` (default - forest green/cream boxed karaoke captions, serif titles),
@@ -220,7 +220,8 @@ cables, phone/GPS mounts, extinguisher mounts…), show it as a **3D product** t
    - Several products named in a quick list: one `product3d` per item at the moment it is said (`info: false` so the
      box/bundle price is not confused with item prices); items without a clear variant → small `card` instead.
    - Prices and product names that are unclear in the audio: ASK the user (never guess a price).
-   - "N culori / modele" said about a product with colour variants on the site → `orbit` with the variants' site photos.
+   - "N culori / modele" said about a product with colour variants on the site → `photos` (the variants' site photos
+     fanned beside the person) or a `checklist` of the colours - never `orbit` (removed).
 - Restart detector false alarms: lists and repeated phrases ("o pereche de ochelari, o pereche de mănuși", "pe
   mindricel.ro ... pe mindricel.ro") are flagged as retakes - ALWAYS read review.txt and keep real lists. Words after a
   long final pause that last < 0.1 s are transcription artefacts - remove them.
@@ -231,9 +232,9 @@ Never recolour or alter the product image. If mindricel.ro is unreachable, tell 
 
 ## 4c. Approved element patterns (user: "add these elements to the workflow and use them when it fits")
 Reusable patterns from the approved order / Black Friday videos. Pick the ones the speech calls for, timed to the word:
-- **Product-photo orbit** - several product categories named in a row ("avem ochelari, trusă de scule, mănuși,
-  cagule"): `orbit` whose items are the site photos (`image: file://.../products/<slug>/view_0.png` for clean cut-outs,
-  `photo_0.jpg` when the cut-out is low quality) + a short label each. Fetch each slug with product.py first.
+- **Several products / categories named in a row** ("avem ochelari, trusă de scule, mănuși, cagule"): `photos` with the
+  site photos (`products/<slug>/photo_0.jpg` or `view_0.png`, fanned beside the person, one per word) or a `checklist` -
+  NOT `orbit` (removed by the user).
 - **"Box contents" checklist** - when the speaker lists what is in a package/Mîndri Box: `checklist` titled
   "În Mîndri Box" (or "În colet"), each item ticking at the word that names it; 1-2 matching `product3d` beside the head
   (`info: false`), the rest only as checklist items. Quick lists (< 1 s per item) = checklist only.

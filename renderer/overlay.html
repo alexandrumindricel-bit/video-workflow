@@ -443,6 +443,8 @@ window.init = async (data) => {
   // ---- build elements (only those on this layer; orbit lives on both)
   const BACK_TYPES = new Set(['backdrop', 'glass', 'cover', 'wall']);
   const layerOf = el => el.type === 'orbit' ? 'both' : (el.layer || (BACK_TYPES.has(el.type) ? 'back' : 'front'));
+  // USER RULE: the orbit effect is removed - orbit elements are ignored even if a storyboard still contains them
+  sb.elements = (sb.elements || []).filter(el => el.type !== 'orbit');
   const mine = (sb.elements || []).filter(el => layerOf(el) === 'both' || layerOf(el) === LAYER);
   const S0 = sb;
   const els = mine.map((el, k) => {
