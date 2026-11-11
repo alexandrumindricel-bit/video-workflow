@@ -99,33 +99,33 @@
   .pname { font: 900 36px/1 'Montserrat'; letter-spacing: -.02em; margin-top: 12px; text-transform: uppercase; }
   .pdesc { font: 600 20px/1.3 'Inter'; opacity: .9; margin-top: 8px; }
 
-  /* post: stacked on the right */
-  .post .prize { right: 44px; width: 540px; --r: 38px; padding: 14px 24px 14px 14px; gap: 18px; }
-  .post .prize .img { width: 200px; height: 172px; border-radius: 28px; background: radial-gradient(closest-side, rgba(255,255,255,.28), rgba(255,255,255,0)); }
-  /* descending sizes: 1 > 2 > 3 */
-  .post .p1 { top: 548px; width: 612px; height: 262px; --r: 42px; }
-  .post .p1 .img { width: 292px; height: 236px; }
-  .post .p1 .pname { font-size: 36px; } .post .p1 .pdesc { font-size: 22px; }
-  .post .p2 { top: 826px; width: 540px; height: 200px; }
-  .post .p2 .img { width: 236px; height: 172px; }
-  .post .p2 .pname { font-size: 33px; } .post .p2 .pdesc { font-size: 19px; }
-  .post .p3 { top: 1042px; width: 470px; height: 172px; --r: 34px; padding: 12px 20px 12px 12px; gap: 14px; }
-  .post .p3 .img { width: 158px; height: 146px; border-radius: 24px; }
+  /* post: stacked on the right, descending sizes 1 > 2 > 3 */
+  .post .prize { right: 44px; --r: 40px; padding: 14px 26px 14px 14px; gap: 20px; }
+  .prize .img { border-radius: 28px; background: radial-gradient(closest-side, rgba(255,255,255,.30), rgba(255,255,255,0)); }
+  .post .p1 { top: 492px; width: 680px; height: 292px; --r: 44px; }
+  .post .p1 .img { width: 320px; height: 264px; }
+  .post .p1 .pname { font-size: 38px; } .post .p1 .pdesc { font-size: 21px; }
+  .post .p2 { top: 798px; width: 620px; height: 234px; }
+  .post .p2 .img { width: 330px; height: 206px; }
+  .post .p2 .pname { font-size: 31px; } .post .p2 .pdesc { font-size: 18px; }
+  .post .p3 { top: 1046px; width: 540px; height: 176px; --r: 34px; padding: 12px 22px 12px 12px; gap: 18px; }
+  .post .p3 .img { width: 190px; height: 152px; border-radius: 24px; }
   .post .p3 .pname { font-size: 28px; margin-top: 9px; } .post .p3 .pdesc { font-size: 17px; margin-top: 6px; }
-  .post .p3 .rank { height: 34px; font-size: 15px; } .post .p3 .rank i { width: 26px; height: 26px; font-size: 15px; }
+  .post .p3 .rank, .story .p3 .rank { height: 34px; font-size: 15px; } .post .p3 .rank i, .story .p3 .rank i { width: 26px; height: 26px; font-size: 15px; }
 
-  .story .prize { flex-direction: column; text-align: center; justify-content: flex-start; padding: 22px 18px 26px; --r: 44px; }
-  .story .prize .img { width: 100%; margin-bottom: 18px; }
-  .story .p1 { left: 368px; width: 372px; top: 980px; height: 590px; }
-  .story .p1 .img { height: 330px; }
-  .story .p1 .pname { font-size: 42px; } .story .p1 .pdesc { font-size: 20px; }
-  .story .p2 { left: 36px; width: 318px; top: 1080px; height: 490px; }
-  .story .p2 .img { height: 236px; }
-  .story .p2 .pname { font-size: 32px; } .story .p2 .pdesc { font-size: 18px; }
-  .story .p3 { left: 754px; width: 290px; top: 1160px; height: 410px; --r: 38px; padding: 18px 14px 22px; }
-  .story .p3 .img { height: 160px; margin-bottom: 14px; }
-  .story .p3 .pname { font-size: 28px; } .story .p3 .pdesc { font-size: 16px; }
-  .story .p3 .rank { height: 34px; font-size: 15px; } .story .p3 .rank i { width: 26px; height: 26px; font-size: 15px; }
+  /* story: full-width rows, descending sizes */
+  .story .prize { left: 50%; transform: translateX(-50%); padding: 18px 34px 18px 18px; gap: 28px; --r: 48px; }
+  .story .p1 { top: 600px; width: 1008px; height: 384px; }
+  .story .p1 .img { width: 420px; height: 318px; }
+  .story .p1 .pname { font-size: 52px; } .story .p1 .pdesc { font-size: 26px; }
+  .story .p1 .rank { height: 48px; font-size: 20px; } .story .p1 .rank i { width: 36px; height: 36px; font-size: 20px; }
+  .story .p2 { top: 1004px; width: 940px; height: 324px; --r: 44px; }
+  .story .p2 .img { width: 450px; height: 268px; }
+  .story .p2 .pname { font-size: 40px; } .story .p2 .pdesc { font-size: 22px; }
+  .story .p2 .rank { height: 42px; font-size: 18px; } .story .p2 .rank i { width: 32px; height: 32px; font-size: 18px; }
+  .story .p3 { top: 1348px; width: 860px; height: 242px; --r: 40px; padding: 14px 30px 14px 14px; }
+  .story .p3 .img { width: 290px; height: 214px; }
+  .story .p3 .pname { font-size: 34px; } .story .p3 .pdesc { font-size: 20px; }
 
   /* ---------- rules / cta ---------- */
   .rules { --r: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 28px; }
@@ -151,8 +151,8 @@
   .voucher .vn { font: 900 1em/1 'Montserrat'; letter-spacing: -.03em; text-shadow: 0 2px 6px rgba(80,0,8,.5); }
   .voucher .vt { font: 800 .2em/1 'Montserrat'; letter-spacing: .25em; margin-top: .25em; padding-left: .25em; }
   .voucher .vr { flex: 1; display: grid; place-items: center; font: 800 .17em/1 'Montserrat'; letter-spacing: .2em; writing-mode: vertical-rl; transform: rotate(180deg); }
-  .post .p3 .voucher { font-size: 50px; }
-  .story .p3 .voucher { font-size: 66px; width: 92%; }
+  .post .p3 .voucher { font-size: 58px; width: 92%; }
+  .story .p3 .voucher { font-size: 72px; width: 80%; }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
