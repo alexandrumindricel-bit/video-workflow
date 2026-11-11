@@ -8,11 +8,8 @@
   body { font-family: 'Inter', sans-serif; color: #fff; position: relative; -webkit-font-smoothing: antialiased; }
   body.post { --H: 1350px; } body.story { --H: 1920px; }
 
-  .bg { position: absolute; inset: 0; background: url(assets/hero-santa.jpg) center 40% / cover no-repeat; }
-  .story .bg { background: url(assets/hero-santa.jpg) center top / 1080px auto no-repeat;
-    -webkit-mask-image: linear-gradient(#000 0, #000 1290px, transparent 1440px); }
-  .bgx { display: none; }
-  .story .bgx { display: block; position: absolute; inset: -60px; background: url(assets/hero-santa.jpg) center bottom / cover; filter: blur(34px) brightness(.55) saturate(1.1); }
+  .bg { position: absolute; inset: 0; background: url(assets/hero.jpg) center 40% / cover no-repeat; }
+  .story .bg { background-position: 30% center; }
   .shade { position: absolute; inset: 0;
     background: linear-gradient(180deg, rgba(0,0,0,.30) 0%, rgba(0,0,0,0) 26%, rgba(0,0,0,0) 55%, rgba(0,0,0,.45) 100%),
                 radial-gradient(120% 60% at 50% 100%, rgba(255,102,0,.18), transparent 60%); }
@@ -55,15 +52,17 @@
 
   /* ---------- title ---------- */
   .title { position: absolute; left: 0; right: 0; text-align: center; }
-  .post .title { top: 170px; } .story .title { top: 250px; }
+  .post .title { top: 180px; } .story .title { top: 260px; }
   .kicker { display: inline-block; font: 800 24px 'Montserrat'; letter-spacing: .32em; text-transform: uppercase; padding-left: .32em;
     text-shadow: 0 2px 14px rgba(0,0,0,.5); }
-  .big { font: 900 196px/0.95 'Montserrat'; letter-spacing: -.045em; margin-top: 10px;
+  .big { font: 900 150px/0.95 'Montserrat'; letter-spacing: -.045em; margin-top: 10px;
     background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 38%, #FFD2B0 62%, #FF8533 82%, #FF6600 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
     filter: drop-shadow(0 3px 0 rgba(10,10,10,.55)) drop-shadow(0 14px 30px rgba(0,0,0,.45)); }
-  .story .big { font-size: 210px; }
-  .sub { margin-top: 18px; font: 700 30px 'Montserrat'; text-shadow: 0 2px 16px rgba(0,0,0,.6); }
+  .story .big { font-size: 158px; }
+  .big2 { font: 800 64px/1 'Montserrat'; letter-spacing: .14em; padding-left: .14em; margin-top: 6px; text-shadow: 0 3px 18px rgba(0,0,0,.55); }
+  .story .big2 { font-size: 70px; }
+  .sub { margin-top: 26px; font: 700 30px 'Montserrat'; text-shadow: 0 2px 16px rgba(0,0,0,.6); }
   .sub b { color: var(--o2); }
 
   /* ---------- prizes ---------- */
@@ -109,50 +108,9 @@
   .story .site { height: 64px; border-radius: 32px; font-size: 24px; padding: 0 28px; }
   .foot { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; font: 600 22px 'Inter'; opacity: .9; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
   .post .foot { display: none; }
-
-  /* ---------- Christmas ---------- */
-  .glass { overflow: visible; }
-  .snow, .snow-front { position: absolute; inset: 0; pointer-events: none; }
-  .snow i, .snow-front i { position: absolute; border-radius: 50%; background: #fff; }
-  .lights { position: absolute; left: 0; top: 0; width: 1080px; height: 300px; overflow: visible; }
-  .bauble { position: absolute; width: var(--d); height: var(--d); }
-  .bauble .str { position: absolute; left: 50%; bottom: 100%; width: 2px; margin-left: -1px; height: var(--l); background: linear-gradient(rgba(255,255,255,.2), rgba(255,255,255,.75)); }
-  .bauble .cap { position: absolute; left: 50%; top: -12px; width: 22px; height: 15px; margin-left: -11px; border-radius: 4px 4px 2px 2px;
-    background: linear-gradient(90deg, #8a5a1a, #f3d27a 45%, #9b6a22); box-shadow: inset 0 1px 0 rgba(255,255,255,.6); }
-  .bauble .ball { position: absolute; inset: 0; border-radius: 50%; backdrop-filter: blur(10px) saturate(180%);
-    box-shadow: inset 0 2px 0 rgba(255,255,255,.7), inset -8px -12px 22px rgba(0,0,0,.25), inset 6px 8px 18px rgba(255,255,255,.25), 0 14px 30px rgba(0,0,0,.35); }
-  .bauble .ball::after { content: ""; position: absolute; left: 20%; top: 14%; width: 30%; height: 22%; border-radius: 50%;
-    background: radial-gradient(closest-side, rgba(255,255,255,.95), rgba(255,255,255,0)); transform: rotate(-30deg); }
-  .bauble.o .ball { background: radial-gradient(circle at 35% 30%, rgba(255,190,140,.75), rgba(255,102,0,.62) 45%, rgba(140,45,0,.78)); }
-  .bauble.g .ball { background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.45), rgba(255,255,255,.12) 50%, rgba(255,255,255,.22)); }
-  .bauble.r .ball { background: radial-gradient(circle at 35% 30%, rgba(255,140,140,.7), rgba(210,20,30,.65) 45%, rgba(110,0,10,.8)); }
-  .bauble.k .ball { background: radial-gradient(circle at 35% 30%, rgba(120,120,120,.6), rgba(20,20,20,.7) 50%, rgba(0,0,0,.85)); }
-  .hat { position: absolute; left: -16px; top: -40px; width: 74px; transform: rotate(-18deg); z-index: 6; filter: drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
-  .brand .lg { position: relative; }
-  .bow { position: absolute; z-index: 8; width: 96px; filter: drop-shadow(0 6px 10px rgba(0,0,0,.4)); }
-  .post .bow { right: 18px; top: -34px; transform: rotate(10deg); width: 96px; }
-  .story .bow { left: 50%; top: -42px; margin-left: -48px; }
-  .story .p1 .bow { width: 112px; margin-left: -56px; top: -50px; }
-  .flake { position: absolute; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; opacity: .92; filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
-  
-  <defs>
-    <linearGradient id="bowg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB27A"/><stop offset=".5" stop-color="#FF6600"/><stop offset="1" stop-color="#B84800"/></linearGradient>
-    <symbol id="bowS" viewBox="0 0 100 70">
-      <path d="M44 34 L30 66 L40 62 L44 70 L50 38 Z M56 34 L70 66 L60 62 L56 70 L50 38 Z" fill="url(#bowg)" opacity=".92"/>
-      <path d="M50 34 C38 10 6 4 6 22 C6 38 34 40 50 34 Z" fill="url(#bowg)"/>
-      <path d="M50 34 C62 10 94 4 94 22 C94 38 66 40 50 34 Z" fill="url(#bowg)"/>
-      <path d="M48 32 C38 18 20 14 18 22 C17 28 34 32 48 32Z M52 32 C62 18 80 14 82 22 C83 28 66 32 52 32Z" fill="rgba(0,0,0,.22)"/>
-      <path d="M14 16 C22 10 34 14 40 22" stroke="rgba(255,255,255,.65)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M60 22 C66 14 78 10 86 16" stroke="rgba(255,255,255,.65)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <rect x="42" y="26" width="16" height="16" rx="6" fill="#FF7A1F" stroke="#B84800" stroke-width="1.5"/>
-      <rect x="45" y="28" width="7" height="4" rx="2" fill="rgba(255,255,255,.6)"/>
-    </symbol>
-    <symbol id="flakeS" viewBox="-20 -20 40 40"><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(0)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(60)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(120)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(180)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(240)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(300)"/></symbol>
-    <filter id="glow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="7"/></filter>
-  </defs>
   <filter id="refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
     <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="7" result="n"/>
     <feGaussianBlur in="n" stdDeviation="2" result="nb"/>
@@ -160,38 +118,31 @@
   </filter>
 </svg>
 
-<div class="bgx"></div><div class="bg"></div><div class="shade"></div>
-<div class="snow" id="snow"></div>
-<svg class="lights" id="lights"></svg>
-<div id="baubles"></div>
-<div id="flakes"></div>
+<div class="bg"></div><div class="shade"></div>
 
 <div class="glass brand">
-  <div class="lg"><svg class="hat" viewBox="0 0 80 70"><path d="M8 52 C14 26 32 6 56 8 C70 9 76 22 72 34 C68 26 60 22 52 26 C44 30 40 42 38 52 Z" fill="#D7141E"/><path d="M20 40 C28 22 44 12 58 14" stroke="rgba(255,255,255,.25)" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M38 52 C40 42 44 32 52 26" stroke="rgba(0,0,0,.25)" stroke-width="5" fill="none"/><rect x="2" y="48" width="48" height="14" rx="7" fill="#fff"/><circle cx="72" cy="36" r="8" fill="#fff"/></svg><img src="assets/logo.png" alt=""></div>
+  <div class="lg"><img src="assets/logo.png" alt=""></div>
   <div><div class="nm">mindricel<b>.ro</b></div><div class="sb">ATV · MOTO · ENDURO</div></div>
 </div>
-<div class="glass orange tag"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M3 10h18v4H3z M5 14h14v7H5z" fill="#fff"/><path d="M12 10v11" stroke="#FF6600" stroke-width="2.4"/><path d="M12 10C9 4 5 5 6 8c.6 1.8 4 2 6 2zm0 0c3-6 7-5 6-2-.6 1.8-4 2-6 2z" fill="none" stroke="#fff" stroke-width="2"/></svg>GIVEAWAY</div>
 
 <div class="title">
-  <div class="kicker">Concurs de Crăciun</div>
-  <div class="big">CÂȘTIGĂ</div>
-  <div class="sub">3 cadouri sub brad pentru riderii <b>mindricel</b></div>
+  <div class="big">GIVEAWAY</div><div class="big2">DE CRĂCIUN</div>
+  <div class="sub">3 premii pentru riderii <b>mindricel</b></div>
 </div>
 
-<div class="glass prize p1"><svg class="bow" viewBox="0 0 100 70"><use href="#bowS"/></svg>
+<div class="glass prize p1">
   <div class="img"><img src="assets/gear.png" alt=""></div>
   <div><div class="rank"><i>1</i>PREMIUL I</div><div class="pname">Echipament</div><div class="pdesc">Costum complet: tricou&nbsp;+&nbsp;pantaloni</div></div>
 </div>
-<div class="glass prize p2"><svg class="bow" viewBox="0 0 100 70"><use href="#bowS"/></svg>
+<div class="glass prize p2">
   <div class="img"><img src="assets/pack.png" alt=""></div>
   <div><div class="rank"><i>2</i>PREMIUL II</div><div class="pname">Rucsac hidratare</div><div class="pdesc">Cu rezervor de apă inclus</div></div>
 </div>
-<div class="glass prize p3"><svg class="bow" viewBox="0 0 100 70"><use href="#bowS"/></svg>
+<div class="glass prize p3">
   <div class="img"><img src="assets/goggles.png" alt=""></div>
   <div><div class="rank"><i>3</i>PREMIUL III</div><div class="pname">Ochelari MX</div><div class="pdesc">Pentru ATV, moto &amp; enduro</div></div>
 </div>
 
-<div class="snow-front" id="snowf"></div>
 <div class="glass rules">
   <div class="steps">
     <span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/><path d="M19 8v6M16 11h6"/></svg>Follow</span>
@@ -205,49 +156,5 @@
 <script>
   const f = new URLSearchParams(location.search).get('f') || 'post';
   document.body.className = f;
-
-  const H = f === 'story' ? 1920 : 1350;
-  let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const snow = document.getElementById('snow'), snowf = document.getElementById('snowf');
-  for (let k = 0; k < (f === 'story' ? 170 : 130); k++) {
-    const i = document.createElement('i'), r = rnd(), d = 2 + Math.pow(r, 2.2) * 9;
-    i.style.cssText = `left:${rnd()*1080}px;top:${rnd()*H}px;width:${d}px;height:${d}px;opacity:${.45 + rnd()*.5};filter:blur(${d > 7 ? 1.5 : .3}px)`;
-    snow.appendChild(i);
-  }
-  for (let k = 0; k < 14; k++) {   // big soft bokeh flakes in front
-    const i = document.createElement('i'), d = 14 + rnd() * 16;
-    i.style.cssText = `left:${rnd()*1080}px;top:${rnd()*H}px;width:${d}px;height:${d}px;opacity:${.25 + rnd()*.3};filter:blur(${3 + rnd()*3}px)`;
-    snowf.appendChild(i);
-  }
-  // string lights: swags between anchor points
-  const L = document.getElementById('lights'), NS = 'http://www.w3.org/2000/svg';
-  const anchors = [[-30, 6], [380, 10], [700, 10], [1110, 6]], dip = 96;
-  const cols = ['#FFD27A', '#FF6600', '#FF2A2A', '#FFF3D6', '#34C36A', '#FF8533'];
-  let wire = '', n = 0;
-  for (let a = 0; a < anchors.length - 1; a++) {
-    const [x0, y0] = anchors[a], [x1, y1] = anchors[a + 1], cx = (x0 + x1) / 2, cy = Math.max(y0, y1) + dip * 2;
-    wire += `M${x0} ${y0} Q${cx} ${cy} ${x1} ${y1} `;
-    const N = 8;
-    for (let j = 1; j < N; j++) {
-      const t = j / N, x = (1-t)*(1-t)*x0 + 2*(1-t)*t*cx + t*t*x1, y = (1-t)*(1-t)*y0 + 2*(1-t)*t*cy + t*t*y1;
-      const dx = 2*(1-t)*(cx-x0) + 2*t*(x1-cx), dy = 2*(1-t)*(cy-y0) + 2*t*(y1-cy), ang = Math.atan2(dy, dx) * 180 / Math.PI;
-      const c = cols[n++ % cols.length];
-      L.insertAdjacentHTML('beforeend', `<g transform="translate(${x} ${y}) rotate(${ang + 90}) scale(1.4)">
-        <circle cx="0" cy="16" r="16" fill="${c}" opacity=".75" filter="url(#glow)"/>
-        <rect x="-4" y="0" width="8" height="7" rx="1.5" fill="#2a2a2a"/>
-        <ellipse cx="0" cy="15" rx="7" ry="10" fill="${c}"/>
-        <ellipse cx="-2.2" cy="11" rx="2.2" ry="3.6" fill="rgba(255,255,255,.75)"/></g>`);
-    }
-  }
-  L.insertAdjacentHTML('afterbegin', `<path d="${wire}" fill="none" stroke="#1d2a1f" stroke-width="3"/><path d="${wire}" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="1" transform="translate(0 -1)"/>`);
-  // hanging glass baubles
-  const B = f === 'story'
-    ? [['o', 70, 62, 176], ['g', 48, 196, 160], ['r', 56, 884, 168], ['k', 62, 1012, 172]]
-    : [['o', 58, 56, 252], ['r', 48, 1026, 248], ['g', 40, 176, 184]];
-  document.getElementById('baubles').innerHTML = B.map(([c, d, x, y]) =>
-    `<div class="bauble ${c}" style="--d:${d}px;--l:${y}px;left:${x - d/2}px;top:${y}px"><div class="str"></div><div class="cap"></div><div class="ball"></div></div>`).join('');
-  // a few crisp snowflakes
-  const FL = f === 'story' ? [[600, 590, 56], [940, 560, 54], [860, 760, 38], [640, 700, 42]] : [[975, 410, 54], [60, 440, 44], [920, 520, 34]];
-  document.getElementById('flakes').innerHTML = FL.map(([x, y, d]) => `<svg class="flake" style="left:${x}px;top:${y}px;width:${d}px;height:${d}px" viewBox="-20 -20 40 40"><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(0)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(60)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(120)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(180)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(240)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(300)"/></svg>`).join('');
 </script>
 </body></html>
