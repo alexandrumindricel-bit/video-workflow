@@ -291,6 +291,16 @@
 
   body .sub { right: 532px !important; }
   body .sub .l2 { display: inline-block; margin-right: -30px; }
+
+  /* festive "CRĂCIUN": red, snow-capped letters, Santa hat on the C, holly */
+  .big2 .xm { position: relative; display: inline-block; }
+  .big2 .xm-base { background: linear-gradient(180deg, #FF4A55 0%, #E3162A 45%, #A50A18 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 2px 0 rgba(90,0,8,.6)) drop-shadow(0 4px 14px rgba(0,0,0,.55)); }
+  .big2 .xm-snow { position: absolute; left: 0; top: 0; color: #FFFFFF; text-shadow: none; pointer-events: none;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M0 0H40V11C36 11 35 15 31 15C27 15 27 10.5 22 10.5C18 10.5 18 16 13 16C9 16 9 11 5 11C3 11 1 12.5 0 12.5Z' fill='white'/%3E%3C/svg%3E") 0 0 / .9em .9em repeat-x; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M0 0H40V11C36 11 35 15 31 15C27 15 27 10.5 22 10.5C18 10.5 18 16 13 16C9 16 9 11 5 11C3 11 1 12.5 0 12.5Z' fill='white'/%3E%3C/svg%3E") 0 0 / .9em .9em repeat-x;
+    filter: drop-shadow(0 1px 0 rgba(160,180,210,.9)); }
+  .big2 .xhat { position: absolute; left: -.3em; top: -.4em; width: .9em; transform: rotate(-22deg); filter: drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+  .big2 .xholly { position: absolute; right: -.95em; top: .02em; width: .85em; filter: drop-shadow(0 2px 3px rgba(0,0,0,.4)); }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
@@ -331,7 +341,7 @@
 
 <div class="title">
   <div class="kicker">Cel mai mare</div>
-  <div class="big"><span class="glow">GIVEAWAY</span><span class="body">GIVEAWAY</span><span class="tube">GIVEAWAY</span><span class="rim">GIVEAWAY</span></div><div class="big2">DE CRĂCIUN</div>
+  <div class="big"><span class="glow">GIVEAWAY</span><span class="body">GIVEAWAY</span><span class="tube">GIVEAWAY</span><span class="rim">GIVEAWAY</span></div><div class="big2"><span class="de">DE</span> <span class="xm"><span class="xm-base">CRĂCIUN</span><span class="xm-snow" aria-hidden="true">CRĂCIUN</span><svg class="xhat" viewBox="0 0 80 70"><path d="M8 52 C14 26 32 6 56 8 C70 9 76 22 72 34 C68 26 60 22 52 26 C44 30 40 42 38 52 Z" fill="#D7141E"/><path d="M20 40 C28 22 44 12 58 14" stroke="rgba(255,255,255,.3)" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M38 52 C40 42 44 32 52 26" stroke="rgba(0,0,0,.25)" stroke-width="5" fill="none"/><rect x="2" y="47" width="50" height="15" rx="7.5" fill="#fff"/><circle cx="72" cy="36" r="8.5" fill="#fff"/></svg><svg class="xholly" viewBox="0 0 60 50"><path d="M30 30 C22 16 8 18 2 8 C6 16 0 22 6 28 C10 24 16 30 14 36 C20 30 26 36 30 30Z" fill="#1F8A3B"/><path d="M30 30 C38 16 52 18 58 8 C54 16 60 22 54 28 C50 24 44 30 46 36 C40 30 34 36 30 30Z" fill="#17732F"/><path d="M8 14 C16 20 22 24 30 30 M52 14 C44 20 38 24 30 30" stroke="#0E5A22" stroke-width="1.4" fill="none"/><circle cx="25" cy="34" r="6" fill="#E3162A"/><circle cx="35" cy="34" r="6" fill="#C80F20"/><circle cx="30" cy="41" r="6" fill="#E3162A"/><circle cx="23" cy="32" r="1.8" fill="rgba(255,255,255,.75)"/><circle cx="33" cy="32" r="1.8" fill="rgba(255,255,255,.75)"/><circle cx="28" cy="39" r="1.8" fill="rgba(255,255,255,.75)"/></svg></span></div>
   <div class="sub">Da, <b>Moș Mîndri</b><br><span class="l2">există!</span></div>
 </div>
 
