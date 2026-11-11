@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ro"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../renderer/fonts.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1000px; height: 1000px; background: transparent; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  .cut { position: absolute; inset: 0; border-radius: 50%; background: #FFFFFF; }
+  .disc { position: absolute; inset: 34px; border-radius: 50%; overflow: hidden; background: #F15A22; }
+  .flakes svg { position: absolute; fill: none; stroke: #FFFFFF; stroke-linecap: round; }
+  .snowcap { position: absolute; left: 0; top: 0; width: 932px; height: 300px; }
+  .logo { position: absolute; left: 50%; top: 330px; width: 560px; margin-left: -280px; }
+  .name { position: absolute; left: 0; right: 0; top: 618px; text-align: center; font: 900 74px/1 'Montserrat'; letter-spacing: .005em; color: #141010; }
+  .ed { position: absolute; left: 0; right: 0; top: 712px; text-align: center; font: 800 30px/1 'Montserrat'; letter-spacing: .34em; padding-left: .34em; color: #FFFFFF; }
+  .ed i { font-style: normal; display: inline-block; margin: 0 14px; transform: translateY(-2px); }
+</style></head>
+<body>
+<div class="cut"></div>
+<div class="disc">
+  <div class="flakes" id="fl"></div>
+  <svg class="snowcap" viewBox="0 0 932 300" preserveAspectRatio="none">
+    <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EEF3F8"/></linearGradient></defs>
+    <path d="M0 0 H932 V150 C900 152 884 178 860 176 C836 174 832 150 806 150 C780 150 778 196 750 198 C722 200 724 160 700 160 C676 160 672 184 648 184 C626 184 622 158 598 160 C574 162 574 232 548 234 C522 236 524 168 500 168 C476 168 472 190 448 190 C426 190 420 160 396 162 C372 164 372 214 346 214 C322 214 322 172 298 172 C274 172 270 196 246 196 C222 196 220 160 196 162 C172 164 170 252 144 252 C118 252 122 176 98 174 C76 172 70 192 48 190 C26 188 22 150 0 150 Z" fill="url(#sg)"/>
+    <path d="M0 150 C22 150 26 188 48 190 C70 192 76 172 98 174 C122 176 118 252 144 252 C170 252 172 164 196 162 C220 160 222 196 246 196 C270 196 274 172 298 172 C322 172 322 214 346 214 C372 214 372 164 396 162 C420 160 426 190 448 190 C472 190 476 168 500 168 C524 168 522 236 548 234 C574 232 574 162 598 160 C622 158 626 184 648 184 C672 184 676 160 700 160 C724 160 722 200 750 198 C778 196 780 150 806 150 C832 150 836 174 860 176 C884 178 900 152 932 150" fill="none" stroke="#C9D6E3" stroke-width="5"/>
+  </svg>
+</div>
+<img class="logo" src="logo-dark.png" alt="">
+<div class="name">MINDRICEL.RO</div>
+<div class="ed"><i>❄</i>WINTER EDITION<i>❄</i></div>
+<script>
+  const arm = 'M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3';
+  const flake = (x, y, d, o, w) => `<svg style="left:${x}px;top:${y}px;width:${d}px;height:${d}px;opacity:${o};stroke-width:${w}" viewBox="-20 -20 40 40">` +
+    [0,60,120,180,240,300].map(a => `<path d="${arm}" transform="rotate(${a})"/>`).join('') + '</svg>';
+  document.getElementById('fl').innerHTML = [
+    [110,330,70,.55,2.2],[770,300,58,.5,2.2],[90,560,44,.45,2.4],[812,520,80,.55,2],[160,700,56,.45,2.2],
+    [720,700,46,.45,2.4],[430,800,38,.4,2.6],[260,270,36,.45,2.6],[620,250,32,.4,2.6],[540,840,52,.4,2.2],[330,780,30,.35,2.6]
+  ].map(a => flake(...a)).join('');
+</script>
+</body></html>
