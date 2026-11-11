@@ -140,6 +140,19 @@
   .story .site { height: 64px; border-radius: 32px; font-size: 24px; padding: 0 28px; }
   .foot { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; font: 600 22px 'Inter'; opacity: .9; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
   .post .foot { display: none; }
+
+  /* voucher ticket */
+  .voucher { position: relative; width: 100%; aspect-ratio: 1.62; display: flex; border-radius: 16px; overflow: hidden; transform: rotate(-6deg);
+    background: linear-gradient(150deg, #F2414E, #C71425 55%, #8E000D);
+    box-shadow: inset 0 1.5px 0 rgba(255,255,255,.55), 0 0 22px rgba(255,30,45,.5), 0 12px 22px rgba(0,0,0,.4); color: #fff; }
+  .voucher::before, .voucher::after { content: ""; position: absolute; left: 74%; width: 18%; aspect-ratio: 1; margin-left: -9%; border-radius: 50%; background: rgba(60,60,64,.9); }
+  .voucher::before { top: -9%; } .voucher::after { bottom: -9%; }
+  .voucher .vl { flex: 0 0 74%; display: flex; flex-direction: column; align-items: center; justify-content: center; border-right: 2px dashed rgba(255,255,255,.55); }
+  .voucher .vn { font: 900 1em/1 'Montserrat'; letter-spacing: -.03em; text-shadow: 0 2px 6px rgba(80,0,8,.5); }
+  .voucher .vt { font: 800 .2em/1 'Montserrat'; letter-spacing: .25em; margin-top: .25em; padding-left: .25em; }
+  .voucher .vr { flex: 1; display: grid; place-items: center; font: 800 .17em/1 'Montserrat'; letter-spacing: .2em; writing-mode: vertical-rl; transform: rotate(180deg); }
+  .post .p3 .voucher { font-size: 50px; }
+  .story .p3 .voucher { font-size: 66px; width: 92%; }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
@@ -193,8 +206,8 @@
   <div><div class="rank"><i>2</i>PREMIUL II</div><div class="pname">Rucsac hidratare</div><div class="pdesc">Rezervor de apă inclus<br>+ cagulă cadou</div></div>
 </div>
 <div class="glass prize p3">
-  <div class="img"><img src="assets/goggles.png" alt=""></div>
-  <div><div class="rank"><i>3</i>PREMIUL III</div><div class="pname">Ochelari MX</div><div class="pdesc">Pentru ATV, moto &amp; enduro</div></div>
+  <div class="img"><div class="voucher"><div class="vl"><span class="vn">50%</span><span class="vt">REDUCERE</span></div><div class="vr">VOUCHER</div></div></div>
+  <div><div class="rank"><i>3</i>PREMIUL III</div><div class="pname">Voucher 50%</div><div class="pdesc">Reducere pe mindricel.ro</div></div>
 </div>
 
 <div class="glass rules">
