@@ -249,6 +249,15 @@
   body.story .p1 .img { height: 334px; } body.story .p2 .img { height: 312px; } body.story .p3 .img { height: 278px; }
   body.story .p3 .voucher { height: auto; width: 96%; font-size: 54px; }
   body.story .rules { top: 1796px; }
+
+  /* subtitle tucked behind the front wheel (3D) */
+  .wheel { position: absolute; left: 550px; top: 1010px; width: 275px; height: 305px; pointer-events: none; }
+  body .sub { position: absolute !important; left: auto !important; right: 438px !important; transform: none !important; margin: 0 !important;
+    white-space: nowrap; font-size: 38px !important; padding: 14px 96px 14px 34px !important; }
+  body .sub::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background: linear-gradient(90deg, transparent 72%, rgba(0,0,0,.42) 100%); }
+  body.post .sub { top: 1150px !important; }
+  body.story .sub { top: 1074px !important; }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
@@ -293,6 +302,7 @@
   <div class="sub">Da, <b>Moș Mîndri</b> există!</div>
 </div>
 
+<img class="wheel" src="assets/wheel.png" alt="">
 <div class="glass prize p1">
   <div class="img tiles t4"><div class="tile"><img src="assets/it_jersey.png" alt=""></div><div class="tile"><img src="assets/it_pants.png" alt=""></div><div class="tile"><img src="assets/it_gloves.png" alt=""></div><div class="tile"><img src="assets/it_goggles.png" alt=""></div></div>
   <div><div class="rank"><i>1</i>PREMIUL I</div><div class="pname">Echipament</div><div class="pdesc">Bluză + pantaloni, mănuși și&nbsp;ochelari</div></div>
