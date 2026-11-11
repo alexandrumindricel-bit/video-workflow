@@ -53,6 +53,10 @@
   .box .snowcap { filter: drop-shadow(0 2px 0 rgba(170,190,215,.95)) !important; }
   /* hat sits on the X */
   .hat { width: 180px !important; left: 150px !important; top: 158px !important; transform: rotate(-6deg) !important; }
+
+  .box .o { visibility: hidden; }
+  .box .helmet { position: absolute; width: 168px; height: 140px; left: 0; top: 0; filter: drop-shadow(0 0 2px #5A000C) drop-shadow(0 0 18px rgba(255,20,40,.6)) drop-shadow(0 4px 4px rgba(0,0,0,.45)); }
+  .hat { left: 196px !important; top: 150px !important; transform: rotate(12deg) !important; }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
@@ -82,7 +86,23 @@
 
 <svg class="lights" id="lights" viewBox="0 0 700 60"></svg>
 
-<div class="c box"><span class="w"><span class="glow">BOX</span><span class="base">BOX</span><span class="snowcap" aria-hidden="true">BOX</span></span></div>
+<div class="c box"><span class="w"><span class="glow">B<span class="o">O</span>X</span><span class="base">B<span class="o">O</span>X</span><span class="snowcap" aria-hidden="true">B<span class="o">O</span>X</span><svg class="helmet" viewBox="0 0 120 100"><defs>
+<linearGradient id="hs" x1="0" y1="0" x2=".3" y2="1"><stop offset="0" stop-color="#FF5260"/><stop offset=".45" stop-color="#F0142A"/><stop offset="1" stop-color="#A3071A"/></linearGradient>
+<linearGradient id="lens" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE08A"/><stop offset=".5" stop-color="#FF9A2E"/><stop offset="1" stop-color="#C2410C"/></linearGradient></defs>
+<g stroke="#4A0009" stroke-width="2.6" stroke-linejoin="round">
+<path d="M12 60 C9 30 34 9 66 9 C90 9 107 23 111 42 L98 46 C94 38 86 34 76 34 L56 34 C47 34 41 41 41 50 L41 60 C41 69 47 76 56 76 L86 76 L98 92 C80 98 50 98 33 91 C20 85 13 74 12 60 Z" fill="url(#hs)"/>
+<path d="M56 12 C78 3 104 5 119 14 L113 28 C99 21 82 19 64 24 Z" fill="url(#hs)"/><path d="M60 13 C80 6 102 7 116 15" stroke="rgba(255,255,255,.8)" stroke-width="2.5" fill="none"/>
+<path d="M80 74 L110 62 C119 70 119 84 110 94 L84 96 C80 90 78 82 80 74 Z" fill="url(#hs)"/><path d="M92 74 L108 68" stroke="#4A0009" stroke-width="2"/><path d="M90 82 L110 76 M90 89 L110 84" stroke="#3A0007" stroke-width="3" stroke-linecap="round"/>
+<path d="M10 44 C22 42 34 42 44 44 L44 58 C34 57 22 57 11 58 Z" fill="#1A1A1A"/>
+<rect x="43" y="37" width="52" height="27" rx="11" fill="#151515"/>
+<rect x="48" y="41" width="42" height="19" rx="8" fill="url(#lens)" stroke="#2A1208" stroke-width="1.6"/></g>
+<path d="M53 45 C60 42 70 42 78 44" stroke="rgba(255,255,255,.85)" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M20 30 C28 20 42 15 56 14" stroke="rgba(255,255,255,.55)" stroke-width="5" fill="none" stroke-linecap="round"/>
+<path d="M22 70 C30 80 44 86 60 86" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" opacity=".9"/>
+
+<path d="M14 46 C13 24 36 9 60 9 C66 9 72 10 76 12 C70 16 66 14 60 17 C54 20 48 16 42 19 C34 23 28 20 22 26 C18 30 16 38 14 46 Z" fill="#FFFFFF" opacity=".97"/>
+<path d="M76 12 C70 16 66 14 60 17 C54 20 48 16 42 19 C34 23 28 20 22 26 C18 30 16 38 14 46" stroke="rgba(170,190,215,.95)" stroke-width="2" fill="none"/>
+</svg></span></div>
 <svg class="holly" viewBox="0 0 60 50"><path d="M30 30 C22 16 8 18 2 8 C6 16 0 22 6 28 C10 24 16 30 14 36 C20 30 26 36 30 30Z" fill="#1F8A3B"/><path d="M30 30 C38 16 52 18 58 8 C54 16 60 22 54 28 C50 24 44 30 46 36 C40 30 34 36 30 30Z" fill="#17732F"/><path d="M8 14 C16 20 22 24 30 30 M52 14 C44 20 38 24 30 30" stroke="#0E5A22" stroke-width="1.4" fill="none"/><circle cx="25" cy="34" r="6" fill="#E3162A"/><circle cx="35" cy="34" r="6" fill="#C80F20"/><circle cx="30" cy="41" r="6" fill="#E3162A"/><circle cx="23" cy="32" r="1.8" fill="rgba(255,255,255,.75)"/><circle cx="33" cy="32" r="1.8" fill="rgba(255,255,255,.75)"/><circle cx="28" cy="39" r="1.8" fill="rgba(255,255,255,.75)"/></svg>
 
 <div class="c site">MINDRICEL<b>.RO</b></div>
@@ -108,5 +128,12 @@
       <rect x="-4.5" y="0" width="9" height="8" rx="2" fill="#2b2b2b"/><ellipse cx="0" cy="20" rx="8" ry="12" fill="${c}"/>
       <ellipse cx="-2.6" cy="15.5" rx="2.6" ry="4.2" fill="rgba(255,255,255,.8)"/></g>`; });
   L.innerHTML = h;
+
+  document.fonts.ready.then(() => {
+    const o = document.querySelector('.box .base .o').getBoundingClientRect(), w = document.querySelector('.box .w').getBoundingClientRect();
+    const h = document.querySelector('.box .helmet'), H = o.height * 0.84, Wd = H * 1.2;
+    h.style.width = Wd + 'px'; h.style.height = H + 'px';
+    h.style.left = (o.left - w.left + o.width / 2 - Wd / 2) + 'px'; h.style.top = (o.top - w.top + o.height * 0.10) + 'px';
+  });
 </script>
 </body></html>
