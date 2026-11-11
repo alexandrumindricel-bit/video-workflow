@@ -115,9 +115,9 @@
 
   document.fonts.ready.then(() => {
     const o = document.querySelector('.box .base .o').getBoundingClientRect(), w = document.querySelector('.box .w').getBoundingClientRect();
-    const h = document.querySelector('.box .helmet'), H = o.height * 0.80, Wd = H * 0.7631;
+    const h = document.querySelector('.box .helmet'), H = o.height * 0.98, Wd = H * 0.7631;
     h.style.width = Wd + 'px'; h.style.height = H + 'px';
-    h.style.left = (o.left - w.left + o.width / 2 - Wd / 2) + 'px'; h.style.top = (o.top - w.top + o.height * 0.52 - H * 0.5) + 'px';
+    h.style.left = (o.left - w.left + o.width / 2 - Wd / 2) + 'px'; h.style.top = (o.top - w.top + o.height * 0.5 - H * 0.5) + 'px';
   });
 </script>
 </body></html>
