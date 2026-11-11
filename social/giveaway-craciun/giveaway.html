@@ -93,21 +93,30 @@
   /* post: stacked on the right */
   .post .prize { right: 44px; width: 540px; --r: 38px; padding: 14px 24px 14px 14px; gap: 18px; }
   .post .prize .img { width: 200px; height: 172px; border-radius: 28px; background: radial-gradient(closest-side, rgba(255,255,255,.28), rgba(255,255,255,0)); }
-  .post .p1 { top: 606px; } .post .p2 { top: 812px; } .post .p3 { top: 1018px; }
-  .post .p1 .img { height: 172px; }
+  /* descending sizes: 1 > 2 > 3 */
+  .post .p1 { top: 548px; width: 612px; height: 262px; --r: 42px; }
+  .post .p1 .img { width: 262px; height: 232px; }
+  .post .p1 .pname { font-size: 41px; } .post .p1 .pdesc { font-size: 22px; }
+  .post .p2 { top: 826px; width: 540px; height: 200px; }
+  .post .p2 .img { width: 196px; height: 172px; }
+  .post .p2 .pname { font-size: 33px; } .post .p2 .pdesc { font-size: 19px; }
+  .post .p3 { top: 1042px; width: 470px; height: 172px; --r: 34px; padding: 12px 20px 12px 12px; gap: 14px; }
+  .post .p3 .img { width: 158px; height: 146px; border-radius: 24px; }
+  .post .p3 .pname { font-size: 28px; margin-top: 9px; } .post .p3 .pdesc { font-size: 17px; margin-top: 6px; }
+  .post .p3 .rank { height: 34px; font-size: 15px; } .post .p3 .rank i { width: 26px; height: 26px; font-size: 15px; }
 
-  /* story: podium */
   .story .prize { flex-direction: column; text-align: center; justify-content: flex-start; padding: 22px 18px 26px; --r: 44px; }
-  .story .prize .img { width: 100%; }
-  .story .p1 { left: 365px; width: 350px; top: 1010px; height: 560px; }
-  .story .p1 .img { height: 312px; }
-  .story .p2 { left: 36px; width: 315px; top: 1100px; height: 470px; }
-  .story .p3 { left: 729px; width: 315px; top: 1100px; height: 470px; }
-  .story .p2 .img, .story .p3 .img { height: 214px; margin-bottom: 18px; }
-  .story .p1 .img { margin-bottom: 18px; }
-  .story .pname { font-size: 34px; }
-  .story .p1 .pname { font-size: 40px; }
-  .story .pdesc { font-size: 19px; }
+  .story .prize .img { width: 100%; margin-bottom: 18px; }
+  .story .p1 { left: 368px; width: 372px; top: 980px; height: 590px; }
+  .story .p1 .img { height: 330px; }
+  .story .p1 .pname { font-size: 42px; } .story .p1 .pdesc { font-size: 20px; }
+  .story .p2 { left: 36px; width: 318px; top: 1080px; height: 490px; }
+  .story .p2 .img { height: 236px; }
+  .story .p2 .pname { font-size: 32px; } .story .p2 .pdesc { font-size: 18px; }
+  .story .p3 { left: 754px; width: 290px; top: 1160px; height: 410px; --r: 38px; padding: 18px 14px 22px; }
+  .story .p3 .img { height: 160px; margin-bottom: 14px; }
+  .story .p3 .pname { font-size: 28px; } .story .p3 .pdesc { font-size: 16px; }
+  .story .p3 .rank { height: 34px; font-size: 15px; } .story .p3 .rank i { width: 26px; height: 26px; font-size: 15px; }
 
   /* ---------- rules / cta ---------- */
   .rules { --r: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 28px; }
