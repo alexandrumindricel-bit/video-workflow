@@ -24,6 +24,13 @@
   .name.glass .dk { color: #000; filter: url(#dkF); }
   .name.glass .rm { color: #000; filter: url(#rimF); }
   .name.glass .ln { color: #000; filter: url(#lnF); }
+
+  /* matched glass: white glass like the logo's MD, dark glass like its bar */
+  .name.glass .bd { background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 40%, #EDE6E8 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; color: transparent; }
+  .name.glass .bd i { font-style: normal; background: linear-gradient(180deg, #4E4648 0%, #1A1416 60%, #0E0A0C 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .name.glass .dk { opacity: .55; }
+  .name.glass .sh { color: rgba(60,0,8,.5) !important; }
+  .logo { filter: drop-shadow(0 6px 8px rgba(60,0,8,.45)); }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
@@ -47,8 +54,8 @@
     <path d="M0 150 C22 150 26 188 48 190 C70 192 76 172 98 174 C122 176 118 252 144 252 C170 252 172 164 196 162 C220 160 222 196 246 196 C270 196 274 172 298 172 C322 172 322 214 346 214 C372 214 372 164 396 162 C420 160 426 190 448 190 C472 190 476 168 500 168 C524 168 522 236 548 234 C574 232 574 162 598 160 C622 158 626 184 648 184 C672 184 676 160 700 160 C724 160 722 200 750 198 C778 196 780 150 806 150 C832 150 836 174 860 176 C884 178 900 152 932 150" fill="none" stroke="#C9D6E3" stroke-width="5"/>
   </svg>
 </div>
-<img class="logo" src="logo-dark.png" alt="">
-<div class="name glass"><span class="sh">MINDRICEL.RO</span><span class="bd">MINDRICEL.RO</span><span class="dk">MINDRICEL.RO</span><span class="rm">MINDRICEL.RO</span><span class="ln">MINDRICEL.RO</span></div>
+<img class="logo" src="logo-glass.png" alt="">
+<div class="name glass"><span class="sh">MINDRICEL.RO</span><span class="bd">MINDRICEL<i class="dkg">.RO</i></span><span class="dk">MINDRICEL.RO</span><span class="rm">MINDRICEL.RO</span><span class="ln">MINDRICEL.RO</span></div>
 <script>
   const arm = 'M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3';
   const flake = (x, y, d, o, w) => `<svg style="left:${x}px;top:${y}px;width:${d}px;height:${d}px;opacity:${o};stroke-width:${w}" viewBox="-20 -20 40 40">` +
