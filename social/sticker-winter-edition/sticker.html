@@ -14,8 +14,30 @@
   .ed i { font-style: normal; display: inline-block; margin: 0 14px; transform: translateY(-2px); }
   .name { color: #0A0A0A; }
   .name b { color: #FFFFFF; }
+
+  /* iOS liquid-glass lettering */
+  .name.glass { font-size: 80px; top: 636px; }
+  .name.glass span { display: block; } .name.glass span + span { position: absolute; inset: 0; }
+  .name.glass .sh { color: rgba(80,0,10,.45); transform: translateY(5px); filter: blur(6px); }
+  .name.glass .bd { color: transparent; -webkit-background-clip: text; background-clip: text;
+    background: linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(255,255,255,.62) 30%, rgba(255,225,228,.30) 55%, rgba(255,255,255,.18) 75%, rgba(255,255,255,.42) 100%); -webkit-background-clip: text; }
+  .name.glass .dk { color: #000; filter: url(#dkF); }
+  .name.glass .rm { color: #000; filter: url(#rimF); }
+  .name.glass .ln { color: #000; filter: url(#lnF); }
 </style></head>
 <body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="rimF" x="-10%" y="-30%" width="120%" height="160%" color-interpolation-filters="sRGB">
+    <feOffset in="SourceAlpha" dy="3" result="o"/><feComposite in="SourceAlpha" in2="o" operator="out" result="top"/>
+    <feGaussianBlur in="top" stdDeviation=".6" result="b"/><feFlood flood-color="#FFFFFF"/><feComposite in2="b" operator="in"/></filter>
+  <filter id="dkF" x="-10%" y="-30%" width="120%" height="160%" color-interpolation-filters="sRGB">
+    <feOffset in="SourceAlpha" dy="-6" result="o"/><feComposite in="SourceAlpha" in2="o" operator="out" result="bot"/>
+    <feGaussianBlur in="bot" stdDeviation="2.5" result="b"/><feComposite in="b" in2="SourceAlpha" operator="in" result="bi"/>
+    <feFlood flood-color="#5A000C" flood-opacity=".55"/><feComposite in2="bi" operator="in"/></filter>
+  <filter id="lnF" x="-10%" y="-30%" width="120%" height="160%" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="erode" radius="1.6" result="e"/><feComposite in="SourceAlpha" in2="e" operator="out" result="r"/>
+    <feGaussianBlur in="r" stdDeviation=".3" result="rb"/><feFlood flood-color="#FFFFFF" flood-opacity=".75"/><feComposite in2="rb" operator="in"/></filter>
+</svg>
 <div class="cut"></div>
 <div class="disc">
   <div class="flakes" id="fl"></div>
@@ -26,7 +48,7 @@
   </svg>
 </div>
 <img class="logo" src="logo-dark.png" alt="">
-<div class="name">MINDRICEL<b>.RO</b></div>
+<div class="name glass"><span class="sh">MINDRICEL.RO</span><span class="bd">MINDRICEL.RO</span><span class="dk">MINDRICEL.RO</span><span class="rm">MINDRICEL.RO</span><span class="ln">MINDRICEL.RO</span></div>
 <script>
   const arm = 'M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3';
   const flake = (x, y, d, o, w) => `<svg style="left:${x}px;top:${y}px;width:${d}px;height:${d}px;opacity:${o};stroke-width:${w}" viewBox="-20 -20 40 40">` +
