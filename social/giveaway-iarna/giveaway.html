@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ro"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../renderer/fonts.css">
+<style>
+  :root { --o: #FF6600; --o2: #FF8533; --ink: #0A0A0A; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: var(--H); overflow: hidden; background: #0A0A0A; }
+  body { font-family: 'Inter', sans-serif; color: #fff; position: relative; -webkit-font-smoothing: antialiased; }
+  body.post { --H: 1350px; } body.story { --H: 1920px; }
+
+  .bg { position: absolute; inset: 0; background: url(assets/hero.jpg) center 40% / cover no-repeat; }
+  .story .bg { background-position: 30% center; }
+  .shade { position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,.30) 0%, rgba(0,0,0,0) 26%, rgba(0,0,0,0) 55%, rgba(0,0,0,.45) 100%),
+                radial-gradient(120% 60% at 50% 100%, rgba(255,102,0,.18), transparent 60%); }
+
+  /* ---------- Liquid glass ---------- */
+  .glass { position: absolute; border-radius: var(--r, 40px); isolation: isolate; overflow: hidden;
+    background: linear-gradient(150deg, rgba(255,255,255,.26) 0%, rgba(255,255,255,.08) 45%, rgba(255,255,255,.12) 100%), rgba(22,22,24,.32);
+    backdrop-filter: url(#refract) blur(20px) saturate(185%) brightness(1.04);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,.85),
+      inset 1.5px 0 0 rgba(255,255,255,.35),
+      inset 0 -1px 0 rgba(255,255,255,.22),
+      inset 0 0 24px rgba(255,255,255,.10),
+      inset 0 -18px 36px rgba(0,0,0,.12),
+      0 24px 60px rgba(0,0,0,.38), 0 2px 8px rgba(0,0,0,.18); }
+  /* rim light: gradient hairline border */
+  .glass::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; z-index: 3;
+    background: linear-gradient(135deg, rgba(255,255,255,.95), rgba(255,255,255,.15) 30%, rgba(255,255,255,0) 55%, rgba(255,255,255,.35) 85%, rgba(255,255,255,.8));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+  /* specular sheen */
+  .glass::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
+    background: radial-gradient(70% 45% at 18% 0%, rgba(255,255,255,.38), transparent 70%),
+                radial-gradient(40% 30% at 100% 100%, rgba(255,255,255,.14), transparent 70%); }
+  .glass > * { position: relative; z-index: 4; }
+  .prize > div:last-child { text-shadow: 0 1px 10px rgba(0,0,0,.35); }
+  .glass.orange { background: linear-gradient(150deg, rgba(255,150,80,.55), rgba(255,102,0,.30) 50%, rgba(194,78,0,.40)), rgba(255,102,0,.10);
+    box-shadow: inset 0 1.5px 0 rgba(255,220,190,.9), inset 0 0 24px rgba(255,200,150,.18), 0 18px 46px rgba(255,102,0,.35), 0 2px 8px rgba(0,0,0,.2); }
+
+  /* ---------- top bar ---------- */
+  .brand { left: 44px; top: 44px; height: 92px; --r: 46px; display: flex; align-items: center; gap: 16px; padding: 0 30px 0 14px; }
+  .brand .lg { width: 66px; height: 66px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(10,10,10,.55); box-shadow: inset 0 1px 0 rgba(255,255,255,.3); }
+  .brand .lg img { width: 50px; }
+  .brand .nm { font: 800 30px 'Montserrat'; letter-spacing: -.01em; }
+  .brand .nm b { color: var(--o2); font-weight: 800; }
+  .brand .sb { font: 600 17px 'Inter'; opacity: .85; margin-top: 2px; letter-spacing: .02em; }
+  .tag { right: 44px; top: 44px; height: 92px; --r: 46px; display: flex; align-items: center; gap: 12px; padding: 0 32px;
+    font: 800 26px 'Montserrat'; letter-spacing: .08em; }
+  .tag .dot { width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 6px rgba(255,255,255,.25); }
+
+  /* ---------- title ---------- */
+  .title { position: absolute; left: 0; right: 0; text-align: center; }
+  .post .title { top: 170px; } .story .title { top: 250px; }
+  .kicker { display: inline-block; font: 800 24px 'Montserrat'; letter-spacing: .32em; text-transform: uppercase; padding-left: .32em;
+    text-shadow: 0 2px 14px rgba(0,0,0,.5); }
+  .big { font: 900 196px/0.95 'Montserrat'; letter-spacing: -.045em; margin-top: 10px;
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 38%, #FFD2B0 62%, #FF8533 82%, #FF6600 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 3px 0 rgba(10,10,10,.55)) drop-shadow(0 14px 30px rgba(0,0,0,.45)); }
+  .story .big { font-size: 210px; }
+  .sub { margin-top: 18px; font: 700 30px 'Montserrat'; text-shadow: 0 2px 16px rgba(0,0,0,.6); }
+  .sub b { color: var(--o2); }
+
+  /* ---------- prizes ---------- */
+  .prize { display: flex; align-items: center; }
+  .prize .img { flex: none; display: grid; place-items: center; }
+  .prize .img img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 14px 18px rgba(0,0,0,.45)); }
+  .rank { display: inline-flex; align-items: center; gap: 10px; height: 40px; padding: 0 16px 0 6px; border-radius: 20px;
+    font: 800 17px 'Montserrat'; letter-spacing: .12em; background: rgba(10,10,10,.5); box-shadow: inset 0 1px 0 rgba(255,255,255,.25); }
+  .rank i { font-style: normal; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font: 900 17px 'Montserrat'; letter-spacing: 0;
+    background: linear-gradient(160deg, #FF9A55, #FF6600 55%, #C24E00); color: #0A0A0A; box-shadow: inset 0 1px 0 rgba(255,255,255,.6); }
+  .pname { font: 900 36px/1 'Montserrat'; letter-spacing: -.02em; margin-top: 12px; text-transform: uppercase; }
+  .pdesc { font: 600 20px/1.3 'Inter'; opacity: .9; margin-top: 8px; }
+
+  /* post: stacked on the right */
+  .post .prize { right: 44px; width: 540px; --r: 38px; padding: 14px 24px 14px 14px; gap: 18px; }
+  .post .prize .img { width: 200px; height: 172px; border-radius: 28px; background: radial-gradient(closest-side, rgba(255,255,255,.28), rgba(255,255,255,0)); }
+  .post .p1 { top: 606px; } .post .p2 { top: 812px; } .post .p3 { top: 1018px; }
+  .post .p1 .img { height: 172px; }
+
+  /* story: podium */
+  .story .prize { flex-direction: column; text-align: center; justify-content: flex-start; padding: 22px 18px 26px; --r: 44px; }
+  .story .prize .img { width: 100%; }
+  .story .p1 { left: 365px; width: 350px; top: 1010px; height: 560px; }
+  .story .p1 .img { height: 312px; }
+  .story .p2 { left: 36px; width: 315px; top: 1100px; height: 470px; }
+  .story .p3 { left: 729px; width: 315px; top: 1100px; height: 470px; }
+  .story .p2 .img, .story .p3 .img { height: 214px; margin-bottom: 18px; }
+  .story .p1 .img { margin-bottom: 18px; }
+  .story .pname { font-size: 34px; }
+  .story .p1 .pname { font-size: 40px; }
+  .story .pdesc { font-size: 19px; }
+
+  /* ---------- rules / cta ---------- */
+  .rules { --r: 34px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 28px; }
+  .post .rules { right: 44px; width: 540px; top: 1236px; height: 72px; }
+  .story .rules { left: 36px; right: 36px; top: 1610px; height: 96px; --r: 48px; padding: 0 18px 0 36px; }
+  .steps { display: flex; gap: 18px; font: 700 21px 'Inter'; }
+  .story .steps { font-size: 26px; gap: 28px; }
+  .steps span { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+  .steps svg { width: 22px; height: 22px; } .story .steps svg { width: 28px; height: 28px; }
+  .site { height: 48px; padding: 0 20px; border-radius: 24px; display: flex; align-items: center; font: 800 19px 'Montserrat';
+    background: linear-gradient(160deg, #FF9A55, #FF6600 55%, #D85600); color: #0A0A0A; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 6px 18px rgba(255,102,0,.45); }
+  .story .site { height: 64px; border-radius: 32px; font-size: 24px; padding: 0 28px; }
+  .foot { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; font: 600 22px 'Inter'; opacity: .9; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
+  .post .foot { display: none; }
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="7" result="n"/>
+    <feGaussianBlur in="n" stdDeviation="2" result="nb"/>
+    <feDisplacementMap in="SourceGraphic" in2="nb" scale="38" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div class="bg"></div><div class="shade"></div>
+
+<div class="glass brand">
+  <div class="lg"><img src="assets/logo.png" alt=""></div>
+  <div><div class="nm">mindricel<b>.ro</b></div><div class="sb">ATV · MOTO · ENDURO</div></div>
+</div>
+<div class="glass orange tag"><span class="dot"></span>GIVEAWAY</div>
+
+<div class="title">
+  <div class="kicker">Concurs de iarnă</div>
+  <div class="big">CÂȘTIGĂ</div>
+  <div class="sub">3 premii pentru riderii <b>mindricel</b></div>
+</div>
+
+<div class="glass prize p1">
+  <div class="img"><img src="assets/gear.png" alt=""></div>
+  <div><div class="rank"><i>1</i>PREMIUL I</div><div class="pname">Echipament</div><div class="pdesc">Costum complet: tricou&nbsp;+&nbsp;pantaloni</div></div>
+</div>
+<div class="glass prize p2">
+  <div class="img"><img src="assets/pack.png" alt=""></div>
+  <div><div class="rank"><i>2</i>PREMIUL II</div><div class="pname">Rucsac hidratare</div><div class="pdesc">Cu rezervor de apă inclus</div></div>
+</div>
+<div class="glass prize p3">
+  <div class="img"><img src="assets/goggles.png" alt=""></div>
+  <div><div class="rank"><i>3</i>PREMIUL III</div><div class="pname">Ochelari MX</div><div class="pdesc">Pentru ATV, moto &amp; enduro</div></div>
+</div>
+
+<div class="glass rules">
+  <div class="steps">
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/><path d="M19 8v6M16 11h6"/></svg>Follow</span>
+    <span><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 21s-7.5-4.6-9.5-9.3C1 8 3.3 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.6 0 5.9 3.5 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg>Like</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>Tag 2</span>
+  </div>
+  <div class="site">mindricel.ro</div>
+</div>
+<div class="foot">Detalii și regulament în descrierea postării</div>
+
+<script>
+  const f = new URLSearchParams(location.search).get('f') || 'post';
+  document.body.className = f;
+</script>
+</body></html>
