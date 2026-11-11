@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;width:1512px;height:2016px;overflow:hidden;background:transparent}
+svg{position:absolute;left:0;top:0;width:1512px;height:2016px}
+</style></head><body>
+<!-- Red fleece parts only (dome + drooping tail). Fur, grain and grading are added in compose.py -->
+<svg viewBox="0 0 1512 2016">
+<defs>
+  <path id="dome" d="M58 1250 C50 1130 105 1000 235 958 C320 930 430 938 492 992 C540 1036 552 1120 546 1250 Z"/>
+  <path id="tail" d="M494 996 C420 916 205 906 128 978 C84 1020 62 1080 64 1150 L126 1150 C124 1100 138 1058 172 1028 C232 978 336 976 410 1004 C442 1012 472 1008 494 996 Z"/>
+  <!-- overcast light: soft, from the sky above / slightly right -->
+  <radialGradient id="red" gradientUnits="userSpaceOnUse" cx="400" cy="960" r="430">
+    <stop offset="0" stop-color="#B8262C"/><stop offset=".45" stop-color="#97161E"/>
+    <stop offset=".85" stop-color="#600B12"/><stop offset="1" stop-color="#43070C"/>
+  </radialGradient>
+  <linearGradient id="redTail" gradientUnits="userSpaceOnUse" x1="300" y1="915" x2="300" y2="1010">
+    <stop offset="0" stop-color="#B42429"/><stop offset=".55" stop-color="#8C141B"/><stop offset="1" stop-color="#4A070C"/>
+  </linearGradient>
+  <filter id="s8" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+  <filter id="s18" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18"/></filter>
+  <filter id="s3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+  <clipPath id="cD"><use href="#dome"/></clipPath>
+  <clipPath id="cT"><use href="#tail"/></clipPath>
+</defs>
+<use href="#dome" fill="url(#red)"/>
+<g clip-path="url(#cD)">
+  <use href="#dome" fill="none" stroke="rgba(25,0,3,.65)" stroke-width="70" filter="url(#s18)"/>
+  <!-- shadow of the tail lying on the crown -->
+  <path d="M420 1010 C340 985 230 985 170 1040 C140 1070 130 1110 132 1160" stroke="rgba(20,0,2,.75)" stroke-width="44" fill="none" filter="url(#s18)"/>
+  <!-- soft pull-folds from the brim up into the crown -->
+  <path d="M470 1240 C480 1170 470 1090 440 1030" stroke="rgba(30,0,4,.45)" stroke-width="16" fill="none" filter="url(#s8)"/>
+  <path d="M488 1238 C498 1170 490 1095 462 1036" stroke="rgba(220,90,90,.22)" stroke-width="12" fill="none" filter="url(#s8)"/>
+  <path d="M330 1245 C335 1180 320 1120 290 1070" stroke="rgba(30,0,4,.38)" stroke-width="14" fill="none" filter="url(#s8)"/>
+  <path d="M350 1245 C355 1180 342 1120 314 1072" stroke="rgba(220,90,90,.18)" stroke-width="10" fill="none" filter="url(#s8)"/>
+  <path d="M200 1248 C200 1200 196 1160 186 1120" stroke="rgba(30,0,4,.35)" stroke-width="14" fill="none" filter="url(#s8)"/>
+  <!-- crumple just above the brim -->
+  <path d="M70 1225 C150 1210 260 1222 340 1212 C420 1202 500 1215 545 1205" stroke="rgba(30,0,4,.4)" stroke-width="18" fill="none" filter="url(#s8)"/>
+  <ellipse cx="455" cy="1060" rx="70" ry="90" fill="rgba(210,80,80,.22)" filter="url(#s18)"/>
+</g>
+<use href="#tail" fill="url(#redTail)"/>
+<g clip-path="url(#cT)">
+  <use href="#tail" fill="none" stroke="rgba(25,0,3,.55)" stroke-width="26" filter="url(#s8)"/>
+  <path d="M400 950 C320 925 220 930 160 985 C130 1015 112 1060 108 1110" stroke="rgba(215,95,95,.3)" stroke-width="18" fill="none" filter="url(#s8)"/>
+  <!-- wrinkles where the tip bends -->
+  <path d="M170 960 C185 985 190 1010 182 1035" stroke="rgba(30,0,4,.5)" stroke-width="8" fill="none" filter="url(#s3)"/>
+  <path d="M215 940 C228 965 232 990 226 1010" stroke="rgba(30,0,4,.45)" stroke-width="7" fill="none" filter="url(#s3)"/>
+  <path d="M190 958 C205 982 210 1006 202 1030" stroke="rgba(220,110,110,.25)" stroke-width="6" fill="none" filter="url(#s3)"/>
+</g>
+</svg>
+</body></html>
