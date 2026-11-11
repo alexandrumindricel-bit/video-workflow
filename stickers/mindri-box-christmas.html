@@ -1,0 +1,115 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../renderer/fonts.css">
+<style>
+  @page { size: 106mm 106mm; margin: 0; }
+  html, body { margin: 0; padding: 0; background: transparent; }
+  .sheet { width: 106mm; height: 106mm; position: relative; }
+  svg { width: 106mm; height: 106mm; display: block; }
+</style></head>
+<body><div class="sheet">
+<!-- 106 mm artboard = 100 mm sticker + 3 mm bleed each side. 1 unit = 0.1 mm -->
+<svg viewBox="0 0 1060 1060" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="60%">
+      <stop offset="0" stop-color="#1E1E1E"/><stop offset="1" stop-color="#050505"/>
+    </radialGradient>
+    <linearGradient id="org" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FF8533"/><stop offset=".55" stop-color="#FF6600"/><stop offset="1" stop-color="#C24E00"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFE7A8"/><stop offset=".5" stop-color="#F5C451"/><stop offset="1" stop-color="#D99A1E"/>
+    </linearGradient>
+    <path id="arcTop" d="M 155 530 A 375 375 0 0 1 905 530"/>
+    <path id="arcBot" d="M 130 530 A 400 400 0 0 0 930 530"/>
+    <g id="flake">
+      <g stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none">
+        <line x1="0" y1="-26" x2="0" y2="26"/><line x1="-22.5" y1="-13" x2="22.5" y2="13"/><line x1="-22.5" y1="13" x2="22.5" y2="-13"/>
+        <path d="M -7 -19 L 0 -12 L 7 -19 M -7 19 L 0 12 L 7 19"/>
+      </g>
+    </g>
+    <g id="branch">
+      <path d="M0 0 C 40 -8, 90 -6, 140 0" stroke="#5B3A1E" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <g fill="#1F7A3A">
+        <path d="M20 -2 l18 -34 l6 32z"/><path d="M45 -3 l20 -36 l5 34z"/><path d="M72 -3 l20 -36 l5 35z"/><path d="M100 -2 l18 -32 l5 32z"/>
+        <path d="M20 2 l18 32 l6 -30z"/><path d="M45 3 l20 34 l5 -32z"/><path d="M72 3 l20 34 l5 -32z"/><path d="M100 2 l18 30 l5 -30z"/>
+      </g>
+      <g fill="#2EA54F" opacity=".9">
+        <path d="M30 -1 l12 -26 l4 25z"/><path d="M58 -2 l13 -28 l4 27z"/><path d="M86 -2 l13 -27 l4 26z"/>
+      </g>
+      <circle cx="140" cy="-4" r="11" fill="#E0262E"/><circle cx="154" cy="8" r="10" fill="#E0262E"/><circle cx="136" cy="12" r="9" fill="#C21A22"/>
+      <circle cx="137" cy="-8" r="3" fill="#fff" opacity=".7"/>
+    </g>
+  </defs>
+
+  <!-- bleed area (full square, same background so a slight mis-cut stays clean) -->
+  <rect width="1060" height="1060" fill="#050505"/>
+  <!-- sticker body: 100 mm circle -->
+  <circle cx="530" cy="530" r="500" fill="url(#bg)"/>
+  <!-- orange outer ring + white dashed inner ring -->
+  <circle cx="530" cy="530" r="472" fill="none" stroke="url(#org)" stroke-width="34"/>
+  <circle cx="530" cy="530" r="436" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-dasharray="2 16" stroke-linecap="round" opacity=".85"/>
+
+  <!-- background snowflakes -->
+  <g opacity=".22">
+    <use href="#flake" transform="translate(300 330) scale(1.1)"/><use href="#flake" transform="translate(770 320) scale(.9)"/>
+    <use href="#flake" transform="translate(250 640) scale(.7)"/><use href="#flake" transform="translate(820 660) scale(1.2)"/>
+    <use href="#flake" transform="translate(420 250) scale(.6)"/><use href="#flake" transform="translate(650 820) scale(.7)"/>
+    <use href="#flake" transform="translate(380 800) scale(.9)"/><use href="#flake" transform="translate(700 230) scale(.6)"/>
+  </g>
+  <!-- snow dots -->
+  <g fill="#FFFFFF" opacity=".55">
+    <circle cx="340" cy="420" r="5"/><circle cx="720" cy="400" r="4"/><circle cx="300" cy="560" r="3.5"/><circle cx="790" cy="560" r="5"/>
+    <circle cx="470" cy="300" r="3"/><circle cx="600" cy="290" r="4"/><circle cx="330" cy="720" r="4"/><circle cx="740" cy="740" r="3.5"/>
+    <circle cx="520" cy="860" r="3"/><circle cx="610" cy="760" r="3.5"/>
+  </g>
+
+  <!-- arc texts -->
+  <text font-family="Montserrat" font-weight="800" font-size="44" letter-spacing="10" fill="#FFFFFF">
+    <textPath href="#arcTop" startOffset="50%" text-anchor="middle">MINDRICEL.RO</textPath>
+  </text>
+  <text font-family="Montserrat" font-weight="800" font-size="32" letter-spacing="6" fill="#FF8533">
+    <textPath href="#arcBot" startOffset="50%" text-anchor="middle">SPOR LA SPORT • FII MÂNDRU</textPath>
+  </text>
+  <!-- little stars on the ring sides -->
+  <g fill="url(#gold)">
+    <path transform="translate(140 530) scale(1.1)" d="M0 -18 L5 -5 L19 -5 L8 3 L12 17 L0 9 L-12 17 L-8 3 L-19 -5 L-5 -5 Z"/>
+    <path transform="translate(920 530) scale(1.1)" d="M0 -18 L5 -5 L19 -5 L8 3 L12 17 L0 9 L-12 17 L-8 3 L-19 -5 L-5 -5 Z"/>
+  </g>
+
+  <!-- MÎNDRI -->
+  <text x="530" y="500" text-anchor="middle" font-family="Montserrat" font-weight="900" font-size="164" letter-spacing="-2"
+        fill="#FFFFFF">MÎNDRI</text>
+  <!-- Santa hat on the M -->
+  <g transform="translate(300 392) rotate(-20) scale(.95)">
+    <path d="M -62 40 C -40 -20, 10 -64, 74 -40 C 50 -30, 40 -6, 44 40 Z" fill="#E0262E"/>
+    <path d="M -62 40 C -40 -20, 10 -64, 74 -40 C 62 -36, 52 -28, 46 -16 C 20 -40, -20 -14, -40 40 Z" fill="#B71C22" opacity=".55"/>
+    <rect x="-72" y="30" width="128" height="30" rx="15" fill="#FFFFFF"/>
+    <circle cx="80" cy="-42" r="18" fill="#FFFFFF"/>
+  </g>
+  <!-- BOX in orange with a gift ribbon -->
+  <g>
+    <rect x="362" y="535" width="336" height="140" rx="22" fill="url(#org)"/>
+    <rect x="362" y="535" width="336" height="140" rx="22" fill="none" stroke="#0A0A0A" stroke-width="4" opacity=".35"/>
+    <text x="530" y="652" text-anchor="middle" font-family="Montserrat" font-weight="900" font-size="122" letter-spacing="10" fill="#0A0A0A">BOX</text>
+    <!-- bow on top of the BOX label -->
+    <g transform="translate(530 535)">
+      <path d="M0 0 C -30 -40, -78 -34, -66 -8 C -58 8, -24 6, 0 0 Z" fill="url(#gold)"/>
+      <path d="M0 0 C 30 -40, 78 -34, 66 -8 C 58 8, 24 6, 0 0 Z" fill="url(#gold)"/>
+      <path d="M-6 0 L -26 34 L -12 32 L -4 44 Z M6 0 L 26 34 L 12 32 L 4 44 Z" fill="#D99A1E"/>
+      <circle r="12" fill="#F5C451" stroke="#B07A12" stroke-width="2"/>
+    </g>
+  </g>
+
+  <!-- Christmas Edition -->
+  <text x="530" y="770" text-anchor="middle" font-family="Kaushan Script" font-size="84" fill="url(#gold)"
+        stroke="#0A0A0A" stroke-width="2" paint-order="stroke">Christmas Edition</text>
+
+  <!-- holly branches -->
+  <use href="#branch" transform="translate(305 826) scale(.78)"/>
+  <use href="#branch" transform="translate(755 826) scale(-.78 .78)"/>
+
+  <!-- year -->
+  <text x="530" y="835" text-anchor="middle" font-family="Montserrat" font-weight="800" font-size="30" letter-spacing="12" fill="#FFFFFF" opacity=".85">2026</text>
+</svg>
+</div></body></html>
