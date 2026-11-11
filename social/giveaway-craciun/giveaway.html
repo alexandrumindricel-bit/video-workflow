@@ -6,7 +6,7 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1080px; height: var(--H); overflow: hidden; background: #0A0A0A; }
   body { font-family: 'Inter', sans-serif; color: #fff; position: relative; -webkit-font-smoothing: antialiased; }
-  body.post { --H: 1350px; } body.story { --H: 1920px; }
+  body.post { --H: 1440px; } body.story { --H: 1920px; }
 
   .bg { position: absolute; inset: 0; background: url(assets/hero-snow.jpg) -525px -330px / 1607px auto no-repeat; }
   .story .bg { background-position: 40% center; background-size: cover; }
@@ -178,6 +178,52 @@
   .post .p1 .pname { font-size: 40px; margin-top: 16px; } .post .p1 .pdesc { font-size: 21px; margin-top: 10px; }
   .story .p1 .rank { height: 80px; font-size: 38px; border-radius: 40px; padding: 0 34px 0 10px; gap: 16px; } .story .p1 .rank i { width: 62px; height: 62px; font-size: 34px; }
   .story .p1 .pname { font-size: 66px; margin-top: 22px; } .story .p1 .pdesc { font-size: 28px; margin-top: 14px; }
+
+  /* ===== full-photo layout (photo never cropped) ===== */
+  body.post .bg { background: url(assets/hero-snow-1080.jpg) 0 0 / 1080px 1440px no-repeat; }
+  body.story .bg { background: url(assets/hero-snow-story.jpg) 0 0 / 1080px 1920px no-repeat; }
+  body .big .body { background-size: 100% 100%, 100% 100%, 100% 100%, 1080px 1440px !important; background-position: 0 0, 0 0, 0 0, 0 0 !important; }
+  body .shade { background: linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,0) 24%, rgba(0,0,0,0) 78%, rgba(0,0,0,.32) 100%); }
+  body .prize { flex-direction: column; align-items: stretch; justify-content: center; text-align: center; transform: none; right: auto; }
+  body .prize > div:last-child { display: flex; flex-direction: column; align-items: center; }
+  body .prize .img { width: 100% !important; margin: 0 !important; }
+
+  /* post 1080x1440: title on the sky, prizes as a podium above the hills, subtitle + actions on the snow */
+  body.post .title { top: 24px; }
+  body.post .kicker { font-size: 30px !important; padding: 10px 22px 10px calc(22px + .22em) !important; }
+  body.post .big { font-size: 150px; margin-top: 6px; }
+  body.post .big2 { font-size: 50px; margin-top: 2px; }
+  body.post .sub { position: absolute; left: 50%; transform: translateX(-50%); top: 1288px; white-space: nowrap; font-size: 34px; padding: 12px 34px; margin: 0; }
+  body.post .prize { padding: 12px; gap: 8px; --r: 32px; }
+  body.post .p2 { left: 24px;  width: 326px; top: 356px; height: 232px; }
+  body.post .p1 { left: 364px; width: 380px; top: 322px; height: 266px; --r: 36px; }
+  body.post .p3 { left: 758px; width: 298px; top: 390px; height: 198px; }
+  body.post .p1 .img { height: 126px; } body.post .p2 .img { height: 104px; } body.post .p3 .img { height: 84px; }
+  body.post .tiles.t4 { grid-template-columns: repeat(4, 1fr); grid-template-rows: 1fr; }
+  body.post .tiles { --tg: 7px; } body.post .tile { border-radius: 14px; padding: 6px; }
+  body.post .prize .rank { height: 32px; font-size: 15px; padding: 0 14px 0 5px; gap: 8px; } body.post .prize .rank i { width: 24px; height: 24px; font-size: 14px; }
+  body.post .p1 .rank { height: 36px; font-size: 17px; } body.post .p1 .rank i { width: 28px; height: 28px; font-size: 16px; }
+  body.post .prize .pname { font-size: 22px; margin-top: 7px; } body.post .p1 .pname { font-size: 27px; }
+  body.post .prize .pdesc { font-size: 13px; margin-top: 4px; line-height: 1.25; } body.post .p1 .pdesc { font-size: 14px; }
+  body.post .p3 .voucher { width: auto; height: 100%; font-size: 34px; }
+  body.post .rules { left: 24px; right: 24px; width: auto; top: 1370px; height: 54px; --r: 27px; padding: 0 8px 0 24px; }
+  body.post .steps { font-size: 20px; } body.post .site { height: 40px; font-size: 18px; }
+
+  /* story 1080x1920: photo on top, prizes + actions on the snow below the ATV */
+  body.story .title { top: 92px; }
+  body.story .prize { padding: 14px; gap: 10px; --r: 38px; transform: none; }
+  body.story .p2 { left: 24px;  width: 326px; top: 1380px; height: 318px; }
+  body.story .p1 { left: 364px; width: 380px; top: 1326px; height: 372px; --r: 42px; }
+  body.story .p3 { left: 758px; width: 298px; top: 1426px; height: 272px; }
+  body.story .p1 .img { height: 186px; } body.story .p2 .img { height: 132px; } body.story .p3 .img { height: 118px; }
+  body.story .tiles { --tg: 8px; } body.story .tile { border-radius: 16px; padding: 6px; }
+  body.story .prize .rank { height: 38px; font-size: 18px; padding: 0 16px 0 6px; gap: 9px; border-radius: 19px; } body.story .prize .rank i { width: 28px; height: 28px; font-size: 16px; }
+  body.story .p1 .rank { height: 42px; font-size: 20px; border-radius: 21px; padding-right: 18px; } body.story .p1 .rank i { width: 32px; height: 32px; font-size: 18px; }
+  body.story .prize .pname { font-size: 26px; margin-top: 8px; } body.story .p1 .pname { font-size: 34px; }
+  body.story .prize .pdesc { font-size: 15px; margin-top: 5px; line-height: 1.25; } body.story .p1 .pdesc { font-size: 17px; }
+  body.story .p3 .voucher { width: auto; height: 100%; font-size: 46px; }
+  body.story .rules { left: 24px; right: 24px; top: 1718px; height: 82px; --r: 41px; }
+  body.story .foot { bottom: 54px; }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
