@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ro"><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../renderer/fonts.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1000px; height: 1000px; background: transparent; overflow: hidden; -webkit-font-smoothing: antialiased; }
+  .cut { position: absolute; inset: 0; border-radius: 50%; background: #FFFFFF; }
+  .disc { position: absolute; inset: 26px; border-radius: 50%; background: radial-gradient(circle at 50% 40%, #2A0A10 0%, #14060A 50%, #070305 100%); }
+  .ring { position: absolute; inset: 52px; border-radius: 50%; border: 6px solid #FF3B4A;
+    box-shadow: 0 0 10px #FF2A3A, 0 0 26px rgba(255,30,45,.85), 0 0 60px rgba(255,20,40,.5), inset 0 0 10px #FF2A3A, inset 0 0 30px rgba(255,30,45,.55); }
+  .ring2 { position: absolute; inset: 74px; border-radius: 50%; border: 2px dashed rgba(255,255,255,.28); }
+  .sheen { position: absolute; inset: 26px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(60% 40% at 30% 12%, rgba(255,255,255,.2), transparent 70%); }
+  .c { position: absolute; left: 0; right: 0; text-align: center; }
+  .name { top: 364px; font: 900 126px/1 'Montserrat'; letter-spacing: -.01em; }
+  .name span { display: block; }
+  .name .glow { color: rgba(255,30,45,.9); text-shadow: 0 0 24px rgba(255,20,40,.75), 0 0 60px rgba(255,20,40,.45); filter: blur(3px); }
+  .name .body { position: absolute; inset: 0; color: #fff; }
+  .name .tube { position: absolute; inset: 0; color: #000; filter: url(#tubeF); }
+  .ro { top: 524px; font: 900 168px/1 'Montserrat'; letter-spacing: .04em; }
+  .ro .w { position: relative; display: inline-block; }
+  .ro .glow { position: absolute; left: 0; top: 0; color: rgba(255,10,30,.9); text-shadow: 0 0 22px rgba(255,10,30,.75), 0 0 55px rgba(255,10,30,.45); filter: blur(3px); }
+  .ro .base { position: relative; background: linear-gradient(180deg, #FF4655 0%, #FF1428 45%, #E0001A 100%); -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 2px #5A000C) drop-shadow(0 0 2px #5A000C) drop-shadow(0 3px 3px rgba(0,0,0,.5)); }
+  .line { position: absolute; left: 50%; width: 520px; margin-left: -260px; top: 506px; height: 3px; border-radius: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); }
+  .tag { top: 708px; font: 700 30px/1 'Montserrat'; letter-spacing: .3em; padding-left: .3em; color: rgba(255,255,255,.8); }
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="tubeF" x="-10%" y="-30%" width="120%" height="160%" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="erode" radius="3.5" result="e"/>
+    <feComposite in="SourceAlpha" in2="e" operator="out" result="ring"/>
+    <feGaussianBlur in="ring" stdDeviation=".35" result="ringS"/>
+    <feFlood flood-color="#FF4453"/><feComposite in2="ringS" operator="in"/>
+  </filter>
+</svg>
+<div class="cut"></div><div class="disc"></div><div class="ring"></div><div class="ring2"></div>
+<div class="c name"><span class="glow">MINDRICEL</span><span class="body">MINDRICEL</span><span class="tube">MINDRICEL</span></div>
+<div class="line"></div>
+<div class="c ro"><span class="w"><span class="glow">.RO</span><span class="base">.RO</span></span></div>
+<div class="sheen"></div>
+</body></html>
