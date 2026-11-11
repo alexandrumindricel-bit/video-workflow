@@ -258,6 +258,16 @@
     background: linear-gradient(90deg, transparent 72%, rgba(0,0,0,.42) 100%); }
   body.post .sub { top: 1150px !important; }
   body.story .sub { top: 1074px !important; }
+
+  /* call-to-action: plain centred texts, no bar */
+  .rules.cta { position: absolute; left: 0 !important; right: 0 !important; width: auto !important; background: none !important; box-shadow: none !important;
+    display: flex; justify-content: center; padding: 0 !important; }
+  .rules.cta .steps { gap: 34px; font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,.75), 0 2px 12px rgba(0,0,0,.55); }
+  .rules.cta svg { filter: drop-shadow(0 1px 3px rgba(0,0,0,.7)); }
+  body.post .rules.cta .steps { font-size: 30px; } body.post .rules.cta svg { width: 30px; height: 30px; }
+  body.post .rules.cta { top: 1352px !important; height: 60px !important; }
+  body.story .rules.cta .steps { font-size: 32px; gap: 36px; } body.story .rules.cta svg { width: 32px; height: 32px; }
+  body.story .rules.cta { top: 1810px !important; height: 70px !important; }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
@@ -316,13 +326,14 @@
   <div><div class="rank"><i>3</i>PREMIUL III</div><div class="pname">Voucher 15%</div><div class="pdesc">Reducere pe mindricel.ro</div></div>
 </div>
 
-<div class="glass rules">
+<div class="rules cta">
   <div class="steps">
     <span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-3.9 3.1-7 7-7s7 3.1 7 7"/><path d="M19 8v6M16 11h6"/></svg>Follow</span>
     <span><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 21s-7.5-4.6-9.5-9.3C1 8 3.3 4.5 6.9 4.5c2 0 3.6 1.1 5.1 3 1.5-1.9 3.1-3 5.1-3 3.6 0 5.9 3.5 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg>Like</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"><path d="M21 12a8.5 8.5 0 0 1-12.4 7.6L3 21l1.5-5A8.5 8.5 0 1 1 21 12z"/></svg>Comment</span>
     <span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/></svg>Tag</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"><path d="M22 3 2 10.5l8 3 3 8z"/><path d="M22 3 10 13.5"/></svg>Share</span>
   </div>
-  <div class="site"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linejoin="round"><path d="M22 3 2 10.5l8 3 3 8z"/><path d="M22 3 10 13.5"/></svg>Share</div>
 </div>
 <div class="foot">Detalii și regulament în descrierea postării</div>
 
