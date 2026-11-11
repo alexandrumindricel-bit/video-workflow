@@ -44,16 +44,24 @@
   .site { top: 736px; font: 800 44px/1 'Montserrat'; letter-spacing: .08em; padding-left: .08em; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
   .site b { color: #FF3B4A; text-shadow: 0 0 10px rgba(255,30,45,.8); }
   .tag { top: 800px; font: 700 24px/1 'Montserrat'; letter-spacing: .3em; padding-left: .3em; color: rgba(255,255,255,.75); }
+
+  /* crisp text */
+  .xmas .glow { color: rgba(255,30,45,.9) !important; text-shadow: 0 0 24px rgba(255,20,40,.75), 0 0 60px rgba(255,20,40,.45) !important; filter: blur(3px); }
+  .xmas .body { background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 55%, #FFE9EB 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; }
+  .box .glow { color: rgba(255,10,30,.9) !important; text-shadow: 0 0 22px rgba(255,10,30,.75), 0 0 55px rgba(255,10,30,.45) !important; filter: blur(3px); }
+  .box .base { filter: drop-shadow(0 0 2px #5A000C) drop-shadow(0 0 2px #5A000C) drop-shadow(0 3px 3px rgba(0,0,0,.5)) !important; }
+  .box .snowcap { filter: drop-shadow(0 2px 0 rgba(170,190,215,.95)) !important; }
+  /* hat sits on the X */
+  .hat { width: 180px !important; left: 150px !important; top: 158px !important; transform: rotate(-6deg) !important; }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
   <filter id="tubeF" x="-10%" y="-30%" width="120%" height="160%" color-interpolation-filters="sRGB">
-    <feMorphology in="SourceAlpha" operator="erode" radius="5" result="e"/>
+    <feMorphology in="SourceAlpha" operator="erode" radius="4" result="e"/>
     <feComposite in="SourceAlpha" in2="e" operator="out" result="ring"/>
-    <feGaussianBlur in="ring" stdDeviation=".8" result="ringS"/>
+    <feGaussianBlur in="ring" stdDeviation=".35" result="ringS"/>
     <feFlood flood-color="#FF4453"/><feComposite in2="ringS" operator="in" result="tube"/>
-    <feGaussianBlur in="tube" stdDeviation="5" result="g1"/>
-    <feMerge><feMergeNode in="g1"/><feMergeNode in="tube"/></feMerge>
+    <feMerge><feMergeNode in="tube"/></feMerge>
   </filter>
   <filter id="bglow" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="7"/></filter>
 </svg>
@@ -64,7 +72,13 @@
 
 
 <div class="c xmas"><span class="glow">X-MAS</span><span class="body">X-MAS</span><span class="tube">X-MAS</span></div>
-<svg class="hat" viewBox="0 0 80 70"><path d="M8 52 C14 26 32 6 56 8 C70 9 76 22 72 34 C68 26 60 22 52 26 C44 30 40 42 38 52 Z" fill="#E3162A"/><path d="M20 40 C28 22 44 12 58 14" stroke="rgba(255,255,255,.3)" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M38 52 C40 42 44 32 52 26" stroke="rgba(0,0,0,.25)" stroke-width="5" fill="none"/><rect x="2" y="47" width="50" height="15" rx="7.5" fill="#fff"/><circle cx="72" cy="36" r="8.5" fill="#fff"/></svg>
+<svg class="hat" viewBox="0 0 100 80"><defs><linearGradient id="hr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF4A55"/><stop offset=".55" stop-color="#E3162A"/><stop offset="1" stop-color="#A50A18"/></linearGradient><radialGradient id="hf" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#DDE3EA"/></radialGradient></defs>
+<path d="M10 60 C13 32 30 11 54 9 C73 8 87 19 89 36 C83 29 75 27 69 31 C62 35 60 46 62 60 Z" fill="url(#hr)"/>
+<path d="M20 50 C24 32 36 18 54 15" stroke="rgba(255,255,255,.35)" stroke-width="4" fill="none" stroke-linecap="round"/>
+<path d="M62 60 C60 46 62 36 69 31" stroke="rgba(80,0,10,.35)" stroke-width="5" fill="none"/>
+<rect x="3" y="55" width="66" height="19" rx="9.5" fill="url(#hf)"/>
+<path d="M9 59 H62" stroke="rgba(255,255,255,.9)" stroke-width="3" stroke-linecap="round"/>
+<circle cx="89" cy="38" r="9.5" fill="url(#hf)"/></svg>
 
 <svg class="lights" id="lights" viewBox="0 0 700 60"></svg>
 
