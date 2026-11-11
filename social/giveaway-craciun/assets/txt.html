@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="/home/user/video-workflow/renderer/fonts.css">
+<style>html,body{margin:0;width:1512px;height:2016px;overflow:hidden;background:transparent}
+#t{position:absolute;left:0;top:0;white-space:nowrap;color:#fff;font:800 var(--fs) 'Montserrat';letter-spacing:.01em;line-height:1;
+transform-origin:0 0;}</style></head><body><div id="t">MINDRICEL.RO</div>
+<script>
+const q=new URLSearchParams(location.search), fs=+q.get('fs'), cx=+q.get('cx'), cy=+q.get('cy'), ang=+q.get('a'), sk=+q.get('sk');
+const t=document.getElementById('t'); t.style.setProperty('--fs', fs+'px');
+document.fonts.ready.then(()=>{ const w=t.offsetWidth, h=t.offsetHeight;
+  t.style.transform=`translate(${cx}px,${cy}px) rotate(${ang}deg) skewX(${sk}deg) translate(${-w/2}px,${-h/2}px)`; document.title='ok '+w;});
+</script></body></html>
