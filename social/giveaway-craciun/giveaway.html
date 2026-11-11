@@ -55,11 +55,25 @@
   .post .title { top: 180px; } .story .title { top: 260px; }
   .kicker { display: inline-block; font: 800 24px 'Montserrat'; letter-spacing: .32em; text-transform: uppercase; padding-left: .32em;
     text-shadow: 0 2px 14px rgba(0,0,0,.5); }
-  .big { font: 900 150px/0.95 'Montserrat'; letter-spacing: -.045em; margin-top: 10px;
-    background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 36%, #FFC7CB 58%, #EC3542 80%, #A8081A 100%);
-    -webkit-background-clip: text; background-clip: text; color: transparent;
-    filter: drop-shadow(0 3px 0 rgba(10,10,10,.55)) drop-shadow(0 14px 30px rgba(0,0,0,.45)); }
-  .story .big { font-size: 158px; }
+  /* ---------- GIVEAWAY: liquid-glass letters + red neon ---------- */
+  .big { position: relative; display: inline-block; margin-top: 10px; font: 900 146px/1 'Montserrat'; letter-spacing: -.01em; }
+  .big span { display: block; white-space: nowrap; }
+  .big span + span { position: absolute; inset: 0; }
+  /* 1. neon halo */
+  .big .glow { color: #FF2A3A; text-shadow: 0 0 14px #FF1F30, 0 0 40px rgba(255,20,40,.8), 0 0 90px rgba(255,20,40,.5); }
+  /* 2. glass body: frosted copy of the photo behind, sheen + faint red tint */
+  .big .body { color: transparent; -webkit-background-clip: text; background-clip: text;
+    background-image: linear-gradient(112deg, transparent 0 22%, rgba(255,255,255,.30) 27%, transparent 33%, transparent 61%, rgba(255,255,255,.22) 65%, transparent 70%),
+                      linear-gradient(180deg, rgba(255,255,255,.85) 17%, rgba(255,255,255,.42) 28%, rgba(255,255,255,.10) 46%, rgba(255,255,255,0) 64%, rgba(255,110,120,.32) 88%),
+                      linear-gradient(rgba(255,40,55,.22), rgba(255,40,55,.22)), url(assets/hero-blur.jpg);
+    background-attachment: scroll, scroll, scroll, fixed; background-repeat: no-repeat; background-size: 100% 100%, 100% 100%, 100% 100%, cover; background-position: 0 0, 0 0, 0 0, center 40%; }
+  .story .big .body { background-position: 0 0, 0 0, 0 0, 30% center; }
+  /* 3. neon tube on the outline */
+  .big .tube { color: #000; filter: url(#tubeF); }
+  .big .shade { color: #000; filter: url(#shadeF); }
+  /* 4. white specular rim on the top edge */
+  .big .rim { color: #000; filter: url(#rimF); opacity: .95; }
+  .story .big { font-size: 154px; }
   .big2 { font: 800 64px/1 'Montserrat'; letter-spacing: .14em; padding-left: .14em; margin-top: 6px; text-shadow: 0 3px 18px rgba(0,0,0,.55); }
   .story .big2 { font-size: 70px; }
   .sub { margin-top: 26px; font: 700 30px 'Montserrat'; text-shadow: 0 1px 2px rgba(0,0,0,.9), 0 2px 6px rgba(0,0,0,.75), 0 4px 18px rgba(0,0,0,.6); }
@@ -111,6 +125,31 @@
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
+  
+  <filter id="tubeF" x="-10%" y="-30%" width="120%" height="160%" color-interpolation-filters="sRGB">
+    <feMorphology in="SourceAlpha" operator="erode" radius="3" result="e"/>
+    <feComposite in="SourceAlpha" in2="e" operator="out" result="ring"/>
+    <feGaussianBlur in="ring" stdDeviation=".6" result="ringS"/>
+    <feFlood flood-color="#FF4453"/><feComposite in2="ringS" operator="in" result="tube"/>
+    <feGaussianBlur in="tube" stdDeviation="4" result="g1"/>
+    <feGaussianBlur in="tube" stdDeviation="10" result="g2"/>
+    <feMerge><feMergeNode in="g2"/><feMergeNode in="g1"/><feMergeNode in="tube"/></feMerge>
+  </filter>
+  <filter id="rimF" x="-10%" y="-30%" width="120%" height="160%" color-interpolation-filters="sRGB">
+    <feOffset in="SourceAlpha" dy="5" result="o"/>
+    <feComposite in="SourceAlpha" in2="o" operator="out" result="top"/>
+    <feMorphology in="SourceAlpha" operator="erode" radius="3" result="e"/>
+    <feComposite in="top" in2="e" operator="in" result="inner"/>
+    <feGaussianBlur in="inner" stdDeviation=".5" result="b"/>
+    <feFlood flood-color="#FFFFFF"/><feComposite in2="b" operator="in"/>
+  </filter>
+  <filter id="shadeF" x="-10%" y="-30%" width="120%" height="160%" color-interpolation-filters="sRGB">
+    <feOffset in="SourceAlpha" dy="-10" result="o"/>
+    <feComposite in="SourceAlpha" in2="o" operator="out" result="bot"/>
+    <feGaussianBlur in="bot" stdDeviation="4" result="b"/>
+    <feComposite in="b" in2="SourceAlpha" operator="in" result="bi"/>
+    <feFlood flood-color="#2A0004" flood-opacity=".7"/><feComposite in2="bi" operator="in"/>
+  </filter>
   <filter id="refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
     <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="7" result="n"/>
     <feGaussianBlur in="n" stdDeviation="2" result="nb"/>
@@ -126,7 +165,7 @@
 </div>
 
 <div class="title">
-  <div class="big">GIVEAWAY</div><div class="big2">DE CRĂCIUN</div>
+  <div class="big"><span class="glow">GIVEAWAY</span><span class="body">GIVEAWAY</span><span class="shade">GIVEAWAY</span><span class="tube">GIVEAWAY</span><span class="rim">GIVEAWAY</span></div><div class="big2">DE CRĂCIUN</div>
   <div class="sub">3 premii pentru riderii <b>mindricel.ro</b></div>
 </div>
 
