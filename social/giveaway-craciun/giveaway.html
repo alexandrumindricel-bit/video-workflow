@@ -8,8 +8,11 @@
   body { font-family: 'Inter', sans-serif; color: #fff; position: relative; -webkit-font-smoothing: antialiased; }
   body.post { --H: 1350px; } body.story { --H: 1920px; }
 
-  .bg { position: absolute; inset: 0; background: url(assets/hero.jpg) center 40% / cover no-repeat; }
-  .story .bg { background-position: 30% center; }
+  .bg { position: absolute; inset: 0; background: url(assets/hero-santa.jpg) center 40% / cover no-repeat; }
+  .story .bg { background: url(assets/hero-santa.jpg) center top / 1080px auto no-repeat;
+    -webkit-mask-image: linear-gradient(#000 0, #000 1290px, transparent 1440px); }
+  .bgx { display: none; }
+  .story .bgx { display: block; position: absolute; inset: -60px; background: url(assets/hero-santa.jpg) center bottom / cover; filter: blur(34px) brightness(.55) saturate(1.1); }
   .shade { position: absolute; inset: 0;
     background: linear-gradient(180deg, rgba(0,0,0,.30) 0%, rgba(0,0,0,0) 26%, rgba(0,0,0,0) 55%, rgba(0,0,0,.45) 100%),
                 radial-gradient(120% 60% at 50% 100%, rgba(255,102,0,.18), transparent 60%); }
@@ -157,7 +160,7 @@
   </filter>
 </svg>
 
-<div class="bg"></div><div class="shade"></div>
+<div class="bgx"></div><div class="bg"></div><div class="shade"></div>
 <div class="snow" id="snow"></div>
 <svg class="lights" id="lights"></svg>
 <div id="baubles"></div>
@@ -244,7 +247,7 @@
   document.getElementById('baubles').innerHTML = B.map(([c, d, x, y]) =>
     `<div class="bauble ${c}" style="--d:${d}px;--l:${y}px;left:${x - d/2}px;top:${y}px"><div class="str"></div><div class="cap"></div><div class="ball"></div></div>`).join('');
   // a few crisp snowflakes
-  const FL = f === 'story' ? [[130, 610, 64], [940, 560, 54], [860, 760, 38], [90, 800, 42]] : [[975, 410, 54], [60, 440, 44], [920, 520, 34]];
+  const FL = f === 'story' ? [[600, 590, 56], [940, 560, 54], [860, 760, 38], [640, 700, 42]] : [[975, 410, 54], [60, 440, 44], [920, 520, 34]];
   document.getElementById('flakes').innerHTML = FL.map(([x, y, d]) => `<svg class="flake" style="left:${x}px;top:${y}px;width:${d}px;height:${d}px" viewBox="-20 -20 40 40"><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(0)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(60)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(120)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(180)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(240)"/><path d="M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3" transform="rotate(300)"/></svg>`).join('');
 </script>
 </body></html>
