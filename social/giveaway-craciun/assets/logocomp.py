@@ -22,7 +22,7 @@ lg=cv2.imread(LOGO).astype(np.float32)
 la=np.clip((lg.max(2)-40)/60,0,1)
 ys,xs=np.where(la>0.05); lg=lg[ys.min():ys.max()+1,xs.min():xs.max()+1]; la=la[ys.min():ys.max()+1,xs.min():xs.max()+1]
 # size: same width as the flag; rotation: follow the back's slope (same as the flag, ~ -8 deg visually)
-tw=150; s=tw/lg.shape[1]
+tw=int(sys.argv[4]) if len(sys.argv)>4 else 150; s=tw/lg.shape[1]
 lg=cv2.resize(lg,None,fx=s,fy=s,interpolation=cv2.INTER_AREA); la=cv2.resize(la,None,fx=s,fy=s,interpolation=cv2.INTER_AREA)
 lh,lw=la.shape; rot=float(sys.argv[3]) if len(sys.argv)>3 else -8
 M=cv2.getRotationMatrix2D((lw/2,lh/2),-rot,1.0); M[0,2]+=cx-lw/2; M[1,2]+=cy-lh/2
