@@ -277,6 +277,17 @@
   .rules.cta .steps span { -webkit-text-stroke: 1.6px #FFFFFF; paint-order: stroke fill; font-weight: 900;
     text-shadow: 0 2px 6px rgba(0,0,0,.45), 0 0 14px rgba(255,255,255,.35); }
   .rules.cta svg { overflow: visible; filter: drop-shadow(1.4px 0 0 #fff) drop-shadow(-1.4px 0 0 #fff) drop-shadow(0 1.4px 0 #fff) drop-shadow(0 -1.4px 0 #fff) drop-shadow(0 2px 4px rgba(0,0,0,.4)); }
+
+  /* subtitle: plain text, bigger, black shadow, tucked behind the wheel */
+  body .sub { background: none !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    padding: 0 !important; font-size: 58px !important; font-weight: 900 !important; letter-spacing: -.01em; right: 505px !important;
+    text-shadow: 0 3px 0 rgba(0,0,0,.55), 0 4px 10px rgba(0,0,0,.75), 0 8px 26px rgba(0,0,0,.6) !important; }
+  body .sub::after { display: none !important; }
+  body .sub b { text-shadow: inherit; }
+  body.post .sub { top: 1148px !important; } body.story .sub { top: 1072px !important; }
+
+  body .sub { white-space: nowrap; text-align: right; line-height: 1.0 !important; font-size: 64px !important; right: 500px !important; }
+  body.post .sub { top: 1150px !important; } body.story .sub { top: 1076px !important; }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
@@ -318,7 +329,7 @@
 <div class="title">
   <div class="kicker">Cel mai mare</div>
   <div class="big"><span class="glow">GIVEAWAY</span><span class="body">GIVEAWAY</span><span class="tube">GIVEAWAY</span><span class="rim">GIVEAWAY</span></div><div class="big2">DE CRĂCIUN</div>
-  <div class="sub">Da, <b>Moș Mîndri</b> există!</div>
+  <div class="sub">Da, <b>Moș Mîndri</b><br>există!</div>
 </div>
 
 <img class="wheel" src="assets/wheel.png" alt="">
