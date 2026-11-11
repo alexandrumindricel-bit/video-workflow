@@ -103,7 +103,7 @@
   .post .prize { right: 44px; --r: 40px; padding: 14px 26px 14px 14px; gap: 20px; }
   .prize .img { border-radius: 28px; background: radial-gradient(closest-side, rgba(255,255,255,.30), rgba(255,255,255,0)); }
   .post .p1 { top: 492px; width: 680px; height: 292px; --r: 44px; }
-  .post .p1 .img { width: 320px; height: 264px; }
+  .post .p1 .img { width: 330px; height: 264px; }
   .post .p1 .pname { font-size: 38px; } .post .p1 .pdesc { font-size: 21px; }
   .post .p2 { top: 798px; width: 620px; height: 234px; }
   .post .p2 .img { width: 330px; height: 206px; }
@@ -116,11 +116,11 @@
   /* story: full-width rows, descending sizes */
   .story .prize { left: 50%; transform: translateX(-50%); padding: 18px 34px 18px 18px; gap: 28px; --r: 48px; }
   .story .p1 { top: 600px; width: 1008px; height: 384px; }
-  .story .p1 .img { width: 420px; height: 318px; }
+  .story .p1 .img { width: 440px; height: 348px; }
   .story .p1 .pname { font-size: 52px; } .story .p1 .pdesc { font-size: 26px; }
   .story .p1 .rank { height: 48px; font-size: 20px; } .story .p1 .rank i { width: 36px; height: 36px; font-size: 20px; }
   .story .p2 { top: 1004px; width: 940px; height: 324px; --r: 44px; }
-  .story .p2 .img { width: 450px; height: 268px; }
+  .story .p2 .img { width: 470px; height: 288px; }
   .story .p2 .pname { font-size: 40px; } .story .p2 .pdesc { font-size: 22px; }
   .story .p2 .rank { height: 42px; font-size: 18px; } .story .p2 .rank i { width: 32px; height: 32px; font-size: 18px; }
   .story .p3 { top: 1348px; width: 860px; height: 242px; --r: 40px; padding: 14px 30px 14px 14px; }
@@ -153,6 +153,16 @@
   .voucher .vr { flex: 1; display: grid; place-items: center; font: 800 .17em/1 'Montserrat'; letter-spacing: .2em; writing-mode: vertical-rl; transform: rotate(180deg); }
   .post .p3 .voucher { font-size: 58px; width: 92%; }
   .story .p3 .voucher { font-size: 72px; width: 80%; }
+
+  /* product tiles: one item per tile, same size, aligned */
+  .prize .img.tiles { display: grid; gap: var(--tg, 10px); background: none; border-radius: 0; place-items: stretch; }
+  .tiles.t4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+  .tiles.t3 { grid-template-columns: 1fr 1fr 1fr; }
+  .tile { position: relative; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 8px 6px; min-height: 0;
+    background: linear-gradient(160deg, rgba(255,255,255,.34), rgba(255,255,255,.12)); box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 4px 12px rgba(0,0,0,.12); }
+  .tile img { flex: 1; min-height: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 8px rgba(0,0,0,.35)); }
+  .tile span { flex: none; margin-top: 4px; font: 800 var(--tl, 13px)/1 'Montserrat'; letter-spacing: .08em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.8), 0 1px 6px rgba(0,0,0,.6); }
+  .story .tile { border-radius: 22px; padding: 12px 12px 10px; } .story .tiles { --tg: 14px; --tl: 16px; }
 </style></head>
 <body>
 <svg width="0" height="0" style="position:absolute">
@@ -198,11 +208,11 @@
 </div>
 
 <div class="glass prize p1">
-  <div class="img"><img src="assets/prize1.png" alt=""></div>
+  <div class="img tiles t4"><div class="tile"><img src="assets/it_jersey.png" alt=""><span>Bluză</span></div><div class="tile"><img src="assets/it_pants.png" alt=""><span>Pantaloni</span></div><div class="tile"><img src="assets/it_gloves.png" alt=""><span>Mănuși</span></div><div class="tile"><img src="assets/it_goggles.png" alt=""><span>Ochelari</span></div></div>
   <div><div class="rank"><i>1</i>PREMIUL I</div><div class="pname">Echipament</div><div class="pdesc">Bluză + pantaloni, mănuși și&nbsp;ochelari</div></div>
 </div>
 <div class="glass prize p2">
-  <div class="img"><img src="assets/prize2.png" alt=""></div>
+  <div class="img tiles t3"><div class="tile"><img src="assets/it_pack.png" alt=""><span>Rucsac</span></div><div class="tile"><img src="assets/it_bladder.png" alt=""><span>Rezervor</span></div><div class="tile"><img src="assets/it_balaclava.png" alt=""><span>Cagulă</span></div></div>
   <div><div class="rank"><i>2</i>PREMIUL II</div><div class="pname">Rucsac hidratare</div><div class="pdesc">Rezervor de apă inclus<br>+ cagulă</div></div>
 </div>
 <div class="glass prize p3">
