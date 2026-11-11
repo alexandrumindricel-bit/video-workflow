@@ -5,13 +5,15 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 1000px; height: 1000px; background: transparent; overflow: hidden; -webkit-font-smoothing: antialiased; }
   .cut { position: absolute; inset: 0; border-radius: 50%; background: #FFFFFF; }
-  .disc { position: absolute; inset: 34px; border-radius: 50%; overflow: hidden; background: #F15A22; }
+  .disc { position: absolute; inset: 34px; border-radius: 50%; overflow: hidden; background: radial-gradient(circle at 50% 42%, #FF2E40 0%, #E3162A 45%, #A50A18 100%); }
   .flakes svg { position: absolute; fill: none; stroke: #FFFFFF; stroke-linecap: round; }
   .snowcap { position: absolute; left: 0; top: 0; width: 932px; height: 300px; }
-  .logo { position: absolute; left: 50%; top: 330px; width: 560px; margin-left: -280px; }
-  .name { position: absolute; left: 0; right: 0; top: 618px; text-align: center; font: 900 74px/1 'Montserrat'; letter-spacing: .005em; color: #141010; }
+  .logo { position: absolute; left: 50%; top: 348px; width: 560px; margin-left: -280px; }
+  .name { position: absolute; left: 0; right: 0; top: 640px; text-align: center; font: 900 74px/1 'Montserrat'; letter-spacing: .005em; color: #141010; }
   .ed { position: absolute; left: 0; right: 0; top: 712px; text-align: center; font: 800 30px/1 'Montserrat'; letter-spacing: .34em; padding-left: .34em; color: #FFFFFF; }
   .ed i { font-style: normal; display: inline-block; margin: 0 14px; transform: translateY(-2px); }
+  .name { color: #0A0A0A; }
+  .name b { color: #FFFFFF; }
 </style></head>
 <body>
 <div class="cut"></div>
@@ -24,8 +26,7 @@
   </svg>
 </div>
 <img class="logo" src="logo-dark.png" alt="">
-<div class="name">MINDRICEL.RO</div>
-<div class="ed"><i>❄</i>WINTER EDITION<i>❄</i></div>
+<div class="name">MINDRICEL<b>.RO</b></div>
 <script>
   const arm = 'M0 0V-17M0 -11l-5 -4M0 -11l5 -4M0 -5l-3.5 -3M0 -5l3.5 -3';
   const flake = (x, y, d, o, w) => `<svg style="left:${x}px;top:${y}px;width:${d}px;height:${d}px;opacity:${o};stroke-width:${w}" viewBox="-20 -20 40 40">` +
