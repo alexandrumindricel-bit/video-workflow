@@ -171,7 +171,8 @@ the user asks.
 **NO TEXT ON THE FACE (user rule, every video, all text)**: front phrases avoid a face zone that is wider than the face
 (head movement) and scaled by any zoom active during the phrase (punch/push/track); if no spot is free they go below
 the zone on the chest. Behind phrases never cross the face (forehead to chin), only hair / top of the head / the sides.
-Titles, cards and products stay in the top zone or beside the head. `combo` handwritten accents (+ swoosh) are
+Titles, cards and products stay in the top zone or beside the head. Close-ups: a phrase that would only fit over a
+top graphic or over the face is dropped (no caption for it) rather than overlap. `combo` handwritten accents (+ swoosh) are
 moved off the face automatically (below the hero → above it → dropped if there is no free spot). QA: open frames at every phrase near the head.
 
 **CAPTIONS ARE WHITE OR BLACK - NO COLOURED TEXT (user rule, latest - overrides the palette rule below)**: white words

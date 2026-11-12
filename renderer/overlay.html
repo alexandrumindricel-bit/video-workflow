@@ -1063,7 +1063,13 @@ window.init = async (data) => {
       // in front + over the face -> move it: chest first, then above the head, then whichever covers the face least
       if (!c.lkBehind && coversFace(c.lkY)) {
         const order = anchorK % 2 ? ['above', 'chest'] : ['chest', 'above'];
-        const alt = order.map(a => ({ a, y: yOf(a) })).find(o => !coversFace(o.y));
+        // close-ups: also try just above / just below the face zone; if nothing is free, the spot that covers the
+        // face least (user rule: never text on the face)
+        const cand = order.map(a => ({ a, y: yOf(a) }))
+          .concat([{ a: 'above', y: FY0 - c.lk.h / 2 - 12 }, { a: 'chest', y: FY1 + c.lk.h / 2 + 10 }])
+          .filter(o => o.y - c.lk.h / 2 >= 50 && o.y + c.lk.h / 2 <= 1600);
+        const ov = y => Math.max(0, Math.min(y + c.lk.h / 2, FY1) - Math.max(y - c.lk.h / 2, FY0));
+        const alt = cand.find(o => !coversFace(o.y)) || cand.sort((p, q) => ov(p.y) - ov(q.y))[0];
         if (alt) { c.lkY = alt.y; c.lkAnchor = alt.a; }
         else { c.lkY = Math.min(1560 - c.lk.h / 2, Math.max(zn.captions_y, FY1 + c.lk.h / 2 + 10)); c.lkAnchor = 'chest'; }
       }
@@ -1114,11 +1120,17 @@ window.init = async (data) => {
         lines.forEach(ln => { ln.fill = 'linear-gradient(180deg,#FFFFFF 0%,#F4F4F4 100%)'; }); c.bright = false;
       }
       c.behind = c.lkBehind;
+      // close-ups with a graphic in the top zone: the only spot left would collide with that graphic (or the face)
+      // -> this phrase gets no caption (the graphic carries the message; fewer captions is the user's rule anyway)
+      if (topBusy && !c.lkBehind && c.lkY - c.lk.h / 2 < (zn.top.y1 || 380) + 40) c.drop = true;
+      { const o = Math.max(0, Math.min(c.lkY + c.lk.h / 2, FY1) - Math.max(c.lkY - c.lk.h / 2, FY0));
+        if (!c.lkBehind && o > 0.35 * c.lk.h) c.drop = true; }
       c.dir = ci % 2 ? -1 : 1;
     });
     // chunk timing for lockups: hold until the next phrase starts (no gaps), small tail at the end
 
     meas.remove();
+    for (let i = chunks.length - 1; i >= 0; i--) if (chunks[i].drop) chunks.splice(i, 1);
     window.lockupQA = chunks.map(c => ({ rej: c.rej, t: +c.t0.toFixed(2), text: c.map(w => w.w).join(' '), anchor: c.lkAnchor, behind: c.lkBehind, mixed: !!c.mixedBg, fills: (c.lk.lines || []).map(l => ((l.fill || '').match(/#[0-9A-Fa-f]{6}/g) || []).join(' ')), y: Math.round(c.lkY), h: Math.round(c.lk.h), w: Math.round(c.lk.w) }));
   }
   window.captionEvents = chunks.map(c => [+c.t0.toFixed(2), !!c.behind, c.map(w => w.w).join(' ')]);
@@ -1550,7 +1562,7 @@ window.renderAt = (t) => {
         const ahead = (S.sb.captions?.lead ?? 0.25) * 0.6;
         const vis = w => clamp((t - w.start + ahead) / 0.12);
         const word = (w, cls, style) => { const p = vis(w); return `<span class="${cls}" style="${style};opacity:${p.toFixed(2)};${p < 1 && cls !== 'big' ? `filter:blur(${((1 - p) * 6).toFixed(1)}px);` : ''}${p < 1 && cls === 'big' ? `transform:scale(${(0.92 + 0.08 * p).toFixed(3)});` : ''}">${esc(w.t)}</span>`; };
-        const body = c.lk.lines.map((ln, j) => `<div class="row" style="transform:translateX(${(j % 2 ? 1 : -1) * (c.lk.lines.length > 1 ? 40 : 0)}px);margin-top:${j ? -0.1 * c.lk.sz : 0}px"><span class="ln">` +
+        const body = c.lk.lines.map((ln, j) => `<div class="row" style="position:relative;z-index:${20 - j};transform:translateX(${(j % 2 ? 1 : -1) * (c.lk.lines.length > 1 ? 40 : 0)}px);margin-top:${j ? -0.1 * c.lk.sz : 0}px"><span class="ln">` +
           (ln.pre.length ? `<span class="sm pre" style="font-size:${Math.round(c.lk.sz * 0.34)}px">${ln.pre.map(w => word(w, '', '')).join(' ')}</span>` : '') +
           word(ln.big, 'big', `font-size:${c.lk.sz}px;--f:${ln.fill}`) +
           (ln.post.length ? `<span class="sm post" style="font-size:${Math.round(c.lk.sz * 0.34)}px">${ln.post.map(w => word(w, '', '')).join(' ')}</span>` : '') + `</span></div>`).join('');
