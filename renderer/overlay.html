@@ -939,7 +939,7 @@ window.init = async (data) => {
       });
       assignFills(bright);
       // size: big words ~170 px, shrink so the widest line fits 960 px; small words ~0.33 of their big word
-      const html = sz => lines.map((ln, j) => `<div class="row" style="transform:translateX(${(j % 2 ? 1 : -1) * (lines.length > 1 ? 40 : 0)}px);margin-top:${j ? -0.1 * sz : 0}px"><span class="ln">` +
+      const html = sz => lines.map((ln, j) => `<div class="row" style="transform:translateX(${(j % 2 ? 1 : -1) * (lines.length > 1 ? 40 : 0)}px);margin-top:${j ? (ln.pre.length ? 0.2 : -0.1) * sz : 0}px"><span class="ln">` +
         (ln.pre.length ? `<span class="sm pre" style="font-size:${Math.round(sz * 0.34)}px">${ln.pre.map(w => esc(w.t)).join(' ')}</span>` : '') +
         `<span class="big" style="font-size:${sz}px">${esc(ln.big.t)}</span>` +
         (ln.post.length ? `<span class="sm post" style="font-size:${Math.round(sz * 0.34)}px">${ln.post.map(w => esc(w.t)).join(' ')}</span>` : '') + `</span></div>`).join('');
@@ -1562,7 +1562,7 @@ window.renderAt = (t) => {
         const ahead = (S.sb.captions?.lead ?? 0.25) * 0.6;
         const vis = w => clamp((t - w.start + ahead) / 0.12);
         const word = (w, cls, style) => { const p = vis(w); return `<span class="${cls}" style="${style};opacity:${p.toFixed(2)};${p < 1 && cls !== 'big' ? `filter:blur(${((1 - p) * 6).toFixed(1)}px);` : ''}${p < 1 && cls === 'big' ? `transform:scale(${(0.92 + 0.08 * p).toFixed(3)});` : ''}">${esc(w.t)}</span>`; };
-        const body = c.lk.lines.map((ln, j) => `<div class="row" style="position:relative;z-index:${20 - j};transform:translateX(${(j % 2 ? 1 : -1) * (c.lk.lines.length > 1 ? 40 : 0)}px);margin-top:${j ? -0.1 * c.lk.sz : 0}px"><span class="ln">` +
+        const body = c.lk.lines.map((ln, j) => `<div class="row" style="position:relative;z-index:${20 - j};transform:translateX(${(j % 2 ? 1 : -1) * (c.lk.lines.length > 1 ? 40 : 0)}px);margin-top:${j ? (ln.pre.length ? 0.2 : -0.1) * c.lk.sz : 0}px"><span class="ln">` +
           (ln.pre.length ? `<span class="sm pre" style="font-size:${Math.round(c.lk.sz * 0.34)}px">${ln.pre.map(w => word(w, '', '')).join(' ')}</span>` : '') +
           word(ln.big, 'big', `font-size:${c.lk.sz}px;--f:${ln.fill}`) +
           (ln.post.length ? `<span class="sm post" style="font-size:${Math.round(c.lk.sz * 0.34)}px">${ln.post.map(w => word(w, '', '')).join(' ')}</span>` : '') + `</span></div>`).join('');
